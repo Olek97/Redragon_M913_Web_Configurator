@@ -1,0 +1,457 @@
+// Redragon M913 Impact Elite — protocol (JS port of Qehbr/m913-ctl, GPL-3.0)
+//
+// 17-byte frame:
+//   [0]     0x08 — config command marker (Report ID, Feature)
+//   [1]     sub-command (0x07=write, 0x04=commit)
+//   [2]     0x00
+//   [3]     0x00 (or address-hi for keyboard sub-packets)
+//   [4]     memory address
+//   [5]     payload length
+//   [6..13] payload
+//   [14-15] padding 0x00
+//   [16]    checksum: (0x55 - sum(bytes[0..15])) & 0xFF
+//
+// Transport: device.sendFeatureReport(0x08, 16-byte-data) over WebHID.
+
+export const M913_VID = 0x25a7;
+export const M913_PID = 0xfa07;
+export const PACKET_SIZE = 17;
+export const REPORT_ID = 0x08;
+
+export function computeChecksum(packet) {
+  let s = 0;
+  for (let i = 0; i < PACKET_SIZE - 1; i++) s += packet[i];
+  return (0x55 - s) & 0xff;
+}
+
+function finalizePacket(p) {
+  p[16] = computeChecksum(p);
+  return p;
+}
+
+function fromTemplate(arr) {
+  const p = new Uint8Array(PACKET_SIZE);
+  p.set(arr);
+  return p;
+}
+
+// 16 firmware button indices.
+export const BUTTONS = {
+  side1: 0, side2: 1, side3: 2, side4: 3,
+  side5: 4, side6: 5, right: 6, left: 7,
+  side7: 8, side8: 9, middle: 10, fire: 11,
+  side9: 12, side10: 13, side11: 14, side12: 15,
+};
+
+export const BUTTON_LABELS = {
+  0: 'Side 1', 1: 'Side 2', 2: 'Side 3', 3: 'Side 4',
+  4: 'Side 5', 5: 'Side 6', 6: 'Right', 7: 'Left',
+  8: 'Side 7', 9: 'Side 8', 10: 'Middle', 11: 'Fire',
+  12: 'Side 9', 13: 'Side 10', 14: 'Side 11', 15: 'Side 12',
+};
+
+// Direct actions (mouse, dpi, special). Format: [type, modifier/extra, scancode/extra, reserved].
+export const DIRECT_ACTIONS = {
+  left: [0x01, 0x01, 0x00, 0x53],
+  right: [0x01, 0x02, 0x00, 0x52],
+  middle: [0x01, 0x04, 0x00, 0x50],
+  backward: [0x01, 0x08, 0x00, 0x4c],
+  forward: [0x01, 0x10, 0x00, 0x44],
+  'dpi-': [0x02, 0x03, 0x00, 0x50],
+  'dpi+': [0x02, 0x02, 0x00, 0x51],
+  'dpi-cycle': [0x02, 0x01, 0x00, 0x52],
+  led_toggle: [0x08, 0x00, 0x00, 0x4d],
+  none: [0x00, 0x00, 0x00, 0x55],
+  three_click: [0x04, 0x32, 0x03, 0x1c],
+  polling_switch: [0x07, 0x00, 0x00, 0x4e],
+  fire: [0x04, 0x3a, 0x03, 0x14],
+};
+
+// Multimedia (action type 0x92, USB HID Consumer page).
+export const MEDIA_ACTIONS = {
+  media_play: [0x92, 0x00, 0xcd, 0x00],
+  media_player: [0x92, 0x01, 0x83, 0x01],
+  media_next: [0x92, 0x00, 0xb5, 0x00],
+  media_prev: [0x92, 0x00, 0xb6, 0x00],
+  media_stop: [0x92, 0x00, 0xb7, 0x00],
+  media_vol_up: [0x92, 0x00, 0xe9, 0x00],
+  media_vol_down: [0x92, 0x00, 0xea, 0x00],
+  media_mute: [0x92, 0x00, 0xe2, 0x00],
+  media_email: [0x92, 0x01, 0x8a, 0x01],
+  media_calc: [0x92, 0x01, 0x92, 0x01],
+  media_computer: [0x92, 0x01, 0x94, 0x01],
+  media_home: [0x92, 0x02, 0x23, 0x02],
+  media_search: [0x92, 0x02, 0x21, 0x02],
+  www_forward: [0x92, 0x02, 0x25, 0x02],
+  www_back: [0x92, 0x02, 0x24, 0x02],
+  www_stop: [0x92, 0x02, 0x26, 0x02],
+  www_refresh: [0x92, 0x02, 0x27, 0x02],
+  www_favorites: [0x92, 0x02, 0x2a, 0x02],
+};
+
+export const MODIFIERS = {
+  ctrl_l: 0x01, shift_l: 0x02, alt_l: 0x04, super_l: 0x08,
+  ctrl_r: 0x10, shift_r: 0x20, alt_r: 0x40, super_r: 0x80,
+  ctrl: 0x01, shift: 0x02, alt: 0x04, super: 0x08, meta: 0x08,
+};
+
+// USB HID keyboard usage codes (HID spec, Section 10).
+export const KEY_CODES = {
+  a: 0x04, b: 0x05, c: 0x06, d: 0x07, e: 0x08, f: 0x09, g: 0x0a, h: 0x0b,
+  i: 0x0c, j: 0x0d, k: 0x0e, l: 0x0f, m: 0x10, n: 0x11, o: 0x12, p: 0x13,
+  q: 0x14, r: 0x15, s: 0x16, t: 0x17, u: 0x18, v: 0x19, w: 0x1a, x: 0x1b,
+  y: 0x1c, z: 0x1d,
+  '1': 0x1e, '2': 0x1f, '3': 0x20, '4': 0x21, '5': 0x22,
+  '6': 0x23, '7': 0x24, '8': 0x25, '9': 0x26, '0': 0x27,
+  enter: 0x28, escape: 0x29, esc: 0x29, backspace: 0x2a, tab: 0x2b, space: 0x2c,
+  minus: 0x2d, equal: 0x2e, lbracket: 0x2f, rbracket: 0x30, backslash: 0x31,
+  semicolon: 0x33, quote: 0x34, grave: 0x35, comma: 0x36, dot: 0x37, slash: 0x38,
+  capslock: 0x39,
+  f1: 0x3a, f2: 0x3b, f3: 0x3c, f4: 0x3d, f5: 0x3e, f6: 0x3f,
+  f7: 0x40, f8: 0x41, f9: 0x42, f10: 0x43, f11: 0x44, f12: 0x45,
+  printscreen: 0x46, scrolllock: 0x47, pause: 0x48, insert: 0x49,
+  home: 0x4a, pageup: 0x4b, delete: 0x4c, end: 0x4d, pagedown: 0x4e,
+  arrowright: 0x4f, arrowleft: 0x50, arrowdown: 0x51, arrowup: 0x52,
+};
+
+// Parses an action string ("ctrl+c", "f1", "media_play", "fire:58:3", ...).
+// Returns { ab, keyboard? } where ab is the 4 action bytes; keyboard
+// (if present) describes a keyboard-type sub-packet to emit.
+export function parseAction(actionStr) {
+  const action = actionStr.toLowerCase().trim();
+
+  if (action.startsWith('fire:')) {
+    const parts = action.split(':');
+    if (parts.length === 3) {
+      const speed = parseInt(parts[1], 10);
+      const times = parseInt(parts[2], 10);
+      if (speed >= 3 && speed <= 255 && times >= 0 && times <= 3) {
+        const cs = (0x55 - (0x04 + speed + times)) & 0xff;
+        return { ab: [0x04, speed, times, cs] };
+      }
+    }
+    return null;
+  }
+
+  if (DIRECT_ACTIONS[action]) return { ab: DIRECT_ACTIONS[action] };
+  if (MEDIA_ACTIONS[action]) return { ab: MEDIA_ACTIONS[action] };
+
+  const parts = action.split('+').map(s => s.trim()).filter(Boolean);
+  if (parts.length === 0) return null;
+
+  let mods = 0;
+  const keys = [];
+  for (const part of parts) {
+    if (MODIFIERS[part] !== undefined) mods |= MODIFIERS[part];
+    else if (KEY_CODES[part] !== undefined) keys.push(KEY_CODES[part]);
+    else return null;
+  }
+
+  if (mods === 0 && keys.length === 1) {
+    return { ab: [0x90, 0x00, keys[0], 0x00], keyboard: { type: 'plain', key: keys[0] } };
+  }
+  if (mods !== 0 && keys.length === 1) {
+    return { ab: [0x90, mods, keys[0], 0x00], keyboard: { type: 'combo', mods, keys } };
+  }
+  if (keys.length >= 2 && keys.length <= 3) {
+    return { ab: [0x91, mods, keys[0], keys.length], keyboard: { type: 'combo', mods, keys } };
+  }
+  if (mods !== 0 && keys.length === 0) {
+    return { ab: [0x90, mods, 0x00, 0x00], keyboard: { type: 'mod_only', mods } };
+  }
+  return null;
+}
+
+// Per-button keyboard addresses (bytes [3] and [4] of the sub-packet).
+// Source: mouse_m913::_c_keyboard_key_buttons
+const KB_KEY_ADDR = [
+  [0x01, 0x00], [0x01, 0x20], [0x01, 0x40], [0x01, 0x60],
+  [0x01, 0x80], [0x01, 0xa0], [0x01, 0xc0], [0x01, 0xe0],
+  [0x02, 0x00], [0x02, 0x20], [0x02, 0x40], [0x02, 0x60],
+  [0x02, 0x80], [0x02, 0xa0], [0x02, 0xc0], [0x02, 0xe0],
+];
+
+const DEFAULT_BUTTON_MAPPING = [
+  [0x08, 0x07, 0x00, 0x00, 0x60, 0x08, 0x00, 0x00, 0x00, 0x55, 0x05, 0x00, 0x00, 0x50, 0x00, 0x00, 0x34],
+  [0x08, 0x07, 0x00, 0x00, 0x68, 0x08, 0x05, 0x00, 0x00, 0x50, 0x01, 0x08, 0x00, 0x4c, 0x00, 0x00, 0x2c],
+  [0x08, 0x07, 0x00, 0x00, 0x70, 0x08, 0x05, 0x00, 0x00, 0x50, 0x05, 0x00, 0x00, 0x50, 0x00, 0x00, 0x24],
+  [0x08, 0x07, 0x00, 0x00, 0x78, 0x08, 0x01, 0x02, 0x00, 0x52, 0x01, 0x01, 0x00, 0x53, 0x00, 0x00, 0x1c],
+  [0x08, 0x07, 0x00, 0x00, 0x80, 0x08, 0x05, 0x00, 0x00, 0x50, 0x05, 0x00, 0x00, 0x50, 0x00, 0x00, 0x14],
+  [0x08, 0x07, 0x00, 0x00, 0x88, 0x08, 0x01, 0x04, 0x00, 0x50, 0x04, 0x3a, 0x03, 0x14, 0x00, 0x00, 0x0c],
+  [0x08, 0x07, 0x00, 0x00, 0x90, 0x08, 0x05, 0x00, 0x00, 0x50, 0x05, 0x00, 0x00, 0x50, 0x00, 0x00, 0x04],
+  [0x08, 0x07, 0x00, 0x00, 0x98, 0x08, 0x05, 0x00, 0x00, 0x50, 0x05, 0x00, 0x00, 0x50, 0x00, 0x00, 0xfc],
+];
+
+const KB_KEY_TEMPLATE = [
+  0x08, 0x07, 0x00, 0x01, 0x60, 0x08,
+  0x02, 0x81, 0x21, 0x00, 0x41, 0x21, 0x00, 0x4f,
+  0x00, 0x00, 0x88
+];
+
+const KB_MARKER = [0x05, 0x00, 0x00, 0x50];
+
+// Builds the packet sequence for button mapping.
+// changes: { btnIdx -> { ab, keyboard } } produced by parseAction
+export function buildButtonMapping(changes) {
+  const buf = DEFAULT_BUTTON_MAPPING.map(fromTemplate);
+  const result = [];
+
+  for (const [btnIdxStr, parsed] of Object.entries(changes)) {
+    const btnIdx = parseInt(btnIdxStr, 10);
+    if (btnIdx < 0 || btnIdx >= 16) continue;
+    const ab = parsed.ab;
+
+    if (ab[0] === 0x90 || ab[0] === 0x91) {
+      const [addrHi, addrLo] = KB_KEY_ADDR[btnIdx];
+      const kb = parsed.keyboard;
+
+      if (kb.type === 'plain') {
+        const sub = fromTemplate(KB_KEY_TEMPLATE);
+        sub[3] = addrHi; sub[4] = addrLo;
+        sub[8] = kb.key; sub[11] = kb.key;
+        sub[13] = (0x91 - 2 * kb.key) & 0xff;
+        finalizePacket(sub);
+        result.push(sub);
+      } else if (kb.type === 'mod_only') {
+        const sub = fromTemplate(KB_KEY_TEMPLATE);
+        sub[3] = addrHi; sub[4] = addrLo;
+        sub[7] = 0x80; sub[8] = kb.mods;
+        sub[10] = 0x40; sub[11] = kb.mods;
+        const isum = 0x02 + 0x80 + kb.mods + 0x40 + kb.mods;
+        sub[13] = (0x55 - isum) & 0xff;
+        finalizePacket(sub);
+        result.push(sub);
+      } else {
+        // combo: pattern is mod-down*, key-down (in order),
+        // then mod-up*, key-up (reverse order). Emitted across 2 packets.
+        const MOD_BITS = [0x01, 0x02, 0x04, 0x08, 0x10, 0x20, 0x40, 0x80];
+        const evts = [];
+        for (const b of MOD_BITS) if (kb.mods & b) evts.push(0x80, b, 0x00);
+        for (const k of kb.keys) evts.push(0x81, k, 0x00);
+        for (const b of MOD_BITS) if (kb.mods & b) evts.push(0x40, b, 0x00);
+        for (let i = kb.keys.length - 1; i >= 0; i--) evts.push(0x41, kb.keys[i], 0x00);
+
+        const count = evts.length / 3;
+        let isum = count;
+        for (const b of evts) isum += b;
+        const innerCs = (0x55 - (isum & 0xff)) & 0xff;
+
+        const p1 = new Uint8Array(PACKET_SIZE);
+        p1[0] = 0x08; p1[1] = 0x07; p1[2] = 0x00;
+        p1[3] = addrHi; p1[4] = addrLo; p1[5] = 0x0a;
+        p1[6] = count;
+        for (let i = 0; i < 9 && i < evts.length; i++) p1[7 + i] = evts[i];
+        finalizePacket(p1);
+        result.push(p1);
+
+        const p1Used = Math.min(9, evts.length);
+        const remaining = evts.length - p1Used;
+        const p2 = new Uint8Array(PACKET_SIZE);
+        p2[0] = 0x08; p2[1] = 0x07; p2[2] = 0x00;
+        p2[3] = addrHi; p2[4] = (addrLo + 0x0a) & 0xff;
+        p2[5] = remaining + 1;
+        for (let i = 0; i < remaining; i++) p2[6 + i] = evts[p1Used + i];
+        p2[6 + remaining] = innerCs;
+        finalizePacket(p2);
+        result.push(p2);
+      }
+
+      const pkt = btnIdx >> 1;
+      const off = (btnIdx & 1) === 0 ? 6 : 10;
+      for (let k = 0; k < 4; k++) buf[pkt][off + k] = KB_MARKER[k];
+    } else if (ab[0] === 0x92) {
+      // Multimedia (Consumer page) sub-packet
+      const [addrHi, addrLo] = KB_KEY_ADDR[btnIdx];
+      const extra = ab[1], code = ab[2], extra2 = ab[3];
+      const sub = new Uint8Array(PACKET_SIZE);
+      sub[0] = 0x08; sub[1] = 0x07; sub[2] = 0x00;
+      sub[3] = addrHi; sub[4] = addrLo; sub[5] = 0x08;
+      sub[6] = 0x02; sub[7] = 0x82; sub[8] = code; sub[9] = extra;
+      sub[10] = 0x42; sub[11] = code; sub[12] = extra2;
+      const isum = 0x02 + 0x82 + code + extra + 0x42 + code + extra2;
+      sub[13] = (0x55 - isum) & 0xff;
+      finalizePacket(sub);
+      result.push(sub);
+
+      const pkt = btnIdx >> 1;
+      const off = (btnIdx & 1) === 0 ? 6 : 10;
+      for (let k = 0; k < 4; k++) buf[pkt][off + k] = KB_MARKER[k];
+    } else {
+      // Direct action: copy 4 bytes into the slot
+      const pkt = btnIdx >> 1;
+      const off = (btnIdx & 1) === 0 ? 6 : 10;
+      for (let k = 0; k < 4; k++) buf[pkt][off + k] = ab[k];
+    }
+  }
+
+  for (let i = 0; i < 8; i++) finalizePacket(buf[i]);
+  // Keyboard sub-packets must be sent BEFORE the 8 mapping packets.
+  for (let i = 0; i < 8; i++) result.push(buf[i]);
+  return result;
+}
+
+const DPI_TABLE = {
+  100: [0x00, 0x00, 0x55], 200: [0x02, 0x02, 0x51], 300: [0x03, 0x03, 0x4f],
+  400: [0x04, 0x04, 0x4d], 500: [0x05, 0x05, 0x4b], 600: [0x06, 0x06, 0x49],
+  700: [0x07, 0x07, 0x47], 800: [0x09, 0x09, 0x43], 900: [0x0a, 0x0a, 0x41],
+  1000: [0x0b, 0x0b, 0x3f], 1100: [0x0c, 0x0c, 0x3d], 1200: [0x0d, 0x0d, 0x3b],
+  1300: [0x0e, 0x0e, 0x39], 1400: [0x10, 0x10, 0x35], 1500: [0x11, 0x11, 0x33],
+  1600: [0x12, 0x12, 0x31], 1700: [0x13, 0x13, 0x2f], 1800: [0x14, 0x14, 0x2d],
+  1900: [0x16, 0x16, 0x29], 2000: [0x17, 0x17, 0x27], 2100: [0x18, 0x18, 0x25],
+  2200: [0x19, 0x19, 0x23], 2300: [0x1a, 0x1a, 0x21], 2400: [0x1b, 0x1b, 0x1f],
+  2500: [0x1d, 0x1d, 0x1b], 2600: [0x1e, 0x1e, 0x19], 2700: [0x1f, 0x1f, 0x17],
+  2800: [0x20, 0x20, 0x15], 2900: [0x21, 0x21, 0x13], 3000: [0x23, 0x23, 0x0f],
+  3200: [0x26, 0x26, 0x09], 3600: [0x2a, 0x2a, 0x01], 4000: [0x2f, 0x2f, 0xf7],
+  4800: [0x39, 0x39, 0xe3], 5000: [0x3b, 0x3b, 0xdf], 5500: [0x41, 0x41, 0xd3],
+  6000: [0x47, 0x47, 0xc7], 6400: [0x4c, 0x4c, 0xbd], 6600: [0x4f, 0x4f, 0xb7],
+  7000: [0x53, 0x53, 0xaf], 7200: [0x56, 0x56, 0xa9], 7300: [0x57, 0x57, 0xa7],
+  7400: [0x58, 0x58, 0xa5], 7500: [0x59, 0x59, 0xa3], 8000: [0x5f, 0x5f, 0x97],
+  8500: [0x65, 0x65, 0x8b], 9000: [0x6b, 0x6b, 0x7f], 9600: [0x73, 0x73, 0x6f],
+  10000: [0x77, 0x77, 0x67], 11000: [0x83, 0x83, 0x4f], 12000: [0x8f, 0x8f, 0x37],
+  13000: [0x9b, 0x9b, 0x1f], 14000: [0xa7, 0xa7, 0x07], 15000: [0xb3, 0xb3, 0xef],
+  16000: [0xbd, 0xbd, 0xdb],
+};
+
+export const VALID_DPI_VALUES = Object.keys(DPI_TABLE).map(Number).sort((a, b) => a - b);
+
+const DPI_TEMPLATES = [
+  [0x08, 0x07, 0x00, 0x00, 0x0c, 0x08, 0x00, 0x00, 0x00, 0x55, 0x02, 0x02, 0x00, 0x51, 0x00, 0x00, 0x88],
+  [0x08, 0x07, 0x00, 0x00, 0x14, 0x08, 0x03, 0x03, 0x00, 0x4f, 0x04, 0x04, 0x00, 0x4d, 0x00, 0x00, 0x80],
+  [0x08, 0x07, 0x00, 0x00, 0x1c, 0x04, 0x05, 0x05, 0x00, 0x4b, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0xd1],
+  [0x08, 0x07, 0x00, 0x00, 0x02, 0x02, 0x05, 0x50, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0xed],
+];
+
+const DPI_UNKNOWN2 = [
+  [0x08, 0x07, 0x00, 0x00, 0x2c, 0x08, 0xff, 0x00, 0x00, 0x56, 0x00, 0x00, 0xff, 0x56, 0x00, 0x00, 0x68],
+  [0x08, 0x07, 0x00, 0x00, 0x34, 0x08, 0x00, 0xff, 0x00, 0x56, 0xff, 0xff, 0x00, 0x57, 0x00, 0x00, 0x60],
+  [0x08, 0x07, 0x00, 0x00, 0x3c, 0x04, 0xff, 0x55, 0x7d, 0x84, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0xb1],
+];
+
+// dpi: { values: [v1..v5] (0=skip), enabled: [b1..b5] }
+export function buildDpiPackets(dpi) {
+  const buf = DPI_TEMPLATES.map(fromTemplate);
+
+  const setLevel = (pkt, baseOff, val) => {
+    const code = DPI_TABLE[val];
+    if (!code) return;
+    buf[pkt][baseOff] = code[0];
+    buf[pkt][baseOff + 1] = code[1];
+    buf[pkt][baseOff + 3] = code[2]; // 0x00 gap at +2
+  };
+
+  if (dpi.values[0]) setLevel(0, 6, dpi.values[0]);
+  if (dpi.values[1]) setLevel(0, 10, dpi.values[1]);
+  if (dpi.values[2]) setLevel(1, 6, dpi.values[2]);
+  if (dpi.values[3]) setLevel(1, 10, dpi.values[3]);
+  if (dpi.values[4]) setLevel(2, 6, dpi.values[4]);
+
+  // Enabled-slots encoding: highest disabled level determines the two bytes.
+  // The M913 firmware only supports a contiguous range of enabled slots from slot 1.
+  if (dpi.enabled.filter(Boolean).length > 0) {
+    let e1 = 0x05, e2 = 0x50;
+    if (!dpi.enabled[4]) { e1 = 0x04; e2 = 0x51; }
+    if (!dpi.enabled[3]) { e1 = 0x03; e2 = 0x52; }
+    if (!dpi.enabled[2]) { e1 = 0x02; e2 = 0x53; }
+    if (!dpi.enabled[1]) { e1 = 0x01; e2 = 0x54; }
+    buf[3][6] = e1;
+    buf[3][7] = e2;
+  }
+
+  for (let i = 0; i < 4; i++) finalizePacket(buf[i]);
+  const result = [...buf];
+  for (const t of DPI_UNKNOWN2) result.push(fromTemplate(t));
+  return result;
+}
+
+export function nearestDpi(value) {
+  let best = VALID_DPI_VALUES[0];
+  let bestDist = Math.abs(value - best);
+  for (const v of VALID_DPI_VALUES) {
+    const d = Math.abs(value - v);
+    if (d < bestDist) { best = v; bestDist = d; }
+  }
+  return best;
+}
+
+export const LED_MODES = { off: 0, steady: 1, respiration: 2, rainbow: 3 };
+
+const LED_OFF_TPL = [0x08, 0x07, 0x00, 0x00, 0x58, 0x02, 0x00, 0x55, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x97];
+const LED_STATIC_TPL = [0x08, 0x07, 0x00, 0x00, 0x54, 0x08, 0xff, 0x00, 0x00, 0x57, 0x01, 0x54, 0xff, 0x56, 0x00, 0x00, 0xeb];
+const LED_BREATH_TPL = [
+  [0x08, 0x07, 0x00, 0x00, 0x54, 0x08, 0xff, 0x00, 0x00, 0x57, 0x01, 0x54, 0xff, 0x56, 0x00, 0x00, 0xeb],
+  [0x08, 0x07, 0x00, 0x00, 0x5c, 0x02, 0x03, 0x52, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x93],
+];
+const LED_RAINBOW_TPL = [
+  [0x08, 0x07, 0x00, 0x00, 0x54, 0x08, 0xff, 0x00, 0xff, 0x57, 0x03, 0x52, 0x80, 0xd5, 0x00, 0x00, 0xeb],
+  [0x08, 0x07, 0x00, 0x00, 0x5c, 0x02, 0x03, 0x52, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x93],
+];
+
+// mode: 'off' | 'steady' | 'respiration' | 'rainbow'
+// color: 0xRRGGBB, brightness: 0-255, speed: 1-5
+export function buildLedPackets(mode, color = 0x00ff00, brightness = 0xff, speed = 3) {
+  const result = [];
+  const r = (color >> 16) & 0xff;
+  const g = (color >> 8) & 0xff;
+  const b = color & 0xff;
+
+  if (mode === 'off') {
+    result.push(fromTemplate(LED_OFF_TPL));
+  } else if (mode === 'steady') {
+    const p = fromTemplate(LED_STATIC_TPL);
+    p[6] = r; p[7] = g; p[8] = b;
+    p[9] = (0x55 - r - g - b) & 0xff;
+    p[10] = 0x01;
+    p[11] = (0x55 - 0x01) & 0xff;
+    p[12] = brightness;
+    p[13] = (0x55 - brightness) & 0xff;
+    finalizePacket(p);
+    result.push(p);
+  } else if (mode === 'respiration') {
+    const p1 = fromTemplate(LED_BREATH_TPL[0]);
+    p1[6] = r; p1[7] = g; p1[8] = b;
+    p1[9] = (0x55 - r - g - b) & 0xff;
+    p1[10] = 0x02;
+    p1[11] = (0x55 - 0x02) & 0xff;
+    p1[12] = brightness;
+    p1[13] = (0x55 - brightness) & 0xff;
+    finalizePacket(p1);
+    result.push(p1);
+
+    const p2 = fromTemplate(LED_BREATH_TPL[1]);
+    p2[6] = speed;
+    p2[7] = (0x55 - speed) & 0xff;
+    finalizePacket(p2);
+    result.push(p2);
+  } else if (mode === 'rainbow') {
+    for (const t of LED_RAINBOW_TPL) result.push(fromTemplate(t));
+  }
+  return result;
+}
+
+export function buildPollingRatePacket(hz) {
+  let code;
+  if (hz >= 1000) code = 0x01;
+  else if (hz >= 500) code = 0x02;
+  else if (hz >= 250) code = 0x04;
+  else code = 0x08; // 125 Hz
+
+  const p = new Uint8Array(PACKET_SIZE);
+  p[0] = 0x08; p[1] = 0x07;
+  p[4] = 0x00; p[5] = 0x02;
+  p[6] = code;
+  p[7] = (0x55 - code) & 0xff;
+  finalizePacket(p);
+  return p;
+}
+
+// Commit (apply-to-flash). Must be sent twice at the end of a config session.
+export function buildCommitPacket() {
+  const p = new Uint8Array(PACKET_SIZE);
+  p[0] = 0x08; p[1] = 0x04;
+  finalizePacket(p);
+  return p;
+}
+
+export function packetToHex(p) {
+  return Array.from(p).map(b => b.toString(16).padStart(2, '0')).join(' ');
+}
