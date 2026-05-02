@@ -1515,6 +1515,9 @@
     const UDEV_SCRIPT = `#!/bin/bash
 # install-m913-udev.sh
 # Grants your user access to the Redragon M913 Impact Elite (VID 25a7, PID fa07).
+# Works on any modern Linux distro with systemd (Debian, Ubuntu, Fedora, Arch,
+# openSUSE, etc.) thanks to the 'uaccess' tag, which systemd-logind uses to
+# automatically grant device access to whichever user owns the active session.
 
 set -e
 if [ "$EUID" -ne 0 ]; then
@@ -1526,22 +1529,15 @@ RULES_FILE="/etc/udev/rules.d/99-m913.rules"
 
 echo ">> Writing udev rule to $RULES_FILE"
 cat > "$RULES_FILE" <<'EOF'
-KERNEL=="hidraw*", ATTRS{idVendor}=="25a7", ATTRS{idProduct}=="fa07", TAG+="uaccess", GROUP="plugdev", MODE="0660"
-SUBSYSTEM=="usb",  ATTRS{idVendor}=="25a7", ATTRS{idProduct}=="fa07", TAG+="uaccess", GROUP="plugdev", MODE="0660"
+# Redragon M913 Impact Elite — grant access to the local interactive user
+# via systemd-logind's 'uaccess' tag.
+KERNEL=="hidraw*", ATTRS{idVendor}=="25a7", ATTRS{idProduct}=="fa07", TAG+="uaccess", MODE="0660"
+SUBSYSTEM=="usb",  ATTRS{idVendor}=="25a7", ATTRS{idProduct}=="fa07", TAG+="uaccess", MODE="0660"
 EOF
 
 echo ">> Reloading udev rules"
 udevadm control --reload-rules
 udevadm trigger
-
-TARGET_USER="\${SUDO_USER:-\$USER}"
-if id -nG "$TARGET_USER" | grep -qw plugdev; then
-  echo ">> User $TARGET_USER is already in the plugdev group."
-else
-  echo ">> Adding $TARGET_USER to the plugdev group"
-  usermod -aG plugdev "$TARGET_USER"
-  echo "!! IMPORTANT: log out and log back in for the group to take effect."
-fi
 
 echo ""
 echo "Setup complete. Now UNPLUG and RE-PLUG the M913 USB dongle."
