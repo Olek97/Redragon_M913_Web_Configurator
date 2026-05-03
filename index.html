@@ -1200,7 +1200,8 @@
 
         <details class="tech-info">
           <summary>Protocol details</summary>
-          <p>Device: Redragon M913 Impact Elite · VID/PID <code>25a7:fa07</code></p>
+          <p>Device: Redragon M913 Impact Elite · VID/PID <code>25a7:fa07</code> (wireless) or <code>25a7:fa08</code>
+            (wired)</p>
           <p>Frame: 17 bytes · Report ID <code>0x08</code> (Feature)</p>
           <p>Transport: <code>device.sendFeatureReport(0x08, payload[16])</code></p>
           <p>Checksum: <code>(0x55 - sum(bytes[0..15])) &amp; 0xFF</code></p>
@@ -1401,7 +1402,7 @@
 
   <script type="module">
     import {
-      M913_VID, M913_PID, REPORT_ID, PACKET_SIZE,
+      M913_VID, M913_PID, M913_PID_WIRED, M913_PIDS, REPORT_ID, PACKET_SIZE,
       BUTTONS, BUTTON_LABELS,
       parseAction, buildButtonMapping,
       buildDpiPackets, buildLedPackets, buildPollingRatePacket, buildCommitPacket,
@@ -1514,7 +1515,8 @@
 
     const UDEV_SCRIPT = `#!/bin/bash
 # install-m913-udev.sh
-# Grants your user access to the Redragon M913 Impact Elite (VID 25a7, PID fa07).
+# Grants your user access to the Redragon M913 Impact Elite (VID 25a7,
+# PID fa07 wireless / fa08 wired).
 # Works on any modern Linux distro with systemd (Debian, Ubuntu, Fedora, Arch,
 # openSUSE, etc.) thanks to the 'uaccess' tag, which systemd-logind uses to
 # automatically grant device access to whichever user owns the active session.
@@ -1531,8 +1533,11 @@ echo ">> Writing udev rule to $RULES_FILE"
 cat > "$RULES_FILE" <<'EOF'
 # Redragon M913 Impact Elite — grant access to the local interactive user
 # via systemd-logind's 'uaccess' tag.
+# Matches both wireless (fa07) and wired/dual-mode (fa08) variants.
 KERNEL=="hidraw*", ATTRS{idVendor}=="25a7", ATTRS{idProduct}=="fa07", TAG+="uaccess", MODE="0660"
 SUBSYSTEM=="usb",  ATTRS{idVendor}=="25a7", ATTRS{idProduct}=="fa07", TAG+="uaccess", MODE="0660"
+KERNEL=="hidraw*", ATTRS{idVendor}=="25a7", ATTRS{idProduct}=="fa08", TAG+="uaccess", MODE="0660"
+SUBSYSTEM=="usb",  ATTRS{idVendor}=="25a7", ATTRS{idProduct}=="fa08", TAG+="uaccess", MODE="0660"
 EOF
 
 echo ">> Reloading udev rules"
@@ -1540,7 +1545,7 @@ udevadm control --reload-rules
 udevadm trigger
 
 echo ""
-echo "Setup complete. Now UNPLUG and RE-PLUG the M913 USB dongle."
+echo "Setup complete. Now UNPLUG and RE-PLUG the M913 (USB dongle or cable)."
 echo "Then go back to the browser and click 'Request device access'."
 `;
 
@@ -1599,9 +1604,14 @@ echo "Then go back to the browser and click 'Request device access'."
         return;
       }
       try {
-        const filters = [0xff00, 0xff01, 0xff02, 0xff03, 0xff04].map(usagePage => ({
-          vendorId: M913_VID, productId: M913_PID, usagePage,
-        }));
+        // Match both wireless (fa07) and wired (fa08) modes, across all known
+        // vendor-defined HID usage pages used by the M913.
+        const filters = [];
+        for (const productId of M913_PIDS) {
+          for (const usagePage of [0xff00, 0xff01, 0xff02, 0xff03, 0xff04]) {
+            filters.push({ vendorId: M913_VID, productId, usagePage });
+          }
+        }
         const devices = await navigator.hid.requestDevice({ filters });
         if (!devices || devices.length === 0) {
           log('No device selected.', 'info');
@@ -2444,7 +2454,7 @@ echo "Then go back to the browser and click 'Request device access'."
 
     if ('hid' in navigator) {
       navigator.hid.getDevices().then(devs => {
-        const m913s = devs.filter(d => d.vendorId === M913_VID && d.productId === M913_PID);
+        const m913s = devs.filter(d => d.vendorId === M913_VID && M913_PIDS.includes(d.productId));
         if (m913s.length > 0) {
           log(`Found previously authorized M913 (${m913s.length} interface).`, 'info');
         }
