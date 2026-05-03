@@ -1706,7 +1706,7 @@ echo "Then go back to the browser and click 'Request device access'."
     const HOTSPOTS = [
       { idx: 7, label: 'LMB', type: 'path', d: 'M 148 82 L 278 50 L 278 244 L 168 232 Z' },
       { idx: 6, label: 'RMB', type: 'path', d: 'M 282 50 L 412 82 L 392 232 L 282 244 Z' },
-      { idx: 10, label: 'MID', type: 'rect', x: 264, y: 245, w: 36, h: 28 },
+      { idx: 10, label: 'MID', type: 'rect', x: 266, y: 98, w: 32, h: 56 },
       { idx: 11, label: 'FIRE', type: 'circle', cx: 168, cy: 105, r: 17 },
       { idx: 0, label: '1', type: 'circle', cx: 112, cy: 130, r: 14 },
       { idx: 1, label: '2', type: 'circle', cx: 102, cy: 165, r: 14 },
@@ -1883,6 +1883,7 @@ echo "Then go back to the browser and click 'Request device access'."
       const cats = [
         { label: 'MOUSE', actions: ['left', 'right', 'middle', 'forward', 'backward'] },
         { label: 'DPI', actions: ['dpi+', 'dpi-', 'dpi-cycle'] },
+        { label: 'MODIFIERS (left/right)', actions: ['ctrl_l', 'ctrl_r', 'shift_l', 'shift_r', 'alt_l', 'alt_r', 'super_l', 'super_r'] },
         { label: 'SPECIAL', actions: ['fire', 'three_click', 'led_toggle', 'polling_switch'] },
         { label: 'MEDIA', actions: Object.keys(MEDIA_ACTIONS) },
       ];
