@@ -122,6 +122,19 @@ export const KEY_CODES = {
 export function parseAction(actionStr) {
   const action = actionStr.toLowerCase().trim();
 
+  // EXPERIMENTAL: hex: prefix lets you write 4 raw action bytes directly.
+  // Examples: "hex:03 00 00 52" or "hex:03000052". Only the first 3 bytes
+  // matter (the 4th, byte[3], is the inner checksum and is recomputed).
+  if (action.startsWith('hex:')) {
+    const hex = action.slice(4).replace(/[\s,]/g, '');
+    if (!/^[0-9a-f]{6,8}$/.test(hex)) return null;
+    const b0 = parseInt(hex.slice(0, 2), 16);
+    const b1 = parseInt(hex.slice(2, 4), 16);
+    const b2 = parseInt(hex.slice(4, 6), 16);
+    const cs = (0x55 - (b0 + b1 + b2)) & 0xff;
+    return { ab: [b0, b1, b2, cs] };
+  }
+
   if (action.startsWith('fire:')) {
     const parts = action.split(':');
     if (parts.length === 3) {
@@ -192,6 +205,14 @@ const KB_KEY_TEMPLATE = [
 
 const KB_MARKER = [0x05, 0x00, 0x00, 0x50];
 
+// Each of the 8 mapping packets holds 2 button slots (4 bytes each).
+// Slot 0 of a packet starts at offset 6, slot 1 at offset 10.
+function writeSlot(packets, btnIdx, fourBytes) {
+  const pkt = btnIdx >> 1;
+  const off = (btnIdx & 1) === 0 ? 6 : 10;
+  for (let k = 0; k < 4; k++) packets[pkt][off + k] = fourBytes[k];
+}
+
 // Builds the packet sequence for button mapping.
 // changes: { btnIdx -> { ab, keyboard } } produced by parseAction
 export function buildButtonMapping(changes) {
@@ -226,7 +247,7 @@ export function buildButtonMapping(changes) {
       } else {
         // combo: pattern is mod-down*, key-down (in order),
         // then mod-up*, key-up (reverse order). Emitted across 2 packets.
-        const MOD_BITS = [0x01,0x02,0x04,0x08,0x10,0x20,0x40,0x80];
+        const MOD_BITS = [0x01, 0x02, 0x04, 0x08, 0x10, 0x20, 0x40, 0x80];
         const evts = [];
         for (const b of MOD_BITS) if (kb.mods & b) evts.push(0x80, b, 0x00);
         for (const k of kb.keys) evts.push(0x81, k, 0x00);
@@ -234,23 +255,23 @@ export function buildButtonMapping(changes) {
         for (let i = kb.keys.length - 1; i >= 0; i--) evts.push(0x41, kb.keys[i], 0x00);
 
         const count = evts.length / 3;
-        let isum = count;
-        for (const b of evts) isum += b;
-        const innerCs = (0x55 - (isum & 0xff)) & 0xff;
+        const innerCs = (0x55 - ((count + evts.reduce((a, b) => a + b, 0)) & 0xff)) & 0xff;
 
+        // First packet: header + count + first 9 event bytes
         const p1 = new Uint8Array(PACKET_SIZE);
-        p1[0]=0x08; p1[1]=0x07; p1[2]=0x00;
-        p1[3]=addrHi; p1[4]=addrLo; p1[5]=0x0a;
+        p1[0] = 0x08; p1[1] = 0x07; p1[2] = 0x00;
+        p1[3] = addrHi; p1[4] = addrLo; p1[5] = 0x0a;
         p1[6] = count;
-        for (let i = 0; i < 9 && i < evts.length; i++) p1[7 + i] = evts[i];
+        const p1Used = Math.min(9, evts.length);
+        for (let i = 0; i < p1Used; i++) p1[7 + i] = evts[i];
         finalizePacket(p1);
         result.push(p1);
 
-        const p1Used = Math.min(9, evts.length);
+        // Second packet: remaining event bytes + inner checksum
         const remaining = evts.length - p1Used;
         const p2 = new Uint8Array(PACKET_SIZE);
-        p2[0]=0x08; p2[1]=0x07; p2[2]=0x00;
-        p2[3]=addrHi; p2[4]=(addrLo + 0x0a) & 0xff;
+        p2[0] = 0x08; p2[1] = 0x07; p2[2] = 0x00;
+        p2[3] = addrHi; p2[4] = (addrLo + 0x0a) & 0xff;
         p2[5] = remaining + 1;
         for (let i = 0; i < remaining; i++) p2[6 + i] = evts[p1Used + i];
         p2[6 + remaining] = innerCs;
@@ -258,31 +279,25 @@ export function buildButtonMapping(changes) {
         result.push(p2);
       }
 
-      const pkt = btnIdx >> 1;
-      const off = (btnIdx & 1) === 0 ? 6 : 10;
-      for (let k = 0; k < 4; k++) buf[pkt][off + k] = KB_MARKER[k];
+      writeSlot(buf, btnIdx, KB_MARKER);
     } else if (ab[0] === 0x92) {
       // Multimedia (Consumer page) sub-packet
       const [addrHi, addrLo] = KB_KEY_ADDR[btnIdx];
       const extra = ab[1], code = ab[2], extra2 = ab[3];
       const sub = new Uint8Array(PACKET_SIZE);
-      sub[0]=0x08; sub[1]=0x07; sub[2]=0x00;
-      sub[3]=addrHi; sub[4]=addrLo; sub[5]=0x08;
-      sub[6]=0x02; sub[7]=0x82; sub[8]=code; sub[9]=extra;
-      sub[10]=0x42; sub[11]=code; sub[12]=extra2;
+      sub[0] = 0x08; sub[1] = 0x07; sub[2] = 0x00;
+      sub[3] = addrHi; sub[4] = addrLo; sub[5] = 0x08;
+      sub[6] = 0x02; sub[7] = 0x82; sub[8] = code; sub[9] = extra;
+      sub[10] = 0x42; sub[11] = code; sub[12] = extra2;
       const isum = 0x02 + 0x82 + code + extra + 0x42 + code + extra2;
       sub[13] = (0x55 - isum) & 0xff;
       finalizePacket(sub);
       result.push(sub);
 
-      const pkt = btnIdx >> 1;
-      const off = (btnIdx & 1) === 0 ? 6 : 10;
-      for (let k = 0; k < 4; k++) buf[pkt][off + k] = KB_MARKER[k];
+      writeSlot(buf, btnIdx, KB_MARKER);
     } else {
       // Direct action: copy 4 bytes into the slot
-      const pkt = btnIdx >> 1;
-      const off = (btnIdx & 1) === 0 ? 6 : 10;
-      for (let k = 0; k < 4; k++) buf[pkt][off + k] = ab[k];
+      writeSlot(buf, btnIdx, ab);
     }
   }
 
@@ -366,13 +381,10 @@ export function buildDpiPackets(dpi) {
 }
 
 export function nearestDpi(value) {
-  let best = VALID_DPI_VALUES[0];
-  let bestDist = Math.abs(value - best);
-  for (const v of VALID_DPI_VALUES) {
-    const d = Math.abs(value - v);
-    if (d < bestDist) { best = v; bestDist = d; }
-  }
-  return best;
+  return VALID_DPI_VALUES.reduce(
+    (best, v) => Math.abs(v - value) < Math.abs(best - value) ? v : best,
+    VALID_DPI_VALUES[0]
+  );
 }
 
 export const LED_MODES = { off: 0, steady: 1, respiration: 2, rainbow: 3 };
@@ -388,54 +400,54 @@ const LED_RAINBOW_TPL = [
   [0x08,0x07,0x00,0x00,0x5c,0x02, 0x03,0x52,0x00,0x00, 0x00,0x00,0x00,0x00, 0x00,0x00,0x93],
 ];
 
+// Fills in the RGB color packet for steady/breathe modes.
+// modeByte: 0x01=steady, 0x02=breathe
+function fillLedColorPacket(p, r, g, b, modeByte, brightness) {
+  p[6] = r; p[7] = g; p[8] = b;
+  p[9]  = (0x55 - r - g - b) & 0xff;
+  p[10] = modeByte;
+  p[11] = (0x55 - modeByte) & 0xff;
+  p[12] = brightness;
+  p[13] = (0x55 - brightness) & 0xff;
+  finalizePacket(p);
+  return p;
+}
+
 // mode: 'off' | 'steady' | 'respiration' | 'rainbow'
 // color: 0xRRGGBB, brightness: 0-255, speed: 1-5
 export function buildLedPackets(mode, color = 0x00ff00, brightness = 0xff, speed = 3) {
-  const result = [];
   const r = (color >> 16) & 0xff;
   const g = (color >> 8) & 0xff;
   const b = color & 0xff;
 
   if (mode === 'off') {
-    result.push(fromTemplate(LED_OFF_TPL));
-  } else if (mode === 'steady') {
-    const p = fromTemplate(LED_STATIC_TPL);
-    p[6] = r; p[7] = g; p[8] = b;
-    p[9]  = (0x55 - r - g - b) & 0xff;
-    p[10] = 0x01;
-    p[11] = (0x55 - 0x01) & 0xff;
-    p[12] = brightness;
-    p[13] = (0x55 - brightness) & 0xff;
-    finalizePacket(p);
-    result.push(p);
-  } else if (mode === 'respiration') {
-    const p1 = fromTemplate(LED_BREATH_TPL[0]);
-    p1[6] = r; p1[7] = g; p1[8] = b;
-    p1[9]  = (0x55 - r - g - b) & 0xff;
-    p1[10] = 0x02;
-    p1[11] = (0x55 - 0x02) & 0xff;
-    p1[12] = brightness;
-    p1[13] = (0x55 - brightness) & 0xff;
-    finalizePacket(p1);
-    result.push(p1);
-
+    return [fromTemplate(LED_OFF_TPL)];
+  }
+  if (mode === 'steady') {
+    return [fillLedColorPacket(fromTemplate(LED_STATIC_TPL), r, g, b, 0x01, brightness)];
+  }
+  if (mode === 'respiration') {
+    const p1 = fillLedColorPacket(fromTemplate(LED_BREATH_TPL[0]), r, g, b, 0x02, brightness);
     const p2 = fromTemplate(LED_BREATH_TPL[1]);
     p2[6] = speed;
     p2[7] = (0x55 - speed) & 0xff;
     finalizePacket(p2);
-    result.push(p2);
-  } else if (mode === 'rainbow') {
-    for (const t of LED_RAINBOW_TPL) result.push(fromTemplate(t));
+    return [p1, p2];
   }
-  return result;
+  if (mode === 'rainbow') {
+    return LED_RAINBOW_TPL.map(fromTemplate);
+  }
+  return [];
 }
 
+// hz → polling-rate code byte. The firmware accepts 4 discrete rates only.
+const POLLING_CODES = { 1000: 0x01, 500: 0x02, 250: 0x04, 125: 0x08 };
+
 export function buildPollingRatePacket(hz) {
-  let code;
-  if (hz >= 1000)      code = 0x01;
-  else if (hz >= 500)  code = 0x02;
-  else if (hz >= 250)  code = 0x04;
-  else                 code = 0x08; // 125 Hz
+  // Snap to the highest supported rate that doesn't exceed the request.
+  const code = POLLING_CODES[hz]
+            ?? POLLING_CODES[[1000, 500, 250, 125].find(r => hz >= r)]
+            ?? 0x08; // fallback to 125 Hz
 
   const p = new Uint8Array(PACKET_SIZE);
   p[0] = 0x08; p[1] = 0x07;

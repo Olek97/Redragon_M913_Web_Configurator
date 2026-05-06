@@ -27,1207 +27,305 @@
       --warn: #c69026;
     }
 
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-    }
-
-    html,
-    body {
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html, body {
       background: var(--bg);
       color: var(--text);
       font: 14px/1.5 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
       min-height: 100vh;
     }
+    ::selection { background: var(--accent); color: #fff; }
+    code, kbd { font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace; font-size: 0.92em; background: var(--bg); padding: 1px 5px; border-radius: 3px; }
 
-    ::selection {
-      background: var(--accent);
-      color: #fff;
-    }
+    header { border-bottom: 1px solid var(--border); padding: 12px 24px; display: flex; justify-content: space-between; align-items: center; background: var(--bg-soft); position: sticky; top: 0; z-index: 50; }
+    .brand h1 { font-size: 15px; font-weight: 600; color: #cdd9e5; }
+    .brand .accent { color: var(--link); }
+    .brand .sub { display: block; font-size: 11px; color: var(--text-soft); margin-top: 2px; font-weight: 400; }
+    .conn-status { display: flex; align-items: center; gap: 8px; font-size: 12px; color: var(--text-soft); }
+    .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--text-mute); }
+    .dot.connected { background: var(--good); }
+    .dot.error { background: var(--bad); }
 
-    code,
-    kbd {
-      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
-      font-size: 0.92em;
-      background: var(--bg);
-      padding: 1px 5px;
-      border-radius: 3px;
-    }
+    main { display: flex; flex-direction: column; gap: 16px; padding: 24px; max-width: 760px; margin: 0 auto; }
+    #app { display: flex; flex-direction: column; gap: 16px; }
+    aside { display: flex; flex-direction: column; gap: 16px; }
 
-    /* Header */
-    header {
-      border-bottom: 1px solid var(--border);
-      padding: 12px 24px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      background: var(--bg-soft);
-      position: sticky;
-      top: 0;
-      z-index: 50;
-    }
+    .panel { background: var(--bg-soft); border: 1px solid var(--border); border-radius: 6px; padding: 16px 20px; }
+    .panel-title { font-size: 13px; font-weight: 600; color: #cdd9e5; margin-bottom: 14px; padding-bottom: 10px; border-bottom: 1px solid var(--border); }
+    .panel-title .num { color: var(--text-mute); margin-right: 8px; font-weight: 400; }
 
-    .brand h1 {
-      font-size: 15px;
-      font-weight: 600;
-      color: #cdd9e5;
-    }
-
-    .brand .accent {
-      color: var(--link);
-    }
-
-    .brand .sub {
-      display: block;
-      font-size: 11px;
-      color: var(--text-soft);
-      margin-top: 2px;
-      font-weight: 400;
-    }
-
-    .conn-status {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      font-size: 12px;
-      color: var(--text-soft);
-    }
-
-    .dot {
-      width: 8px;
-      height: 8px;
-      border-radius: 50%;
-      background: var(--text-mute);
-    }
-
-    .dot.connected {
-      background: var(--good);
-    }
-
-    .dot.error {
-      background: var(--bad);
-    }
-
-    /* Layout */
-    main {
-      display: flex;
-      flex-direction: column;
-      gap: 16px;
-      padding: 24px;
-      max-width: 760px;
-      margin: 0 auto;
-    }
-
-    #app {
-      display: flex;
-      flex-direction: column;
-      gap: 16px;
-    }
-
-    aside {
-      display: flex;
-      flex-direction: column;
-      gap: 16px;
-    }
-
-    /* Panels */
-    .panel {
-      background: var(--bg-soft);
-      border: 1px solid var(--border);
-      border-radius: 6px;
-      padding: 16px 20px;
-    }
-
-    .panel-title {
-      font-size: 13px;
-      font-weight: 600;
-      color: #cdd9e5;
-      margin-bottom: 14px;
-      padding-bottom: 10px;
-      border-bottom: 1px solid var(--border);
-    }
-
-    .panel-title .num {
-      color: var(--text-mute);
-      margin-right: 8px;
-      font-weight: 400;
-    }
-
-    /* Mouse SVG */
-    .mouse-stage {
-      aspect-ratio: 1.1 / 1;
-      position: relative;
-      margin: 4px auto 8px;
-      max-width: 380px;
-    }
-
-    .mouse-svg {
-      width: 100%;
-      height: 100%;
-      display: block;
-      overflow: visible;
-    }
-
-    .btn-hotspot {
-      cursor: pointer;
-    }
-
-    .btn-hotspot rect,
-    .btn-hotspot circle,
-    .btn-hotspot path {
-      transition: fill 0.12s, stroke 0.12s;
-    }
-
-    .btn-hotspot:hover .hot-fill {
-      fill: rgba(83, 155, 245, 0.25);
-      stroke: var(--link);
-    }
-
-    .btn-hotspot.modified .hot-fill {
-      fill: rgba(87, 171, 90, 0.25);
-      stroke: var(--good);
-    }
-
+    .mouse-stage { aspect-ratio: 1.1 / 1; position: relative; margin: 4px auto 8px; max-width: 380px; }
+    .mouse-svg { width: 100%; height: 100%; display: block; overflow: visible; }
+    .btn-hotspot { cursor: pointer; }
+    .btn-hotspot rect, .btn-hotspot circle, .btn-hotspot path { transition: fill 0.12s, stroke 0.12s; }
+    .btn-hotspot:hover .hot-fill { fill: rgba(83,155,245,0.25); stroke: var(--link); }
+    .btn-hotspot.modified .hot-fill { fill: rgba(87,171,90,0.25); stroke: var(--good); }
     .btn-hotspot.selected .hot-fill,
-    .btn-hotspot.modified.selected .hot-fill {
-      fill: var(--accent);
-      stroke: var(--link);
-      stroke-width: 2;
-    }
-
+    .btn-hotspot.modified.selected .hot-fill { fill: var(--accent); stroke: var(--link); stroke-width: 2; }
     .btn-hotspot:hover .hot-label,
-    .btn-hotspot.selected .hot-label {
-      fill: #fff;
-    }
-
-    .hot-fill {
-      fill: rgba(68, 76, 86, 0.7);
-      stroke: var(--border-2);
-      stroke-width: 1;
-    }
-
-    .hot-label {
-      fill: var(--text);
-      font-family: ui-monospace, monospace;
-      font-weight: 600;
-      font-size: 10px;
-      text-anchor: middle;
-      dominant-baseline: middle;
-      pointer-events: none;
-      user-select: none;
-    }
-
-    .legend {
-      display: flex;
-      gap: 16px;
-      font-size: 11px;
-      color: var(--text-soft);
-      margin-top: 8px;
-      justify-content: center;
-    }
-
-    .legend span {
-      display: flex;
-      align-items: center;
-      gap: 6px;
-    }
-
-    .legend .swatch {
-      width: 8px;
-      height: 8px;
-      border-radius: 2px;
-    }
-
-    .legend .cur {
-      color: var(--link);
-    }
-
-    .legend .mod {
-      color: var(--good);
-    }
-
-    .legend .cur .swatch {
-      background: var(--accent);
-    }
-
-    .legend .mod .swatch {
-      background: var(--good);
-    }
-
-    /* Assignments list */
-    .assignments {
-      display: grid;
-      gap: 1px;
-      margin-top: 12px;
-      background: var(--border);
-      border: 1px solid var(--border);
-      border-radius: 6px;
-      overflow: hidden;
-    }
-
-    .assign-row {
-      display: grid;
-      grid-template-columns: 80px 1fr auto;
-      gap: 12px;
-      align-items: center;
-      padding: 8px 12px;
-      background: var(--bg-soft);
-      cursor: pointer;
-    }
-
-    .assign-row:hover {
-      background: var(--bg-hover);
-    }
-
-    .assign-row.modified {
-      background: rgba(87, 171, 90, 0.08);
-    }
-
-    .assign-label {
-      font-size: 12px;
-      color: var(--text-soft);
-      font-weight: 600;
-    }
-
-    .assign-row.modified .assign-label {
-      color: var(--good);
-    }
-
-    .assign-action {
-      color: var(--text);
-      font-size: 13px;
-      overflow: hidden;
-      text-overflow: ellipsis;
-      white-space: nowrap;
-    }
-
-    .assign-row.modified .assign-action {
-      color: #cdd9e5;
-      font-weight: 500;
-    }
-
-    .reset-mark {
-      color: var(--text-mute);
-      font-size: 14px;
-      padding: 2px 6px;
-      background: none;
-      border: none;
-      cursor: pointer;
-      line-height: 1;
-      border-radius: 3px;
-      opacity: 0;
-      transition: opacity 0.1s;
-    }
-
-    .assign-row:hover .reset-mark {
-      opacity: 1;
-    }
-
-    .reset-mark:hover {
-      color: var(--bad);
-      background: rgba(229, 83, 75, 0.15);
-    }
-
-    /* Modal */
-    .modal-backdrop {
-      position: fixed;
-      inset: 0;
-      background: rgba(0, 0, 0, 0.5);
-      z-index: 100;
-      display: none;
-      align-items: center;
-      justify-content: center;
-      padding: 20px;
-    }
-
-    .modal-backdrop.show {
-      display: flex;
-    }
-
-    .modal {
-      background: var(--bg-soft);
-      border: 1px solid var(--border);
-      border-radius: 6px;
-      width: 100%;
-      max-width: 560px;
-      max-height: 90vh;
-      overflow-y: auto;
-      padding: 20px;
-    }
-
-    .modal-head {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 16px;
-      padding-bottom: 12px;
-      border-bottom: 1px solid var(--border);
-    }
-
-    .modal-title {
-      font-size: 13px;
-      color: var(--text-soft);
-    }
-
-    .modal-title .target {
-      color: #cdd9e5;
-      font-weight: 600;
-      margin-left: 4px;
-    }
-
-    .modal-close {
-      background: none;
-      border: none;
-      color: var(--text-soft);
-      cursor: pointer;
-      font-size: 18px;
-      padding: 4px 8px;
-      line-height: 1;
-      border-radius: 3px;
-    }
-
-    .modal-close:hover {
-      color: var(--bad);
-      background: rgba(229, 83, 75, 0.15);
-    }
-
-    /* Tabs */
-    .tabs {
-      display: flex;
-      gap: 0;
-      margin-bottom: 16px;
-      border-bottom: 1px solid var(--border);
-    }
-
-    .tab {
-      background: none;
-      color: var(--text-soft);
-      border: none;
-      border-bottom: 2px solid transparent;
-      padding: 8px 14px;
-      font: inherit;
-      font-size: 13px;
-      cursor: pointer;
-      margin-bottom: -1px;
-    }
-
-    .tab:hover {
-      color: var(--text);
-    }
-
-    .tab.active {
-      color: #cdd9e5;
-      border-bottom-color: var(--link);
-      font-weight: 600;
-    }
-
-    .tab-pane {
-      display: none;
-    }
-
-    .tab-pane.active {
-      display: block;
-    }
-
-    /* Quick action grid */
-    .quick-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
-      gap: 6px;
-    }
-
-    .quick-grid button {
-      background: var(--bg);
-      color: var(--text);
-      border: 1px solid var(--border);
-      padding: 7px 10px;
-      font: inherit;
-      font-size: 12px;
-      cursor: pointer;
-      text-align: left;
-      border-radius: 4px;
-    }
-
-    .quick-grid button:hover {
-      background: var(--bg-hover);
-      border-color: var(--border-2);
-    }
-
-    .quick-grid .cat-label {
-      grid-column: 1 / -1;
-      font-size: 11px;
-      color: var(--text-soft);
-      font-weight: 600;
-      margin-top: 8px;
-      padding-bottom: 4px;
-      border-bottom: 1px solid var(--border);
-    }
-
-    .quick-grid .cat-label:first-child {
-      margin-top: 0;
-    }
-
-    /* Editor builders */
-    .combo-builder {
-      display: flex;
-      flex-direction: column;
-      gap: 12px;
-    }
-
-    .capture-btn {
-      width: 100%;
-      padding: 12px;
-      font-size: 13px;
-    }
-
-    .capture-btn.listening {
-      background: var(--bad);
-      border-color: var(--bad);
-      color: #fff;
-      animation: pulse 1s ease-in-out infinite;
-    }
-
-    @keyframes pulse {
-
-      0%,
-      100% {
-        opacity: 1;
-      }
-
-      50% {
-        opacity: 0.6;
-      }
-    }
-
-    .captured-display {
-      background: var(--bg);
-      border: 1px dashed var(--border);
-      padding: 14px 16px;
-      text-align: center;
-      font-size: 14px;
-      color: var(--text-mute);
-      font-style: italic;
-      border-radius: 4px;
-    }
-
-    .captured-display.has-value {
-      color: #cdd9e5;
-      font-style: normal;
-      font-weight: 600;
-      font-size: 16px;
-      border-style: solid;
-      border-color: var(--good);
-      font-family: ui-monospace, monospace;
-    }
-
-    .key-input {
-      background: var(--bg);
-      color: var(--text);
-      border: 1px solid var(--border);
-      padding: 8px 12px;
-      font: inherit;
-      font-size: 13px;
-      border-radius: 4px;
-      width: 100%;
-    }
-
-    .key-input:focus {
-      outline: none;
-      border-color: var(--link);
-      box-shadow: 0 0 0 2px rgba(83, 155, 245, 0.2);
-    }
-
-    .fire-row {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 12px;
-    }
-
-    .fire-row label {
-      display: flex;
-      flex-direction: column;
-      gap: 4px;
-      font-size: 12px;
-      color: var(--text-soft);
-    }
-
-    .fire-row input {
-      background: var(--bg);
-      color: var(--text);
-      border: 1px solid var(--border);
-      padding: 7px 10px;
-      font: inherit;
-      font-size: 13px;
-      border-radius: 4px;
-    }
-
-    .preview-action {
-      background: var(--bg);
-      border: 1px solid var(--border);
-      border-radius: 4px;
-      padding: 10px 14px;
-      margin-top: 14px;
-      font-size: 12px;
-      display: flex;
-      align-items: center;
-      gap: 12px;
-    }
-
-    .preview-action .lbl {
-      font-size: 11px;
-      color: var(--text-soft);
-      font-weight: 600;
-    }
-
-    .preview-action .val {
-      color: #cdd9e5;
-      font-weight: 600;
-      font-family: ui-monospace, monospace;
-    }
-
-    .preview-action .err {
-      color: var(--bad);
-      font-style: italic;
-    }
-
-    .modal-footer {
-      display: flex;
-      justify-content: flex-end;
-      gap: 8px;
-      margin-top: 16px;
-      padding-top: 14px;
-      border-top: 1px solid var(--border);
-    }
-
-    /* Buttons */
-    .btn {
-      background: var(--bg);
-      color: var(--text);
-      border: 1px solid var(--border);
-      padding: 7px 14px;
-      font: inherit;
-      font-size: 13px;
-      cursor: pointer;
-      border-radius: 4px;
-    }
-
-    .btn:hover {
-      background: var(--bg-hover);
-      border-color: var(--border-2);
-    }
-
-    .btn:disabled {
-      opacity: 0.5;
-      cursor: not-allowed;
-    }
-
-    .btn-primary {
-      background: var(--accent);
-      color: #fff;
-      border-color: var(--accent);
-      font-weight: 500;
-    }
-
-    .btn-primary:hover {
-      background: var(--accent-h);
-      border-color: var(--accent-h);
-    }
-
-    .btn-cyan {
-      background: var(--good);
-      color: #fff;
-      border-color: var(--good);
-      font-weight: 500;
-    }
-
-    .btn-cyan:hover {
-      background: #6cbe6f;
-      border-color: #6cbe6f;
-    }
-
-    /* DPI / LED / Polling */
-    .dpi-slot {
-      display: grid;
-      grid-template-columns: 24px 1fr 80px 50px;
-      gap: 12px;
-      align-items: center;
-      padding: 8px 0;
-      border-bottom: 1px solid var(--border);
-    }
-
-    .dpi-slot:last-of-type {
-      border-bottom: none;
-    }
-
-    .dpi-slot .lbl {
-      color: var(--text-soft);
-      font-size: 12px;
-    }
-
-    .dpi-slot input[type="range"] {
-      width: 100%;
-      accent-color: var(--accent);
-    }
-
-    .dpi-slot .val {
-      color: #cdd9e5;
-      font-weight: 600;
-      text-align: right;
-      font-family: ui-monospace, monospace;
-      font-size: 12px;
-    }
-
-    .dpi-slot input[type="checkbox"] {
-      accent-color: var(--accent);
-      justify-self: end;
-    }
-
-    .led-controls {
-      display: flex;
-      flex-direction: column;
-      gap: 12px;
-    }
-
-    .led-modes {
-      display: grid;
-      grid-template-columns: repeat(4, 1fr);
-      gap: 4px;
-    }
-
-    .led-modes button,
-    .polling-modes button {
-      background: var(--bg);
-      color: var(--text);
-      border: 1px solid var(--border);
-      padding: 8px 6px;
-      font: inherit;
-      font-size: 12px;
-      cursor: pointer;
-      border-radius: 4px;
-    }
-
-    .led-modes button.active,
-    .polling-modes button.active {
-      background: var(--accent);
-      color: #fff;
-      border-color: var(--accent);
-      font-weight: 500;
-    }
-
+    .btn-hotspot.selected .hot-label { fill: #fff; }
+    .hot-fill { fill: rgba(68,76,86,0.7); stroke: var(--border-2); stroke-width: 1; }
+    .hot-label { fill: var(--text); font-family: ui-monospace, monospace; font-weight: 600; font-size: 10px; text-anchor: middle; dominant-baseline: middle; pointer-events: none; user-select: none; }
+
+    .legend { display: flex; gap: 16px; font-size: 11px; color: var(--text-soft); margin-top: 8px; justify-content: center; }
+    .legend span { display: flex; align-items: center; gap: 6px; }
+    .legend .swatch { width: 8px; height: 8px; border-radius: 2px; }
+    .legend .cur { color: var(--link); }
+    .legend .mod { color: var(--good); }
+    .legend .cur .swatch { background: var(--accent); }
+    .legend .mod .swatch { background: var(--good); }
+
+    .assignments { display: grid; gap: 1px; margin-top: 12px; background: var(--border); border: 1px solid var(--border); border-radius: 6px; overflow: hidden; }
+    .assign-row { display: grid; grid-template-columns: 80px 1fr auto; gap: 12px; align-items: center; padding: 8px 12px; background: var(--bg-soft); cursor: pointer; }
+    .assign-row:hover { background: var(--bg-hover); }
+    .assign-row.modified { background: rgba(87,171,90,0.08); }
+    .assign-label { font-size: 12px; color: var(--text-soft); font-weight: 600; }
+    .assign-row.modified .assign-label { color: var(--good); }
+    .assign-action { color: var(--text); font-size: 13px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .assign-row.modified .assign-action { color: #cdd9e5; font-weight: 500; }
+    .reset-mark { color: var(--text-mute); font-size: 14px; padding: 2px 6px; background: none; border: none; cursor: pointer; line-height: 1; border-radius: 3px; opacity: 0; transition: opacity 0.1s; }
+    .assign-row:hover .reset-mark { opacity: 1; }
+    .reset-mark:hover { color: var(--bad); background: rgba(229,83,75,0.15); }
+
+    .modal-backdrop { position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 100; display: none; align-items: center; justify-content: center; padding: 20px; }
+    .modal-backdrop.show { display: flex; }
+    .modal { background: var(--bg-soft); border: 1px solid var(--border); border-radius: 6px; width: 100%; max-width: 560px; max-height: 90vh; overflow-y: auto; padding: 20px; }
+    .modal-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; padding-bottom: 12px; border-bottom: 1px solid var(--border); }
+    .modal-title { font-size: 13px; color: var(--text-soft); }
+    .modal-title .target { color: #cdd9e5; font-weight: 600; margin-left: 4px; }
+    .modal-close { background: none; border: none; color: var(--text-soft); cursor: pointer; font-size: 18px; padding: 4px 8px; line-height: 1; border-radius: 3px; }
+    .modal-close:hover { color: var(--bad); background: rgba(229,83,75,0.15); }
+
+    .tabs { display: flex; gap: 0; margin-bottom: 16px; border-bottom: 1px solid var(--border); }
+    .tab { background: none; color: var(--text-soft); border: none; border-bottom: 2px solid transparent; padding: 8px 14px; font: inherit; font-size: 13px; cursor: pointer; margin-bottom: -1px; }
+    .tab:hover { color: var(--text); }
+    .tab.active { color: #cdd9e5; border-bottom-color: var(--link); font-weight: 600; }
+    .tab-pane { display: none; }
+    .tab-pane.active { display: block; }
+
+    .quick-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); gap: 6px; }
+    .quick-grid button { background: var(--bg); color: var(--text); border: 1px solid var(--border); padding: 7px 10px; font: inherit; font-size: 12px; cursor: pointer; text-align: left; border-radius: 4px; }
+    .quick-grid button:hover { background: var(--bg-hover); border-color: var(--border-2); }
+    .quick-grid .cat-label { grid-column: 1 / -1; font-size: 11px; color: var(--text-soft); font-weight: 600; margin-top: 8px; padding-bottom: 4px; border-bottom: 1px solid var(--border); }
+    .quick-grid .cat-label:first-child { margin-top: 0; }
+
+    .combo-builder { display: flex; flex-direction: column; gap: 12px; }
+    .capture-btn { width: 100%; padding: 12px; font-size: 13px; }
+    .capture-btn.listening { background: var(--bad); border-color: var(--bad); color: #fff; animation: pulse 1s ease-in-out infinite; }
+    @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.6; } }
+    .captured-display { background: var(--bg); border: 1px dashed var(--border); padding: 14px 16px; text-align: center; font-size: 14px; color: var(--text-mute); font-style: italic; border-radius: 4px; }
+    .captured-display.has-value { color: #cdd9e5; font-style: normal; font-weight: 600; font-size: 16px; border-style: solid; border-color: var(--good); font-family: ui-monospace, monospace; }
+    .key-input { background: var(--bg); color: var(--text); border: 1px solid var(--border); padding: 8px 12px; font: inherit; font-size: 13px; border-radius: 4px; width: 100%; }
+    .key-input:focus { outline: none; border-color: var(--link); box-shadow: 0 0 0 2px rgba(83,155,245,0.2); }
+
+    .fire-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+    .fire-row label { display: flex; flex-direction: column; gap: 4px; font-size: 12px; color: var(--text-soft); }
+    .fire-row input { background: var(--bg); color: var(--text); border: 1px solid var(--border); padding: 7px 10px; font: inherit; font-size: 13px; border-radius: 4px; }
+
+    .preview-action { background: var(--bg); border: 1px solid var(--border); border-radius: 4px; padding: 10px 14px; margin-top: 14px; font-size: 12px; display: flex; align-items: center; gap: 12px; }
+    .preview-action .lbl { font-size: 11px; color: var(--text-soft); font-weight: 600; }
+    .preview-action .val { color: #cdd9e5; font-weight: 600; font-family: ui-monospace, monospace; }
+    .preview-action .err { color: var(--bad); font-style: italic; }
+
+    .modal-footer { display: flex; justify-content: flex-end; gap: 8px; margin-top: 16px; padding-top: 14px; border-top: 1px solid var(--border); }
+
+    .btn { background: var(--bg); color: var(--text); border: 1px solid var(--border); padding: 7px 14px; font: inherit; font-size: 13px; cursor: pointer; border-radius: 4px; }
+    .btn:hover { background: var(--bg-hover); border-color: var(--border-2); }
+    .btn:disabled { opacity: 0.5; cursor: not-allowed; }
+    .btn-primary { background: var(--accent); color: #fff; border-color: var(--accent); font-weight: 500; }
+    .btn-primary:hover { background: var(--accent-h); border-color: var(--accent-h); }
+    .btn-cyan { background: var(--good); color: #fff; border-color: var(--good); font-weight: 500; }
+    .btn-cyan:hover { background: #6cbe6f; border-color: #6cbe6f; }
+
+    .dpi-slot { display: grid; grid-template-columns: 24px 1fr 80px 50px; gap: 12px; align-items: center; padding: 8px 0; border-bottom: 1px solid var(--border); }
+    .dpi-slot:last-of-type { border-bottom: none; }
+    .dpi-slot .lbl { color: var(--text-soft); font-size: 12px; }
+    .dpi-slot input[type="range"] { width: 100%; accent-color: var(--accent); }
+    .dpi-slot .val { color: #cdd9e5; font-weight: 600; text-align: right; font-family: ui-monospace, monospace; font-size: 12px; }
+    .dpi-slot input[type="checkbox"] { accent-color: var(--accent); justify-self: end; }
+
+    .led-controls { display: flex; flex-direction: column; gap: 12px; }
+    .led-modes { display: grid; grid-template-columns: repeat(4, 1fr); gap: 4px; }
+    .led-modes button, .polling-modes button { background: var(--bg); color: var(--text); border: 1px solid var(--border); padding: 8px 6px; font: inherit; font-size: 12px; cursor: pointer; border-radius: 4px; }
+    .led-modes button.active, .polling-modes button.active { background: var(--accent); color: #fff; border-color: var(--accent); font-weight: 500; }
     .led-modes button:hover:not(.active),
-    .polling-modes button:hover:not(.active) {
-      background: var(--bg-hover);
-    }
+    .polling-modes button:hover:not(.active) { background: var(--bg-hover); }
+    .led-color-row { display: flex; gap: 12px; align-items: center; font-size: 12px; color: var(--text-soft); }
+    .led-color-row input[type="color"] { width: 48px; height: 32px; background: transparent; border: 1px solid var(--border); cursor: pointer; border-radius: 4px; }
+    .slider-row { display: grid; grid-template-columns: 90px 1fr 50px; gap: 12px; align-items: center; }
+    .slider-row .lbl { color: var(--text-soft); font-size: 12px; }
+    .slider-row input[type="range"] { accent-color: var(--accent); width: 100%; }
+    .slider-row .val { color: #cdd9e5; font-weight: 600; text-align: right; font-family: ui-monospace, monospace; font-size: 12px; }
+    .polling-modes { display: grid; grid-template-columns: repeat(4, 1fr); gap: 4px; }
 
-    .led-color-row {
-      display: flex;
-      gap: 12px;
-      align-items: center;
-      font-size: 12px;
-      color: var(--text-soft);
-    }
+    .commit-bar { position: sticky; bottom: 16px; padding: 12px 16px; background: var(--bg-soft); border: 1px solid var(--border); border-radius: 6px; display: flex; gap: 12px; align-items: center; justify-content: space-between; flex-wrap: wrap; z-index: 10; box-shadow: 0 4px 12px rgba(0,0,0,0.3); }
+    .commit-info { font-size: 13px; color: var(--text-soft); }
+    .commit-info .count { color: var(--good); font-weight: 700; margin-left: 4px; }
+    .commit-actions { display: flex; gap: 8px; }
 
-    .led-color-row input[type="color"] {
-      width: 48px;
-      height: 32px;
-      background: transparent;
-      border: 1px solid var(--border);
-      cursor: pointer;
-      border-radius: 4px;
-    }
+    .debug-toggle { display: block; background: none; border: 1px dashed var(--border); color: var(--text-soft); font: inherit; font-size: 12px; padding: 8px 12px; cursor: pointer; width: 100%; text-align: center; border-radius: 4px; }
+    .debug-toggle:hover { color: var(--text); border-color: var(--border-2); }
+    .log-panel { max-height: 220px; overflow-y: auto; background: var(--bg); border: 1px solid var(--border); border-radius: 4px; padding: 10px; font-family: ui-monospace, monospace; font-size: 11px; line-height: 1.6; margin-top: 10px; }
+    .log-row { color: var(--text); white-space: pre-wrap; word-break: break-all; }
+    .log-row.tx { color: var(--link); }
+    .log-row.rx { color: var(--good); }
+    .log-row.info { color: var(--text-soft); }
+    .log-row.err { color: var(--bad); }
+    .log-row.ok { color: var(--good); }
+    .log-row .ts { color: var(--text-mute); margin-right: 8px; }
 
-    .slider-row {
-      display: grid;
-      grid-template-columns: 90px 1fr 50px;
-      gap: 12px;
-      align-items: center;
-    }
+    .empty-state { text-align: center; padding: 32px 20px; }
+    .empty-state h2 { font-size: 22px; color: #cdd9e5; margin-bottom: 8px; font-weight: 600; }
+    .empty-state .sub { font-size: 12px; color: var(--text-soft); margin-bottom: 8px; }
+    .empty-state p { font-size: 13px; color: var(--text); margin-bottom: 6px; }
 
-    .slider-row .lbl {
-      color: var(--text-soft);
-      font-size: 12px;
-    }
+    .setup-card { background: var(--bg); border: 1px solid var(--border); border-left: 3px solid var(--link); border-radius: 6px; padding: 18px 20px; margin: 24px auto 8px; text-align: left; max-width: 520px; }
+    .setup-head { display: flex; align-items: center; gap: 10px; margin-bottom: 12px; font-size: 13px; color: #cdd9e5; font-weight: 600; }
+    .badge { background: var(--link); color: #fff; padding: 2px 8px; font-size: 11px; font-weight: 600; border-radius: 3px; }
+    .setup-text { font-size: 13px; color: var(--text); margin-bottom: 14px; }
+    .setup-text strong { color: var(--link); }
+    .setup-steps { list-style: none; display: flex; flex-direction: column; gap: 12px; }
+    .setup-steps li { display: flex; gap: 12px; align-items: flex-start; }
+    .step-num { flex-shrink: 0; width: 24px; height: 24px; background: var(--bg-soft); border: 1px solid var(--link); color: var(--link); font-weight: 600; display: flex; align-items: center; justify-content: center; font-size: 12px; border-radius: 4px; }
+    .step-body { flex: 1; font-size: 13px; color: var(--text); display: flex; flex-direction: column; gap: 6px; }
+    .step-body strong { color: var(--text); font-weight: 600; }
+    .code-block { background: var(--bg-soft); border: 1px solid var(--border); border-radius: 4px; padding: 8px 10px; display: flex; align-items: center; gap: 8px; font-family: ui-monospace, monospace; font-size: 12px; }
+    .code-block code { flex: 1; color: var(--text); background: none; padding: 0; word-break: break-all; }
+    .copy-btn { background: transparent; color: var(--link); border: 1px solid var(--border); padding: 3px 8px; font: inherit; font-size: 11px; cursor: pointer; border-radius: 3px; flex-shrink: 0; }
+    .copy-btn:hover { background: var(--bg); border-color: var(--link); }
+    .copy-btn.copied { background: var(--good); color: #fff; border-color: var(--good); }
+    .os-hints { margin-top: 14px; font-size: 11px; color: var(--text-mute); text-align: center; }
 
-    .slider-row input[type="range"] {
-      accent-color: var(--accent);
-      width: 100%;
-    }
+    details.tech-info { margin: 18px auto 0; max-width: 520px; padding: 10px 14px; background: var(--bg); border: 1px solid var(--border); border-radius: 6px; font-size: 12px; text-align: left; }
+    details.tech-info summary { cursor: pointer; color: var(--text-soft); font-weight: 600; }
+    details.tech-info[open] summary { margin-bottom: 8px; color: var(--text); }
+    details.tech-info p { margin: 3px 0; }
 
-    .slider-row .val {
-      color: #cdd9e5;
-      font-weight: 600;
-      text-align: right;
-      font-family: ui-monospace, monospace;
-      font-size: 12px;
-    }
+    .toast { position: fixed; top: 70px; right: 24px; background: var(--bg-soft); border: 1px solid var(--border); border-left: 3px solid var(--link); padding: 12px 16px; font-size: 13px; z-index: 200; max-width: 360px; display: none; border-radius: 4px; box-shadow: 0 4px 12px rgba(0,0,0,0.3); }
+    .toast.show { display: block; }
+    .toast.error { border-left-color: var(--bad); }
+    .toast.ok { border-left-color: var(--good); }
 
-    .polling-modes {
-      display: grid;
-      grid-template-columns: repeat(4, 1fr);
-      gap: 4px;
-    }
-
-    /* Commit bar */
-    .commit-bar {
-      position: sticky;
-      bottom: 16px;
-      padding: 12px 16px;
-      background: var(--bg-soft);
-      border: 1px solid var(--border);
-      border-radius: 6px;
-      display: flex;
-      gap: 12px;
-      align-items: center;
-      justify-content: space-between;
-      flex-wrap: wrap;
-      z-index: 10;
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
-    }
-
-    .commit-info {
-      font-size: 13px;
-      color: var(--text-soft);
-    }
-
-    .commit-info .count {
-      color: var(--good);
-      font-weight: 700;
-      margin-left: 4px;
-    }
-
-    .commit-actions {
-      display: flex;
-      gap: 8px;
-    }
-
-    /* Debug log */
-    .debug-toggle {
-      display: block;
-      background: none;
-      border: 1px dashed var(--border);
-      color: var(--text-soft);
-      font: inherit;
-      font-size: 12px;
-      padding: 8px 12px;
-      cursor: pointer;
-      width: 100%;
-      text-align: center;
-      border-radius: 4px;
-    }
-
-    .debug-toggle:hover {
-      color: var(--text);
-      border-color: var(--border-2);
-    }
-
-    .log-panel {
-      max-height: 220px;
-      overflow-y: auto;
-      background: var(--bg);
-      border: 1px solid var(--border);
-      border-radius: 4px;
-      padding: 10px;
-      font-family: ui-monospace, monospace;
-      font-size: 11px;
-      line-height: 1.6;
-      margin-top: 10px;
-    }
-
-    .log-row {
-      color: var(--text);
-      white-space: pre-wrap;
-      word-break: break-all;
-    }
-
-    .log-row.tx {
-      color: var(--link);
-    }
-
-    .log-row.rx {
-      color: var(--good);
-    }
-
-    .log-row.info {
-      color: var(--text-soft);
-    }
-
-    .log-row.err {
-      color: var(--bad);
-    }
-
-    .log-row.ok {
-      color: var(--good);
-    }
-
-    .log-row .ts {
-      color: var(--text-mute);
-      margin-right: 8px;
-    }
-
-    /* Empty state / connect */
-    .empty-state {
-      text-align: center;
-      padding: 32px 20px;
-    }
-
-    .empty-state h2 {
-      font-size: 22px;
-      color: #cdd9e5;
-      margin-bottom: 8px;
-      font-weight: 600;
-    }
-
-    .empty-state .sub {
-      font-size: 12px;
-      color: var(--text-soft);
-      margin-bottom: 8px;
-    }
-
-    .empty-state p {
-      font-size: 13px;
-      color: var(--text);
-      margin-bottom: 6px;
-    }
-
-    /* Setup card */
-    .setup-card {
-      background: var(--bg);
-      border: 1px solid var(--border);
-      border-left: 3px solid var(--link);
-      border-radius: 6px;
-      padding: 18px 20px;
-      margin: 24px auto 8px;
-      text-align: left;
-      max-width: 520px;
-    }
-
-    .setup-head {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      margin-bottom: 12px;
-      font-size: 13px;
-      color: #cdd9e5;
-      font-weight: 600;
-    }
-
-    .badge {
-      background: var(--link);
-      color: #fff;
-      padding: 2px 8px;
-      font-size: 11px;
-      font-weight: 600;
-      border-radius: 3px;
-    }
-
-    .setup-text {
-      font-size: 13px;
-      color: var(--text);
-      margin-bottom: 14px;
-    }
-
-    .setup-text strong {
-      color: var(--link);
-    }
-
-    .setup-steps {
-      list-style: none;
-      display: flex;
-      flex-direction: column;
-      gap: 12px;
-    }
-
-    .setup-steps li {
-      display: flex;
-      gap: 12px;
-      align-items: flex-start;
-    }
-
-    .step-num {
-      flex-shrink: 0;
-      width: 24px;
-      height: 24px;
-      background: var(--bg-soft);
-      border: 1px solid var(--link);
-      color: var(--link);
-      font-weight: 600;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 12px;
-      border-radius: 4px;
-    }
-
-    .step-body {
-      flex: 1;
-      font-size: 13px;
-      color: var(--text);
-      display: flex;
-      flex-direction: column;
-      gap: 6px;
-    }
-
-    .step-body strong {
-      color: var(--text);
-      font-weight: 600;
-    }
-
-    .code-block {
-      background: var(--bg-soft);
-      border: 1px solid var(--border);
-      border-radius: 4px;
-      padding: 8px 10px;
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      font-family: ui-monospace, monospace;
-      font-size: 12px;
-    }
-
-    .code-block code {
-      flex: 1;
-      color: var(--text);
-      background: none;
-      padding: 0;
-      word-break: break-all;
-    }
-
-    .copy-btn {
-      background: transparent;
-      color: var(--link);
-      border: 1px solid var(--border);
-      padding: 3px 8px;
-      font: inherit;
-      font-size: 11px;
-      cursor: pointer;
-      border-radius: 3px;
-      flex-shrink: 0;
-    }
-
-    .copy-btn:hover {
-      background: var(--bg);
-      border-color: var(--link);
-    }
-
-    .copy-btn.copied {
-      background: var(--good);
-      color: #fff;
-      border-color: var(--good);
-    }
-
-    .os-hints {
-      margin-top: 14px;
-      font-size: 11px;
-      color: var(--text-mute);
-      text-align: center;
-    }
-
-    details.tech-info {
-      margin: 18px auto 0;
-      max-width: 520px;
-      padding: 10px 14px;
-      background: var(--bg);
-      border: 1px solid var(--border);
-      border-radius: 6px;
-      font-size: 12px;
-      text-align: left;
-    }
-
-    details.tech-info summary {
-      cursor: pointer;
-      color: var(--text-soft);
-      font-weight: 600;
-    }
-
-    details.tech-info[open] summary {
-      margin-bottom: 8px;
-      color: var(--text);
-    }
-
-    details.tech-info p {
-      margin: 3px 0;
-    }
-
-    /* Toast */
-    .toast {
-      position: fixed;
-      top: 70px;
-      right: 24px;
-      background: var(--bg-soft);
-      border: 1px solid var(--border);
-      border-left: 3px solid var(--link);
-      padding: 12px 16px;
-      font-size: 13px;
-      z-index: 200;
-      max-width: 360px;
-      display: none;
-      border-radius: 4px;
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
-    }
-
-    .toast.show {
-      display: block;
-    }
-
-    .toast.error {
-      border-left-color: var(--bad);
-    }
-
-    .toast.ok {
-      border-left-color: var(--good);
-    }
-
-    /* Misc */
     input[type="number"]::-webkit-inner-spin-button,
-    input[type="number"]::-webkit-outer-spin-button {
-      -webkit-appearance: none;
-      margin: 0;
-    }
-
-    .small-note {
-      font-size: 12px;
-      color: var(--text-soft);
-      margin-top: 6px;
-    }
-
-    ::-webkit-scrollbar {
-      width: 10px;
-      height: 10px;
-    }
-
-    ::-webkit-scrollbar-track {
-      background: var(--bg);
-    }
-
-    ::-webkit-scrollbar-thumb {
-      background: var(--border-2);
-      border-radius: 5px;
-    }
-
-    ::-webkit-scrollbar-thumb:hover {
-      background: var(--text-mute);
-    }
+    input[type="number"]::-webkit-outer-spin-button { -webkit-appearance: none; margin: 0; }
+    .small-note { font-size: 12px; color: var(--text-soft); margin-top: 6px; }
+    ::-webkit-scrollbar { width: 10px; height: 10px; }
+    ::-webkit-scrollbar-track { background: var(--bg); }
+    ::-webkit-scrollbar-thumb { background: var(--border-2); border-radius: 5px; }
+    ::-webkit-scrollbar-thumb:hover { background: var(--text-mute); }
   </style>
 </head>
 
 <body>
 
-  <header>
-    <div class="brand">
-      <h1>REDRAGON M<span class="accent">913</span></h1>
-      <span class="sub">impact elite · web configurator</span>
-    </div>
-    <div class="conn-status">
-      <span class="dot" id="status-dot"></span>
-      <span id="status-text">Disconnected</span>
-    </div>
-  </header>
+<header>
+  <div class="brand">
+    <h1>REDRAGON M<span class="accent">913</span></h1>
+    <span class="sub">impact elite · web configurator</span>
+  </div>
+  <div class="conn-status">
+    <span class="dot" id="status-dot"></span>
+    <span id="status-text">Disconnected</span>
+  </div>
+</header>
 
-  <main>
-    <!-- =================================================================
+<main>
+  <!-- =================================================================
        NOT CONNECTED VIEW — visible until the user authorizes the device
        ================================================================= -->
-    <div id="not-connected">
-      <div class="empty-state">
+  <div id="not-connected">
+    <div class="empty-state">
 
-        <div id="browser-unsupported" class="setup-card" style="display:none;border-left-color:var(--bad)">
-          <div class="setup-head">
-            <span class="badge" style="background:var(--bad)">UNSUPPORTED BROWSER</span>
-          </div>
-          <p class="setup-text">
-            This app needs <strong style="color:var(--bad)">WebHID</strong> to talk to the mouse, and your current
-            browser doesn't support it.
-          </p>
-          <p class="setup-text" style="margin-bottom:0">
-            Please open this page with <strong style="color:var(--text)">Chrome</strong>, <strong
-              style="color:var(--text)">Edge</strong>, <strong style="color:var(--text)">Brave</strong> or another
-            Chromium-based browser. Firefox and Safari are <em>not</em> supported.
-          </p>
+      <div id="browser-unsupported" class="setup-card" style="display:none;border-left-color:var(--bad)">
+        <div class="setup-head">
+          <span class="badge" style="background:var(--bad)">UNSUPPORTED BROWSER</span>
         </div>
-
-        <h2>Connect your M913</h2>
-        <p class="sub">Redragon M913 Impact Elite</p>
-        <p id="os-line-default">Plug in the mouse and press the button below.</p>
-
-        <div id="linux-setup" class="setup-card" style="display:none">
-          <div class="setup-head">
-            <span class="badge">LINUX</span>
-            <span>One-time setup required</span>
-          </div>
-          <p class="setup-text">
-            On Linux the kernel protects HID devices. You need <strong>~30 seconds</strong> to grant your user access to
-            the M913. You only have to do this <strong>once</strong>.
-          </p>
-          <ol class="setup-steps">
-            <li>
-              <span class="step-num">1</span>
-              <div class="step-body">
-                <div>Download the installer script:</div>
-                <button class="btn btn-cyan" id="dl-udev">▸ Download install-m913-udev.sh</button>
-              </div>
-            </li>
-            <li>
-              <span class="step-num">2</span>
-              <div class="step-body">
-                <div>Open a terminal and run:</div>
-                <div class="code-block">
-                  <code>cd ~/Downloads &amp;&amp; chmod +x install-m913-udev.sh &amp;&amp; sudo ./install-m913-udev.sh</code>
-                  <button class="copy-btn"
-                    data-copy="cd ~/Downloads && chmod +x install-m913-udev.sh && sudo ./install-m913-udev.sh">copy</button>
-                </div>
-              </div>
-            </li>
-            <li>
-              <span class="step-num">3</span>
-              <div class="step-body">
-                <div><strong>Unplug and re-plug</strong> the M913 USB dongle. Required.</div>
-              </div>
-            </li>
-            <li>
-              <span class="step-num">4</span>
-              <div class="step-body">
-                <div>Press the connect button below.</div>
-              </div>
-            </li>
-          </ol>
-        </div>
-
-        <button class="btn btn-primary" id="connect-btn" style="margin-top:24px;padding:14px 32px;font-size:12px">▸
-          Request device access</button>
-
-        <div class="os-hints" id="os-hints"></div>
-
-        <details class="tech-info">
-          <summary>Protocol details</summary>
-          <p>Device: Redragon M913 Impact Elite · VID/PID <code>25a7:fa07</code> (wireless) or <code>25a7:fa08</code>
-            (wired)</p>
-          <p>Frame: 17 bytes · Report ID <code>0x08</code> (Feature)</p>
-          <p>Transport: <code>device.sendFeatureReport(0x08, payload[16])</code></p>
-          <p>Checksum: <code>(0x55 - sum(bytes[0..15])) &amp; 0xFF</code></p>
-        </details>
+        <p class="setup-text">
+          This app needs <strong style="color:var(--bad)">WebHID</strong> to talk to the mouse, and your current browser doesn't support it.
+        </p>
+        <p class="setup-text" style="margin-bottom:0">
+          Please open this page with <strong style="color:var(--text)">Chrome</strong>, <strong style="color:var(--text)">Edge</strong>, <strong style="color:var(--text)">Brave</strong> or another Chromium-based browser. Firefox and Safari are <em>not</em> supported.
+        </p>
       </div>
-    </div>
 
-    <!-- =================================================================
+      <h2>Connect your M913</h2>
+      <p class="sub">Redragon M913 Impact Elite</p>
+      <p id="os-line-default">Plug in the mouse and press the button below.</p>
+
+      <div id="linux-setup" class="setup-card" style="display:none">
+        <div class="setup-head">
+          <span class="badge">LINUX</span>
+          <span>One-time setup required</span>
+        </div>
+        <p class="setup-text">
+          On Linux the kernel protects HID devices. You need <strong>~30 seconds</strong> to grant your user access to the M913. You only have to do this <strong>once</strong>.
+        </p>
+        <ol class="setup-steps">
+          <li>
+            <span class="step-num">1</span>
+            <div class="step-body">
+              <div>Download the installer script:</div>
+              <button class="btn btn-cyan" id="dl-udev">▸ Download install-m913-udev.sh</button>
+            </div>
+          </li>
+          <li>
+            <span class="step-num">2</span>
+            <div class="step-body">
+              <div>Open a terminal and run:</div>
+              <div class="code-block">
+                <code>cd ~/Downloads &amp;&amp; chmod +x install-m913-udev.sh &amp;&amp; sudo ./install-m913-udev.sh</code>
+                <button class="copy-btn" data-copy="cd ~/Downloads && chmod +x install-m913-udev.sh && sudo ./install-m913-udev.sh">copy</button>
+              </div>
+            </div>
+          </li>
+          <li>
+            <span class="step-num">3</span>
+            <div class="step-body">
+              <div><strong>Unplug and re-plug</strong> the M913 USB dongle. Required.</div>
+            </div>
+          </li>
+          <li>
+            <span class="step-num">4</span>
+            <div class="step-body">
+              <div>Press the connect button below.</div>
+            </div>
+          </li>
+        </ol>
+      </div>
+
+      <button class="btn btn-primary" id="connect-btn" style="margin-top:24px;padding:14px 32px;font-size:12px">▸ Request device access</button>
+
+      <div class="os-hints" id="os-hints"></div>
+
+      <details class="tech-info">
+        <summary>Protocol details</summary>
+        <p>Device: Redragon M913 Impact Elite · VID/PID <code>25a7:fa07</code> (wireless) or <code>25a7:fa08</code> (wired)</p>
+        <p>Frame: 17 bytes · Report ID <code>0x08</code> (Feature)</p>
+        <p>Transport: <code>device.sendFeatureReport(0x08, payload[16])</code></p>
+        <p>Checksum: <code>(0x55 - sum(bytes[0..15])) &amp; 0xFF</code></p>
+      </details>
+    </div>
+  </div>
+
+  <!-- =================================================================
        APP VIEW — all configuration panels, shown only once connected
        ================================================================= -->
-    <div id="app" style="display:none">
-      <section class="panel">
-        <div class="panel-title"><span class="num">01</span>Button mapping</div>
-        <div class="mouse-stage">
-          <svg class="mouse-svg" viewBox="0 0 540 510" aria-label="Redragon M913 Impact Elite diagram">
-            <defs>
-              <linearGradient id="bodyGrad" x1="0%" y1="0%" x2="0%" y2="100%">
-                <stop offset="0%" stop-color="#3a4250" />
-                <stop offset="50%" stop-color="#2d333b" />
-                <stop offset="100%" stop-color="#1c2128" />
-              </linearGradient>
-            </defs>
+  <div id="app" style="display:none">
+    <section class="panel">
+      <div class="panel-title"><span class="num">01</span>Button mapping</div>
+      <div class="mouse-stage">
+        <svg class="mouse-svg" viewBox="0 0 540 510" aria-label="Redragon M913 Impact Elite diagram">
+          <defs>
+            <linearGradient id="bodyGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+              <stop offset="0%"  stop-color="#3a4250"/>
+              <stop offset="50%" stop-color="#2d333b"/>
+              <stop offset="100%" stop-color="#1c2128"/>
+            </linearGradient>
+          </defs>
 
-            <ellipse cx="275" cy="478" rx="190" ry="10" fill="rgba(0,0,0,0.4)" />
+          <ellipse cx="275" cy="478" rx="190" ry="10" fill="rgba(0,0,0,0.4)"/>
 
-            <path d="M 270 32
+          <path d="M 270 32
                    C 200 32, 152 54, 132 104
                    C 112 154, 92 222, 92 312
                    C 92 410, 142 478, 222 478
@@ -1235,291 +333,291 @@
                    C 302 468, 320 478, 348 478
                    C 428 478, 478 410, 478 312
                    C 478 222, 458 154, 438 104
-                   C 418 54, 340 32, 270 32 Z" fill="url(#bodyGrad)" stroke="#545d68" stroke-width="1.5" />
+                   C 418 54, 340 32, 270 32 Z"
+                fill="url(#bodyGrad)" stroke="#545d68" stroke-width="1.5"/>
 
-            <path d="M 278 32 Q 282 150 282 248" stroke="rgba(84,93,104,0.5)" stroke-width="1" fill="none" />
+          <path d="M 278 32 Q 282 150 282 248" stroke="rgba(84,93,104,0.5)" stroke-width="1" fill="none"/>
 
-            <rect x="266" y="98" width="32" height="56" rx="6" fill="#1c2128" stroke="#545d68" stroke-width="1" />
-            <line x1="270" y1="115" x2="294" y2="115" stroke="#373e47" stroke-width="0.8" />
-            <line x1="270" y1="125" x2="294" y2="125" stroke="#373e47" stroke-width="0.8" />
-            <line x1="270" y1="135" x2="294" y2="135" stroke="#373e47" stroke-width="0.8" />
-            <line x1="270" y1="145" x2="294" y2="145" stroke="#373e47" stroke-width="0.8" />
+          <rect x="266" y="98" width="32" height="56" rx="6" fill="#1c2128" stroke="#545d68" stroke-width="1"/>
+          <line x1="270" y1="115" x2="294" y2="115" stroke="#373e47" stroke-width="0.8"/>
+          <line x1="270" y1="125" x2="294" y2="125" stroke="#373e47" stroke-width="0.8"/>
+          <line x1="270" y1="135" x2="294" y2="135" stroke="#373e47" stroke-width="0.8"/>
+          <line x1="270" y1="145" x2="294" y2="145" stroke="#373e47" stroke-width="0.8"/>
 
-            <g opacity="0.4">
-              <rect x="270" y="86" width="24" height="8" rx="2" fill="none" stroke="#768390" stroke-width="0.8"
-                stroke-dasharray="2 2" />
-              <text x="282" y="80" fill="#768390" font-family="JetBrains Mono" font-size="7"
-                text-anchor="middle">DPI+</text>
-              <rect x="270" y="158" width="24" height="8" rx="2" fill="none" stroke="#768390" stroke-width="0.8"
-                stroke-dasharray="2 2" />
-              <text x="282" y="178" fill="#768390" font-family="JetBrains Mono" font-size="7"
-                text-anchor="middle">DPI−</text>
-            </g>
+          <g opacity="0.4">
+            <rect x="270" y="86" width="24" height="8" rx="2" fill="none" stroke="#768390" stroke-width="0.8" stroke-dasharray="2 2"/>
+            <text x="282" y="80" fill="#768390" font-family="JetBrains Mono" font-size="7" text-anchor="middle">DPI+</text>
+            <rect x="270" y="158" width="24" height="8" rx="2" fill="none" stroke="#768390" stroke-width="0.8" stroke-dasharray="2 2"/>
+            <text x="282" y="178" fill="#768390" font-family="JetBrains Mono" font-size="7" text-anchor="middle">DPI−</text>
+          </g>
 
-            <g id="hotspots"></g>
-          </svg>
-        </div>
-        <div class="legend">
-          <span class="cur"><span class="swatch"></span>selected</span>
-          <span class="mod"><span class="swatch"></span>modified</span>
-          <span style="color:var(--ink-2)"><span class="swatch"></span>dpi (not remappable)</span>
-        </div>
+          <g id="hotspots"></g>
+        </svg>
+      </div>
+      <div class="legend">
+        <span class="cur"><span class="swatch"></span>selected</span>
+        <span class="mod"><span class="swatch"></span>modified</span>
+        <span style="color:var(--ink-2)"><span class="swatch"></span>dpi (not remappable)</span>
+      </div>
 
-        <div class="assignments" id="assignments-list"></div>
+      <div class="assignments" id="assignments-list"></div>
 
-      </section>
+    </section>
 
-      <!-- RIGHT: SETTINGS -->
-      <aside>
-        <div class="panel">
-          <div class="panel-title"><span class="num">02</span>DPI · 5 slots</div>
-          <div id="dpi-slots"></div>
-        </div>
+    <!-- RIGHT: SETTINGS -->
+    <aside>
+      <div class="panel">
+        <div class="panel-title"><span class="num">02</span>DPI · 5 slots</div>
+        <div id="dpi-slots"></div>
+      </div>
 
-        <div class="panel">
-          <div class="panel-title"><span class="num">03</span>RGB lighting</div>
-          <div class="led-controls">
-            <div class="led-modes">
-              <button class="led-mode-btn active" data-mode="off">OFF</button>
-              <button class="led-mode-btn" data-mode="steady">STEADY</button>
-              <button class="led-mode-btn" data-mode="respiration">BREATHE</button>
-              <button class="led-mode-btn" data-mode="rainbow">RAINBOW</button>
-            </div>
-            <div class="led-color-row">
-              <input type="color" id="led-color" value="#ff5722">
-              <span style="font-size:12px;color:var(--text-soft)">color (steady/breathe)</span>
-            </div>
-            <div class="slider-row">
-              <span class="lbl">Brightness</span>
-              <input type="range" id="led-brightness" min="0" max="255" value="255">
-              <span class="val" id="led-brightness-val">255</span>
-            </div>
-            <div class="slider-row">
-              <span class="lbl">Speed</span>
-              <input type="range" id="led-speed" min="1" max="5" value="3">
-              <span class="val" id="led-speed-val">3</span>
-            </div>
+      <div class="panel">
+        <div class="panel-title"><span class="num">03</span>RGB lighting</div>
+        <div class="led-controls">
+          <div class="led-modes">
+            <button class="led-mode-btn active" data-mode="off">OFF</button>
+            <button class="led-mode-btn" data-mode="steady">STEADY</button>
+            <button class="led-mode-btn" data-mode="respiration">BREATHE</button>
+            <button class="led-mode-btn" data-mode="rainbow">RAINBOW</button>
+          </div>
+          <div class="led-color-row">
+            <input type="color" id="led-color" value="#ff5722">
+            <span style="font-size:12px;color:var(--text-soft)">color (steady/breathe)</span>
+          </div>
+          <div class="slider-row">
+            <span class="lbl">Brightness</span>
+            <input type="range" id="led-brightness" min="0" max="255" value="255">
+            <span class="val" id="led-brightness-val">255</span>
+          </div>
+          <div class="slider-row">
+            <span class="lbl">Speed</span>
+            <input type="range" id="led-speed" min="1" max="5" value="3">
+            <span class="val" id="led-speed-val">3</span>
           </div>
         </div>
-
-        <div class="panel">
-          <div class="panel-title"><span class="num">04</span>Polling rate</div>
-          <div class="polling-modes">
-            <button class="polling-btn" data-hz="125">125 Hz</button>
-            <button class="polling-btn" data-hz="250">250 Hz</button>
-            <button class="polling-btn" data-hz="500">500 Hz</button>
-            <button class="polling-btn active" data-hz="1000">1000 Hz</button>
-          </div>
-        </div>
-
-        <div class="commit-bar" id="commit-bar">
-          <div class="commit-info">
-            Pending changes <span class="count" id="pending-count">0</span>
-          </div>
-          <div class="commit-actions">
-            <input type="file" id="import-file-input" accept=".ini,.txt" style="display:none">
-            <button class="btn" id="reset-factory" title="Restore all buttons to their factory defaults">↺ Factory
-              reset</button>
-            <button class="btn" id="import-config">Import configuration</button>
-            <button class="btn" id="export-config">Export configuration</button>
-            <button class="btn btn-primary" id="commit-btn">▸ Apply to mouse</button>
-          </div>
-        </div>
-
-        <button class="debug-toggle" id="debug-toggle">▸ Show debug log</button>
-        <div id="log-section" style="display:none">
-          <div class="log-panel" id="log-panel">
-            <div class="log-row info"><span class="ts">00:00</span>// waiting for connection…</div>
-          </div>
-        </div>
-      </aside>
-    </div>
-  </main>
-
-  <!-- EDIT MODAL -->
-  <div class="modal-backdrop" id="edit-modal">
-    <div class="modal">
-      <div class="modal-head">
-        <div class="modal-title">EDIT <span class="target" id="editor-target">side1</span></div>
-        <button class="modal-close" id="modal-close-x" title="Close">✕</button>
       </div>
 
-      <div class="tabs">
-        <button class="tab active" data-tab="keyboard">Keyboard</button>
-        <button class="tab" data-tab="fire">Fire</button>
-        <button class="tab" data-tab="raw">Raw</button>
-        <button class="tab" data-tab="quick">Other</button>
-      </div>
-
-      <div class="tab-pane active" data-pane="keyboard">
-        <div class="combo-builder">
-          <div class="small-note">Press a key, or a modifier combination (e.g. <code>Ctrl+C</code>, <code>F5</code>,
-            just <code>Shift</code>). Multi-key combos like A+B require the Raw tab.</div>
-          <button class="btn btn-cyan capture-btn" id="capture-kb" type="button">
-            ▸ Press a key combination
-          </button>
-          <div class="captured-display" id="captured-kb-display">— nothing captured yet —</div>
+      <div class="panel">
+        <div class="panel-title"><span class="num">04</span>Polling rate</div>
+        <div class="polling-modes">
+          <button class="polling-btn" data-hz="125">125 Hz</button>
+          <button class="polling-btn" data-hz="250">250 Hz</button>
+          <button class="polling-btn" data-hz="500">500 Hz</button>
+          <button class="polling-btn active" data-hz="1000">1000 Hz</button>
         </div>
       </div>
 
-      <div class="tab-pane" data-pane="fire">
-        <div class="small-note">Auto-repeats left click. Use default <code>fire</code> for hardware behaviour, or
-          customize:</div>
-        <div class="fire-row" style="margin-top:14px">
-          <label>SPEED (3=fast → 255=slow)
-            <input type="number" id="fire-speed" min="3" max="255" value="58">
-          </label>
-          <label>REPEAT (0–3 clicks per press)
-            <input type="number" id="fire-times" min="0" max="3" value="3">
-          </label>
+      <div class="commit-bar" id="commit-bar">
+        <div class="commit-info">
+          Pending changes <span class="count" id="pending-count">0</span>
+        </div>
+        <div class="commit-actions">
+          <input type="file" id="import-file-input" accept=".ini,.txt" style="display:none">
+          <button class="btn" id="reset-factory" title="Restore all buttons to their factory defaults">↺ Factory reset</button>
+          <button class="btn" id="import-config">Import configuration</button>
+          <button class="btn" id="export-config">Export configuration</button>
+          <button class="btn btn-primary" id="commit-btn">▸ Apply to mouse</button>
         </div>
       </div>
 
-      <div class="tab-pane" data-pane="raw">
-        <div class="small-note">Action string compatible with m913-ctl. E.g. <code>ctrl+shift+t</code>,
-          <code>media_play</code>, <code>fire:80:2</code></div>
-        <input type="text" class="key-input" id="raw-input" placeholder="e.g. ctrl+c" style="margin-top:10px"
-          autocomplete="off">
-      </div>
+    </aside>
+  </div>
 
-      <div class="tab-pane" data-pane="quick">
-        <div class="quick-grid" id="quick-grid"></div>
-      </div>
-
-      <div class="preview-action">
-        <span class="lbl">PREVIEW</span>
-        <span class="val" id="preview-action-text">—</span>
-        <span style="margin-left:auto" id="preview-bytes"></span>
-      </div>
-
-      <div class="modal-footer">
-        <button class="btn btn-cyan" id="modal-done">▸ Done</button>
+  <!-- DEBUG LOG (always visible, even before connection) -->
+  <div style="max-width:760px;margin:0 auto;padding:0 24px 24px">
+    <button class="debug-toggle" id="debug-toggle">▸ Show debug log</button>
+    <div id="log-section" style="display:none">
+      <div class="log-panel" id="log-panel">
+        <div class="log-row info"><span class="ts">00:00</span>// waiting for connection…</div>
       </div>
     </div>
   </div>
+</main>
 
-  <div class="toast" id="toast"></div>
+<!-- EDIT MODAL -->
+<div class="modal-backdrop" id="edit-modal">
+  <div class="modal">
+    <div class="modal-head">
+      <div class="modal-title">EDIT <span class="target" id="editor-target">side1</span></div>
+      <button class="modal-close" id="modal-close-x" title="Close">✕</button>
+    </div>
 
-  <script type="module">
-    import {
-      M913_VID, M913_PID, M913_PID_WIRED, M913_PIDS, REPORT_ID, PACKET_SIZE,
-      BUTTONS, BUTTON_LABELS,
-      parseAction, buildButtonMapping,
-      buildDpiPackets, buildLedPackets, buildPollingRatePacket, buildCommitPacket,
-      packetToHex, nearestDpi, VALID_DPI_VALUES,
-      DIRECT_ACTIONS, MEDIA_ACTIONS, MODIFIERS,
-    } from './protocol.js';
+    <div class="tabs">
+      <button class="tab active" data-tab="keyboard">Keyboard</button>
+      <button class="tab" data-tab="fire">Fire</button>
+      <button class="tab" data-tab="raw">Raw</button>
+      <button class="tab" data-tab="quick">Other</button>
+    </div>
 
-    // --- STATE ---
-    const state = {
-      device: null,
-      selectedBtn: null,
-      pendingButtons: {},   // changes not yet applied to the mouse
-      effectiveButtons: {}, // last known applied/imported config (used by export)
-      dpi: {
-        values: [800, 1600, 3200, 6400, 12000],
-        enabled: [true, true, true, true, true],
-      },
-      led: { mode: 'off', color: 0xff5722, brightness: 255, speed: 3 },
-      polling: 1000,
+    <div class="tab-pane active" data-pane="keyboard">
+      <div class="combo-builder">
+        <div class="small-note">Press a key, or a modifier combination (e.g. <code>Ctrl+C</code>, <code>F5</code>, just <code>Shift</code>). Multi-key combos like A+B require the Raw tab.</div>
+        <button class="btn btn-cyan capture-btn" id="capture-kb" type="button">
+          ▸ Press a key combination
+        </button>
+        <div class="captured-display" id="captured-kb-display">— nothing captured yet —</div>
+      </div>
+    </div>
+
+    <div class="tab-pane" data-pane="fire">
+      <div class="small-note">Auto-repeats left click. Use default <code>fire</code> for hardware behaviour, or customize:</div>
+      <div class="fire-row" style="margin-top:14px">
+        <label>SPEED (3=fast → 255=slow)
+          <input type="number" id="fire-speed" min="3" max="255" value="58">
+        </label>
+        <label>REPEAT (0–3 clicks per press)
+          <input type="number" id="fire-times" min="0" max="3" value="3">
+        </label>
+      </div>
+    </div>
+
+    <div class="tab-pane" data-pane="raw">
+      <div class="small-note">Action string compatible with m913-ctl. E.g. <code>ctrl+shift+t</code>, <code>media_play</code>, <code>fire:80:2</code></div>
+      <input type="text" class="key-input" id="raw-input" placeholder="e.g. ctrl+c" style="margin-top:10px" autocomplete="off">
+    </div>
+
+    <div class="tab-pane" data-pane="quick">
+      <div class="quick-grid" id="quick-grid"></div>
+    </div>
+
+    <div class="preview-action">
+      <span class="lbl">PREVIEW</span>
+      <span class="val" id="preview-action-text">—</span>
+      <span style="margin-left:auto" id="preview-bytes"></span>
+    </div>
+
+    <div class="modal-footer">
+      <button class="btn btn-cyan" id="modal-done">▸ Done</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script type="module">
+import {
+  M913_VID, M913_PID, M913_PID_WIRED, M913_PIDS, REPORT_ID, PACKET_SIZE,
+  BUTTONS, BUTTON_LABELS,
+  parseAction, buildButtonMapping,
+  buildDpiPackets, buildLedPackets, buildPollingRatePacket, buildCommitPacket,
+  packetToHex, nearestDpi, VALID_DPI_VALUES,
+  DIRECT_ACTIONS, MEDIA_ACTIONS, MODIFIERS,
+} from './protocol.js';
+
+// --- STATE ---
+const state = {
+  device: null,
+  selectedBtn: null,
+  pendingButtons: {},
+  effectiveButtons: {},
+  dpi: {
+    values: [1000, 2000, 4000, 8000, 16000],
+    enabled: [true, true, true, true, true],
+  },
+  led: { mode: 'off', color: 0xff5722, brightness: 255, speed: 3 },
+  polling: 1000,
+};
+
+const FACTORY_DEFAULTS = {
+  // Side 1..6 → keypad-row digits 1..6
+  0: '1', 1: '2', 2: '3', 3: '4', 4: '5', 5: '6',
+  // Primary buttons
+  6: 'right', 7: 'left',
+  // Side 7..8 → digits 7..8
+  8: '7', 9: '8',
+  // Middle + Fire
+  10: 'middle', 11: 'fire',
+  // Side 9..10 → digits 9, 0
+  12: '9', 13: '0',
+  // Side 11..12 → browser navigation
+  14: 'backward', 15: 'forward',
+};
+
+// --- PERSISTENCE ---
+const STORAGE_KEY = 'm913-effective-config';
+
+function saveState() {
+  try {
+    const snapshot = {
+      effectiveButtons: state.effectiveButtons,
+      dpi: state.dpi,
+      led: state.led,
+      polling: state.polling,
+      savedAt: new Date().toISOString(),
     };
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(snapshot));
+  } catch (e) {
+    console.warn('Could not save state:', e);
+  }
+}
 
-    const FACTORY_DEFAULTS = {
-      0: 'none', 1: 'none', 2: 'none', 3: 'none', 4: 'none', 5: 'none',
-      6: 'right', 7: 'left',
-      8: 'none', 9: 'none', 10: 'middle', 11: 'fire',
-      12: 'none', 13: 'none', 14: 'none', 15: 'none',
-    };
+function loadState() {
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if (!raw) return false;
+    const snap = JSON.parse(raw);
+    if (snap.effectiveButtons) state.effectiveButtons = snap.effectiveButtons;
+    if (snap.dpi) state.dpi = snap.dpi;
+    if (snap.led) state.led = snap.led;
+    if (typeof snap.polling === 'number') state.polling = snap.polling;
+    return snap.savedAt || true;
+  } catch (e) {
+    console.warn('Could not load state:', e);
+    return false;
+  }
+}
 
-    // --- PERSISTENCE ---
-    // We cache the last known good config in localStorage so the UI can show
-    // what's (probably) on the mouse across page reloads. This is NOT a substitute
-    // for reading from the device — if someone else writes to the mouse, this
-    // cache won't know about it.
-    const STORAGE_KEY = 'm913-effective-config';
+// --- LOG / TOAST ---
+const logEl = document.getElementById('log-panel');
+function log(msg, level = 'info') {
+  const row = document.createElement('div');
+  row.className = `log-row ${level}`;
+  const t = new Date();
+  const ts = `${String(t.getHours()).padStart(2,'0')}:${String(t.getMinutes()).padStart(2,'0')}:${String(t.getSeconds()).padStart(2,'0')}`;
+  row.innerHTML = `<span class="ts">${ts}</span>${msg}`;
+  logEl.appendChild(row);
+  logEl.scrollTop = logEl.scrollHeight;
+  while (logEl.children.length > 200) logEl.removeChild(logEl.firstChild);
+}
 
-    function saveState() {
-      try {
-        const snapshot = {
-          effectiveButtons: state.effectiveButtons,
-          dpi: state.dpi,
-          led: state.led,
-          polling: state.polling,
-          savedAt: new Date().toISOString(),
-        };
-        localStorage.setItem(STORAGE_KEY, JSON.stringify(snapshot));
-      } catch (e) {
-        // localStorage might be disabled (private mode, quota, etc.) — non-fatal.
-        console.warn('Could not save state:', e);
-      }
-    }
+function toast(msg, level = 'info') {
+  const el = document.getElementById('toast');
+  el.textContent = msg;
+  el.className = `toast show ${level}`;
+  clearTimeout(el._t);
+  el._t = setTimeout(() => { el.className = 'toast'; }, 3000);
+}
 
-    function loadState() {
-      try {
-        const raw = localStorage.getItem(STORAGE_KEY);
-        if (!raw) return false;
-        const snap = JSON.parse(raw);
-        if (snap.effectiveButtons) state.effectiveButtons = snap.effectiveButtons;
-        if (snap.dpi) state.dpi = snap.dpi;
-        if (snap.led) state.led = snap.led;
-        if (typeof snap.polling === 'number') state.polling = snap.polling;
-        return snap.savedAt || true;
-      } catch (e) {
-        console.warn('Could not load state:', e);
-        return false;
-      }
-    }
+document.getElementById('debug-toggle').addEventListener('click', () => {
+  const sec = document.getElementById('log-section');
+  const btn = document.getElementById('debug-toggle');
+  const visible = sec.style.display !== 'none';
+  sec.style.display = visible ? 'none' : 'block';
+  btn.textContent = visible ? '▸ Show debug log' : '▾ Hide debug log';
+});
 
-    // --- LOG / TOAST ---
-    const logEl = document.getElementById('log-panel');
-    function log(msg, level = 'info') {
-      const row = document.createElement('div');
-      row.className = `log-row ${level}`;
-      const t = new Date();
-      const ts = `${String(t.getHours()).padStart(2, '0')}:${String(t.getMinutes()).padStart(2, '0')}:${String(t.getSeconds()).padStart(2, '0')}`;
-      row.innerHTML = `<span class="ts">${ts}</span>${msg}`;
-      logEl.appendChild(row);
-      logEl.scrollTop = logEl.scrollHeight;
-      while (logEl.children.length > 200) logEl.removeChild(logEl.firstChild);
-    }
+// --- OS DETECTION + UDEV INSTALLER ---
+function detectOS() {
+  const ua = navigator.userAgent.toLowerCase();
+  const platform = (navigator.platform || '').toLowerCase();
+  if (platform.includes('linux') || ua.includes('linux')) {
+    if (ua.includes('android')) return 'android';
+    return 'linux';
+  }
+  if (platform.includes('mac') || ua.includes('mac os')) return 'mac';
+  if (platform.includes('win') || ua.includes('windows')) return 'windows';
+  return 'unknown';
+}
 
-    function toast(msg, level = 'info') {
-      const el = document.getElementById('toast');
-      el.textContent = msg;
-      el.className = `toast show ${level}`;
-      clearTimeout(el._t);
-      el._t = setTimeout(() => { el.className = 'toast'; }, 3000);
-    }
-
-    // --- DEBUG LOG TOGGLE ---
-    document.getElementById('debug-toggle').addEventListener('click', () => {
-      const sec = document.getElementById('log-section');
-      const btn = document.getElementById('debug-toggle');
-      const visible = sec.style.display !== 'none';
-      sec.style.display = visible ? 'none' : 'block';
-      btn.textContent = visible ? '▸ Show debug log' : '▾ Hide debug log';
-    });
-
-    // --- OS DETECTION + UDEV INSTALLER ---
-    function detectOS() {
-      const ua = navigator.userAgent.toLowerCase();
-      const platform = (navigator.platform || '').toLowerCase();
-      if (platform.includes('linux') || ua.includes('linux')) {
-        if (ua.includes('android')) return 'android';
-        return 'linux';
-      }
-      if (platform.includes('mac') || ua.includes('mac os')) return 'mac';
-      if (platform.includes('win') || ua.includes('windows')) return 'windows';
-      return 'unknown';
-    }
-
-    const UDEV_SCRIPT = `#!/bin/bash
+const UDEV_SCRIPT = `#!/bin/bash
 # install-m913-udev.sh
 # Grants your user access to the Redragon M913 Impact Elite (VID 25a7,
 # PID fa07 wireless / fa08 wired).
-# Works on any modern Linux distro with systemd (Debian, Ubuntu, Fedora, Arch,
-# openSUSE, etc.) thanks to the 'uaccess' tag, which systemd-logind uses to
-# automatically grant device access to whichever user owns the active session.
+# Uses two complementary mechanisms for maximum compatibility across distros:
+#   - TAG+="uaccess" : on systemd-logind systems with proper local sessions,
+#                      grants ACL to whichever user owns the active session
+#   - GROUP="plugdev": fallback that works on Debian/Ubuntu/Mint and any other
+#                      distro where 'plugdev' exists. Adds the user to the group.
 
 set -e
 if [ "$EUID" -ne 0 ]; then
@@ -1528,973 +626,935 @@ if [ "$EUID" -ne 0 ]; then
 fi
 
 RULES_FILE="/etc/udev/rules.d/99-m913.rules"
+TARGET_USER="\${SUDO_USER:-\$USER}"
 
 echo ">> Writing udev rule to $RULES_FILE"
 cat > "$RULES_FILE" <<'EOF'
-# Redragon M913 Impact Elite — grant access to the local interactive user
-# via systemd-logind's 'uaccess' tag.
+# Redragon M913 Impact Elite — grant access to the local interactive user.
 # Matches both wireless (fa07) and wired/dual-mode (fa08) variants.
-KERNEL=="hidraw*", ATTRS{idVendor}=="25a7", ATTRS{idProduct}=="fa07", TAG+="uaccess", MODE="0660"
-SUBSYSTEM=="usb",  ATTRS{idVendor}=="25a7", ATTRS{idProduct}=="fa07", TAG+="uaccess", MODE="0660"
-KERNEL=="hidraw*", ATTRS{idVendor}=="25a7", ATTRS{idProduct}=="fa08", TAG+="uaccess", MODE="0660"
-SUBSYSTEM=="usb",  ATTRS{idVendor}=="25a7", ATTRS{idProduct}=="fa08", TAG+="uaccess", MODE="0660"
+KERNEL=="hidraw*", ATTRS{idVendor}=="25a7", ATTRS{idProduct}=="fa07", TAG+="uaccess", GROUP="plugdev", MODE="0660"
+SUBSYSTEM=="usb",  ATTRS{idVendor}=="25a7", ATTRS{idProduct}=="fa07", TAG+="uaccess", GROUP="plugdev", MODE="0660"
+KERNEL=="hidraw*", ATTRS{idVendor}=="25a7", ATTRS{idProduct}=="fa08", TAG+="uaccess", GROUP="plugdev", MODE="0660"
+SUBSYSTEM=="usb",  ATTRS{idVendor}=="25a7", ATTRS{idProduct}=="fa08", TAG+="uaccess", GROUP="plugdev", MODE="0660"
 EOF
 
 echo ">> Reloading udev rules"
 udevadm control --reload-rules
 udevadm trigger
 
+if getent group plugdev > /dev/null 2>&1; then
+  if id -nG "$TARGET_USER" | grep -qw plugdev; then
+    echo ">> User $TARGET_USER is already in the plugdev group."
+  else
+    echo ">> Adding $TARGET_USER to the plugdev group"
+    usermod -aG plugdev "$TARGET_USER"
+    echo "!! IMPORTANT: log out and log back in for the group change to take effect."
+  fi
+else
+  echo ">> No 'plugdev' group on this system. Relying on 'uaccess' alone."
+fi
+
 echo ""
 echo "Setup complete. Now UNPLUG and RE-PLUG the M913 (USB dongle or cable)."
 echo "Then go back to the browser and click 'Request device access'."
 `;
 
-    function downloadUdevScript() {
-      const blob = new Blob([UDEV_SCRIPT], { type: 'text/x-shellscript' });
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = 'install-m913-udev.sh';
-      a.click();
-      URL.revokeObjectURL(url);
-      toast('Script downloaded. Run the command from step 2.', 'ok');
-    }
+function downloadUdevScript() {
+  const blob = new Blob([UDEV_SCRIPT], { type: 'text/x-shellscript' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = 'install-m913-udev.sh';
+  a.click();
+  URL.revokeObjectURL(url);
+  toast('Script downloaded. Run the command from step 2.', 'ok');
+}
 
-    function setupOSAwareUI() {
-      const os = detectOS();
-      const linuxSetup = document.getElementById('linux-setup');
-      const osHints = document.getElementById('os-hints');
-      const defaultLine = document.getElementById('os-line-default');
+function setupOSAwareUI() {
+  const os = detectOS();
+  const linuxSetup = document.getElementById('linux-setup');
+  const osHints = document.getElementById('os-hints');
+  const defaultLine = document.getElementById('os-line-default');
 
-      if (os === 'linux') {
-        linuxSetup.style.display = 'block';
-        defaultLine.textContent = 'Already installed the udev rule? Just continue.';
-        osHints.textContent = '// linux detected · udev setup required on first run';
-      } else if (os === 'windows') {
-        osHints.textContent = '// windows detected · no setup required';
-      } else if (os === 'mac') {
-        osHints.textContent = '// macos detected · no setup required';
-      } else if (os === 'android') {
-        osHints.textContent = '// ⚠ android: WebHID does not work reliably on mobile';
-      }
+  if (os === 'linux') {
+    linuxSetup.style.display = 'block';
+    defaultLine.textContent = 'Already installed the udev rule? Just continue.';
+    osHints.textContent = '// linux detected · udev setup required on first run';
+  } else if (os === 'windows') {
+    osHints.textContent = '// windows detected · no setup required';
+  } else if (os === 'mac') {
+    osHints.textContent = '// macos detected · no setup required';
+  } else if (os === 'android') {
+    osHints.textContent = '// ⚠ android: WebHID does not work reliably on mobile';
+  }
 
-      const dlBtn = document.getElementById('dl-udev');
-      if (dlBtn) dlBtn.addEventListener('click', downloadUdevScript);
+  const dlBtn = document.getElementById('dl-udev');
+  if (dlBtn) dlBtn.addEventListener('click', downloadUdevScript);
 
-      document.querySelectorAll('.copy-btn').forEach(btn => {
-        btn.addEventListener('click', async () => {
-          const text = btn.dataset.copy;
-          try {
-            await navigator.clipboard.writeText(text);
-            const orig = btn.textContent;
-            btn.textContent = '✓ copied';
-            btn.classList.add('copied');
-            setTimeout(() => { btn.textContent = orig; btn.classList.remove('copied'); }, 1500);
-          } catch (err) {
-            toast('Copy failed: select the text manually', 'error');
-          }
-        });
-      });
-    }
-
-    // --- WEBHID ---
-    async function connect() {
-      if (!('hid' in navigator)) {
-        toast('WebHID is not available. Use Chrome/Edge/Brave.', 'error');
-        return;
-      }
+  document.querySelectorAll('.copy-btn').forEach(btn => {
+    btn.addEventListener('click', async () => {
+      const text = btn.dataset.copy;
       try {
-        // Match both wireless (fa07) and wired (fa08) modes, across all known
-        // vendor-defined HID usage pages used by the M913.
-        const filters = [];
-        for (const productId of M913_PIDS) {
-          for (const usagePage of [0xff00, 0xff01, 0xff02, 0xff03, 0xff04]) {
-            filters.push({ vendorId: M913_VID, productId, usagePage });
-          }
-        }
-        const devices = await navigator.hid.requestDevice({ filters });
-        if (!devices || devices.length === 0) {
-          log('No device selected.', 'info');
-          return;
-        }
-
-        const describe = (dev) => {
-          const colls = (dev.collections || []).map(c =>
-            `up=0x${(c.usagePage ?? 0).toString(16)} u=0x${(c.usage ?? 0).toString(16)}`
-          ).join(' | ');
-          return `[${colls || 'no collections'}]`;
-        };
-        const hasVendor = (dev) => (dev.collections || []).some(c => {
-          const up = c.usagePage ?? 0;
-          return up >= 0xff00 && up <= 0xffff;
-        });
-        const hasReportId = (dev) => (dev.collections || []).some(c => [
-          ...(c.featureReports?.map(r => r.reportId) ?? []),
-          ...(c.outputReports?.map(r => r.reportId) ?? []),
-        ].includes(REPORT_ID));
-
-        log(`Found ${devices.length} authorized interface(s).`, 'info');
-        for (const d of devices) log(`  · ${describe(d)}`, 'info');
-
-        const chosen = devices.find(d => hasVendor(d) && hasReportId(d))
-          || devices.find(hasVendor)
-          || devices.find(hasReportId)
-          || devices[0];
-
-        log(`Selected interface: ${describe(chosen)}`, 'info');
-
-        try {
-          await chosen.open();
-        } catch (openErr) {
-          const os = detectOS();
-          if (os === 'linux') {
-            const setupCard = document.getElementById('linux-setup');
-            if (setupCard) {
-              setupCard.style.display = 'block';
-              setupCard.scrollIntoView({ behavior: 'smooth', block: 'center' });
-            }
-            throw new Error(openErr.message + '\n  → Insufficient permissions on /dev/hidraw* (most likely cause). Follow the LINUX setup card above.');
-          } else {
-            throw new Error(openErr.message + '\n  → Make sure the mouse is not in use by another application.');
-          }
-        }
-
-        state.device = chosen;
-        log(`Connection opened: ${chosen.productName || 'M913'}`, 'ok');
-
-        chosen.addEventListener('inputreport', e => {
-          const data = new Uint8Array(e.data.buffer);
-          const hex = Array.from(data.slice(0, 17)).map(b => b.toString(16).padStart(2, '0')).join(' ');
-          log(`◀ ACK[${e.reportId.toString(16)}] ${hex}`, 'rx');
-        });
-
-        setStatus('Connected · ' + (chosen.productName || 'M913'), 'connected');
-        showConnectedUI();
+        await navigator.clipboard.writeText(text);
+        const orig = btn.textContent;
+        btn.textContent = '✓ copied';
+        btn.classList.add('copied');
+        setTimeout(() => { btn.textContent = orig; btn.classList.remove('copied'); }, 1500);
       } catch (err) {
-        log(`Connection error: ${err.message}`, 'err');
-        toast(`Connection failed: ${err.message.split('\n')[0]}`, 'error');
+        toast('Copy failed: select the text manually', 'error');
       }
-    }
-
-    async function sendPacket(pkt, label = '') {
-      if (!state.device) throw new Error('Device not connected');
-      if (pkt[0] !== REPORT_ID) {
-        throw new Error(`Unexpected report ID: 0x${pkt[0].toString(16)}`);
-      }
-      const data = pkt.slice(1);
-      log(`▶ ${label} ${packetToHex(pkt)}`, 'tx');
-      await state.device.sendFeatureReport(REPORT_ID, data);
-    }
-
-    // Delay between consecutive packets. The M913 firmware processes each packet
-    // synchronously and can drop packets that arrive before it's ready. The
-    // reference m913-ctl tool waits for an ACK on the interrupt endpoint, but
-    // WebHID doesn't expose that, so we use a generous fixed delay instead.
-    const PACKET_DELAY_MS = 100;
-
-    async function sendSequence(packets, label) {
-      log(`── ${label} (${packets.length} packets) ──`, 'info');
-      for (let i = 0; i < packets.length; i++) {
-        await sendPacket(packets[i], `${label} ${i + 1}/${packets.length}`);
-        await new Promise(r => setTimeout(r, PACKET_DELAY_MS));
-      }
-    }
-
-    function setStatus(text, cls = '') {
-      document.getElementById('status-text').textContent = text;
-      document.getElementById('status-dot').className = 'dot ' + cls;
-    }
-
-    function showConnectedUI() {
-      document.getElementById('not-connected').style.display = 'none';
-      document.getElementById('app').style.display = 'flex';
-      buildHotspots();
-      renderAssignments();
-    }
-
-    // --- MOUSE SVG hotspots ---
-    const HOTSPOTS = [
-      { idx: 7, label: 'LMB', type: 'path', d: 'M 148 82 L 278 50 L 278 244 L 168 232 Z' },
-      { idx: 6, label: 'RMB', type: 'path', d: 'M 282 50 L 412 82 L 392 232 L 282 244 Z' },
-      { idx: 10, label: 'MID', type: 'rect', x: 266, y: 98, w: 32, h: 56 },
-      { idx: 11, label: 'FIRE', type: 'circle', cx: 168, cy: 105, r: 17 },
-      { idx: 0, label: '1', type: 'circle', cx: 112, cy: 130, r: 14 },
-      { idx: 1, label: '2', type: 'circle', cx: 102, cy: 165, r: 14 },
-      { idx: 2, label: '3', type: 'circle', cx: 96, cy: 200, r: 14 },
-      { idx: 3, label: '4', type: 'circle', cx: 96, cy: 235, r: 14 },
-      { idx: 4, label: '5', type: 'circle', cx: 102, cy: 270, r: 14 },
-      { idx: 5, label: '6', type: 'circle', cx: 112, cy: 305, r: 14 },
-      { idx: 8, label: '7', type: 'circle', cx: 442, cy: 130, r: 14 },
-      { idx: 9, label: '8', type: 'circle', cx: 452, cy: 165, r: 14 },
-      { idx: 12, label: '9', type: 'circle', cx: 458, cy: 200, r: 14 },
-      { idx: 13, label: '10', type: 'circle', cx: 458, cy: 235, r: 14 },
-      { idx: 14, label: '11', type: 'circle', cx: 452, cy: 270, r: 14 },
-      { idx: 15, label: '12', type: 'circle', cx: 442, cy: 305, r: 14 },
-    ];
-
-    function buildHotspots() {
-      const root = document.getElementById('hotspots');
-      root.innerHTML = '';
-      for (const h of HOTSPOTS) {
-        const g = document.createElementNS('http://www.w3.org/2000/svg', 'g');
-        g.setAttribute('class', 'btn-hotspot');
-        g.dataset.idx = h.idx;
-
-        let shape, lblX, lblY;
-        if (h.type === 'path') {
-          shape = document.createElementNS('http://www.w3.org/2000/svg', 'path');
-          shape.setAttribute('d', h.d);
-          const m = h.d.match(/[ML]\s*([\d.]+)\s+([\d.]+)/g) || [];
-          const pts = m.map(s => s.match(/([\d.]+)\s+([\d.]+)/)).filter(Boolean);
-          const xs = pts.map(p => parseFloat(p[1]));
-          const ys = pts.map(p => parseFloat(p[2]));
-          lblX = xs.reduce((a, b) => a + b, 0) / xs.length;
-          lblY = ys.reduce((a, b) => a + b, 0) / ys.length;
-        } else if (h.type === 'rect') {
-          shape = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
-          shape.setAttribute('x', h.x); shape.setAttribute('y', h.y);
-          shape.setAttribute('width', h.w); shape.setAttribute('height', h.h);
-          shape.setAttribute('rx', '4');
-          lblX = h.x + h.w / 2; lblY = h.y + h.h / 2;
-        } else {
-          shape = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
-          shape.setAttribute('cx', h.cx); shape.setAttribute('cy', h.cy);
-          shape.setAttribute('r', h.r);
-          lblX = h.cx; lblY = h.cy;
-        }
-        shape.setAttribute('class', 'hot-fill');
-        g.appendChild(shape);
-
-        const text = document.createElementNS('http://www.w3.org/2000/svg', 'text');
-        text.setAttribute('class', 'hot-label');
-        text.setAttribute('x', lblX);
-        text.setAttribute('y', lblY);
-        text.textContent = h.label;
-        g.appendChild(text);
-
-        g.addEventListener('click', () => selectButton(h.idx));
-        root.appendChild(g);
-      }
-      refreshHotspotStyles();
-    }
-
-    function refreshHotspotStyles() {
-      document.querySelectorAll('.btn-hotspot').forEach(g => {
-        const idx = parseInt(g.dataset.idx, 10);
-        g.classList.toggle('selected', idx === state.selectedBtn);
-        g.classList.toggle('modified', !!state.pendingButtons[idx]);
-      });
-    }
-
-    // --- ASSIGNMENT LIST ---
-    function renderAssignments() {
-      const list = document.getElementById('assignments-list');
-      list.innerHTML = '';
-
-      const DISPLAY_ORDER = [
-        7, 6, 10, 11,            // LMB, RMB, Middle, Fire
-        0, 1, 2, 3, 4, 5,        // Side 1..6
-        8, 9, 12, 13, 14, 15,    // Side 7..12
-      ];
-
-      for (const i of DISPLAY_ORDER) {
-        const row = document.createElement('div');
-        row.className = 'assign-row';
-        const pending = state.pendingButtons[i];
-        const effective = state.effectiveButtons[i];
-        if (pending) row.classList.add('modified');
-
-        const lbl = document.createElement('div');
-        lbl.className = 'assign-label';
-        lbl.textContent = BUTTON_LABELS[i];
-
-        const action = document.createElement('div');
-        action.className = 'assign-action';
-        if (pending) {
-          action.textContent = pending.raw;
-        } else if (effective) {
-          action.textContent = effective.raw;
-        } else {
-          // No app-side knowledge: assume the mouse still has its factory value.
-          action.textContent = FACTORY_DEFAULTS[i] || 'none';
-        }
-
-        const reset = document.createElement('button');
-        reset.className = 'reset-mark';
-        reset.title = 'Set to none (button will do nothing)';
-        reset.textContent = '✕';
-        reset.addEventListener('click', e => {
-          e.stopPropagation();
-          const parsed = parseAction('none');
-          state.pendingButtons[i] = { ...parsed, raw: 'none' };
-          refresh();
-        });
-
-        row.appendChild(lbl); row.appendChild(action); row.appendChild(reset);
-        row.addEventListener('click', () => selectButton(i));
-        list.appendChild(row);
-      }
-      document.getElementById('pending-count').textContent = Object.keys(state.pendingButtons).length;
-    }
-
-    function selectButton(idx) {
-      state.selectedBtn = idx;
-      document.getElementById('editor-target').textContent = BUTTON_LABELS[idx];
-      // Clear editor state so a stale value isn't auto-applied
-      currentEdit = null;
-      capturedKeyboard = null;
-      document.getElementById('raw-input').value = '';
-      const kbd = document.getElementById('captured-kb-display');
-      if (kbd) { kbd.textContent = '— nothing captured yet —'; kbd.classList.remove('has-value'); }
-      document.querySelectorAll('.tab').forEach(t => t.classList.toggle('active', t.dataset.tab === 'keyboard'));
-      document.querySelectorAll('.tab-pane').forEach(p => p.classList.toggle('active', p.dataset.pane === 'keyboard'));
-      refreshPreview();
-      editModal.classList.add('show');
-      refreshHotspotStyles();
-      renderAssignments();
-    }
-
-    function closeEditor() {
-      state.selectedBtn = null;
-      editModal.classList.remove('show');
-      refresh();
-    }
-
-    const editModal = document.getElementById('edit-modal');
-    document.getElementById('modal-close-x').addEventListener('click', closeEditor);
-    document.getElementById('modal-done').addEventListener('click', closeEditor);
-    editModal.addEventListener('click', (e) => {
-      if (e.target === editModal) closeEditor();
     });
-    document.addEventListener('keydown', (e) => {
-      if (e.key === 'Escape' && editModal.classList.contains('show')) closeEditor();
+  });
+}
+
+// --- WEBHID ---
+async function connect() {
+  if (!('hid' in navigator)) {
+    toast('WebHID is not available. Use Chrome/Edge/Brave.', 'error');
+    return;
+  }
+  try {
+    const filters = [];
+    for (const productId of M913_PIDS) {
+      for (const usagePage of [0xff00, 0xff01, 0xff02, 0xff03, 0xff04]) {
+        filters.push({ vendorId: M913_VID, productId, usagePage });
+      }
+    }
+    const devices = await navigator.hid.requestDevice({ filters });
+    if (!devices || devices.length === 0) {
+      log('No device selected.', 'info');
+      return;
+    }
+
+    const describe = (dev) => {
+      const colls = (dev.collections || []).map(c =>
+        `up=0x${(c.usagePage??0).toString(16)} u=0x${(c.usage??0).toString(16)}`
+      ).join(' | ');
+      return `[${colls || 'no collections'}]`;
+    };
+    const hasVendor = (dev) => (dev.collections || []).some(c => {
+      const up = c.usagePage ?? 0;
+      return up >= 0xff00 && up <= 0xffff;
     });
+    const hasReportId = (dev) => (dev.collections || []).some(c => [
+      ...(c.featureReports?.map(r => r.reportId) ?? []),
+      ...(c.outputReports?.map(r => r.reportId) ?? []),
+    ].includes(REPORT_ID));
 
-    function refresh() {
-      refreshHotspotStyles();
-      renderAssignments();
-      refreshPreview();
-    }
+    log(`Found ${devices.length} authorized interface(s).`, 'info');
+    for (const d of devices) log(`  · ${describe(d)}`, 'info');
 
-    // --- EDITOR ---
-    const tabs = document.querySelectorAll('.tab');
-    const panes = document.querySelectorAll('.tab-pane');
-    tabs.forEach(t => t.addEventListener('click', () => {
-      tabs.forEach(x => x.classList.remove('active'));
-      panes.forEach(x => x.classList.remove('active'));
-      t.classList.add('active');
-      document.querySelector(`.tab-pane[data-pane="${t.dataset.tab}"]`).classList.add('active');
-      refreshPreview();
-    }));
+    const chosen = devices.find(d => hasVendor(d) && hasReportId(d))
+                || devices.find(hasVendor)
+                || devices.find(hasReportId)
+                || devices[0];
 
-    function buildQuickGrid() {
-      const grid = document.getElementById('quick-grid');
-      grid.innerHTML = '';
-      const cats = [
-        { label: 'MOUSE', actions: ['left', 'right', 'middle', 'forward', 'backward'] },
-        { label: 'DPI', actions: ['dpi+', 'dpi-', 'dpi-cycle'] },
-        { label: 'MODIFIERS (left/right)', actions: ['ctrl_l', 'ctrl_r', 'shift_l', 'shift_r', 'alt_l', 'alt_r', 'super_l', 'super_r'] },
-        { label: 'SPECIAL', actions: ['fire', 'three_click', 'led_toggle', 'polling_switch'] },
-        { label: 'MEDIA', actions: Object.keys(MEDIA_ACTIONS) },
-      ];
-      for (const c of cats) {
-        const lbl = document.createElement('div');
-        lbl.className = 'cat-label';
-        lbl.textContent = c.label;
-        grid.appendChild(lbl);
-        for (const act of c.actions) {
-          const b = document.createElement('button');
-          b.textContent = act;
-          b.dataset.action = act;
-          b.addEventListener('click', () => {
-            currentEdit = act;
-            refreshPreview();
-            applyAction(act);
-          });
-          grid.appendChild(b);
+    log(`Selected interface: ${describe(chosen)}`, 'info');
+
+    try {
+      await chosen.open();
+    } catch (openErr) {
+      const os = detectOS();
+      if (os === 'linux') {
+        const setupCard = document.getElementById('linux-setup');
+        if (setupCard) {
+          setupCard.style.display = 'block';
+          setupCard.scrollIntoView({ behavior: 'smooth', block: 'center' });
         }
-      }
-    }
-
-    let currentEdit = null;
-
-    // Captured action string for the Keyboard tab (set by the capture handler).
-    let capturedKeyboard = null;
-
-    function buildCurrentEdit() {
-      const activeTab = document.querySelector('.tab.active').dataset.tab;
-      if (activeTab === 'quick') return currentEdit;
-      if (activeTab === 'keyboard') return capturedKeyboard;
-      if (activeTab === 'fire') {
-        const sp = document.getElementById('fire-speed').value;
-        const tm = document.getElementById('fire-times').value;
-        return `fire:${sp}:${tm}`;
-      }
-      if (activeTab === 'raw') {
-        return document.getElementById('raw-input').value.trim().toLowerCase() || null;
-      }
-      return null;
-    }
-
-    function refreshPreview() {
-      const txt = buildCurrentEdit();
-      const previewText = document.getElementById('preview-action-text');
-      const previewBytes = document.getElementById('preview-bytes');
-      if (!txt) {
-        previewText.textContent = '—';
-        previewText.className = 'val';
-        previewBytes.textContent = '';
-        return;
-      }
-      const parsed = parseAction(txt);
-      if (!parsed) {
-        previewText.textContent = `${txt} (invalid)`;
-        previewText.className = 'val err';
-        previewBytes.textContent = '';
+        throw new Error(openErr.message + '\n  → Insufficient permissions on /dev/hidraw* (most likely cause). Follow the LINUX setup card above.');
       } else {
-        previewText.textContent = txt;
-        previewText.className = 'val';
-        previewBytes.innerHTML = '<span class="lbl">BYTES</span> ' + parsed.ab.map(b => b.toString(16).padStart(2, '0')).join(' ');
+        throw new Error(openErr.message + '\n  → Make sure the mouse is not in use by another application.');
       }
     }
 
-    document.querySelectorAll('#raw-input, #fire-speed, #fire-times')
-      .forEach(el => el.addEventListener('input', () => {
-        refreshPreview();
-        autoApply();
-      }));
+    state.device = chosen;
+    log(`Connection opened: ${chosen.productName || 'M913'}`, 'ok');
 
-    // applyAction(actionString) writes the action to pendingButtons and refreshes UI.
-    // Called either explicitly with a string (from quick grid, raw input, etc.)
-    // or with no arg, in which case it derives the action from the active tab.
-    function applyAction(forcedAction) {
-      if (state.selectedBtn === null) return;
-      const txt = forcedAction !== undefined ? forcedAction : buildCurrentEdit();
-      if (!txt) return;
-      const parsed = parseAction(txt);
-      if (!parsed) return;
-      state.pendingButtons[state.selectedBtn] = { ...parsed, raw: txt };
+    chosen.addEventListener('inputreport', e => {
+      const data = new Uint8Array(e.data.buffer);
+      const hex = Array.from(data.slice(0, 17)).map(b => b.toString(16).padStart(2, '0')).join(' ');
+      log(`◀ ACK[${e.reportId.toString(16)}] ${hex}`, 'rx');
+    });
+
+    setStatus('Connected · ' + (chosen.productName || 'M913'), 'connected');
+    showConnectedUI();
+  } catch (err) {
+    log(`Connection error: ${err.message}`, 'err');
+    toast(`Connection failed: ${err.message.split('\n')[0]}`, 'error');
+  }
+}
+
+async function sendPacket(pkt, label = '') {
+  if (!state.device) throw new Error('Device not connected');
+  if (pkt[0] !== REPORT_ID) {
+    throw new Error(`Unexpected report ID: 0x${pkt[0].toString(16)}`);
+  }
+  const data = pkt.slice(1);
+  log(`▶ ${label} ${packetToHex(pkt)}`, 'tx');
+  await state.device.sendFeatureReport(REPORT_ID, data);
+}
+
+const PACKET_DELAY_MS = 100;
+
+async function sendSequence(packets, label) {
+  log(`── ${label} (${packets.length} packets) ──`, 'info');
+  for (let i = 0; i < packets.length; i++) {
+    await sendPacket(packets[i], `${label} ${i+1}/${packets.length}`);
+    await new Promise(r => setTimeout(r, PACKET_DELAY_MS));
+  }
+}
+
+function setStatus(text, cls = '') {
+  document.getElementById('status-text').textContent = text;
+  document.getElementById('status-dot').className = 'dot ' + cls;
+}
+
+function showConnectedUI() {
+  document.getElementById('not-connected').style.display = 'none';
+  document.getElementById('app').style.display = 'flex';
+  buildHotspots();
+  renderAssignments();
+}
+
+// --- MOUSE SVG hotspots ---
+const HOTSPOTS = [
+  { idx: 7,  label: 'LMB',  type: 'path',   d: 'M 148 82 L 278 50 L 278 244 L 168 232 Z' },
+  { idx: 6,  label: 'RMB',  type: 'path',   d: 'M 282 50 L 412 82 L 392 232 L 282 244 Z' },
+  { idx: 10, label: 'MID',  type: 'rect',   x: 266, y: 98, w: 32, h: 56 },
+  { idx: 11, label: 'FIRE', type: 'circle', cx: 168, cy: 105, r: 17 },
+  { idx: 0,  label: '1',  type: 'circle', cx: 112, cy: 130, r: 14 },
+  { idx: 1,  label: '2',  type: 'circle', cx: 102, cy: 165, r: 14 },
+  { idx: 2,  label: '3',  type: 'circle', cx: 96,  cy: 200, r: 14 },
+  { idx: 3,  label: '4',  type: 'circle', cx: 96,  cy: 235, r: 14 },
+  { idx: 4,  label: '5',  type: 'circle', cx: 102, cy: 270, r: 14 },
+  { idx: 5,  label: '6',  type: 'circle', cx: 112, cy: 305, r: 14 },
+  { idx: 8,  label: '7',  type: 'circle', cx: 442, cy: 130, r: 14 },
+  { idx: 9,  label: '8',  type: 'circle', cx: 452, cy: 165, r: 14 },
+  { idx: 12, label: '9',  type: 'circle', cx: 458, cy: 200, r: 14 },
+  { idx: 13, label: '10', type: 'circle', cx: 458, cy: 235, r: 14 },
+  { idx: 14, label: '11', type: 'circle', cx: 452, cy: 270, r: 14 },
+  { idx: 15, label: '12', type: 'circle', cx: 442, cy: 305, r: 14 },
+];
+
+function buildHotspots() {
+  const root = document.getElementById('hotspots');
+  root.innerHTML = '';
+  for (const h of HOTSPOTS) {
+    const g = document.createElementNS('http://www.w3.org/2000/svg', 'g');
+    g.setAttribute('class', 'btn-hotspot');
+    g.dataset.idx = h.idx;
+
+    let shape, lblX, lblY;
+    if (h.type === 'path') {
+      shape = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+      shape.setAttribute('d', h.d);
+      const m = h.d.match(/[ML]\s*([\d.]+)\s+([\d.]+)/g) || [];
+      const pts = m.map(s => s.match(/([\d.]+)\s+([\d.]+)/)).filter(Boolean);
+      const xs = pts.map(p => parseFloat(p[1]));
+      const ys = pts.map(p => parseFloat(p[2]));
+      lblX = xs.reduce((a, b) => a + b, 0) / xs.length;
+      lblY = ys.reduce((a, b) => a + b, 0) / ys.length;
+    } else if (h.type === 'rect') {
+      shape = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
+      shape.setAttribute('x', h.x); shape.setAttribute('y', h.y);
+      shape.setAttribute('width', h.w); shape.setAttribute('height', h.h);
+      shape.setAttribute('rx', '4');
+      lblX = h.x + h.w / 2; lblY = h.y + h.h / 2;
+    } else {
+      shape = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+      shape.setAttribute('cx', h.cx); shape.setAttribute('cy', h.cy);
+      shape.setAttribute('r', h.r);
+      lblX = h.cx; lblY = h.cy;
+    }
+    shape.setAttribute('class', 'hot-fill');
+    g.appendChild(shape);
+
+    const text = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+    text.setAttribute('class', 'hot-label');
+    text.setAttribute('x', lblX);
+    text.setAttribute('y', lblY);
+    text.textContent = h.label;
+    g.appendChild(text);
+
+    g.addEventListener('click', () => selectButton(h.idx));
+    root.appendChild(g);
+  }
+  refreshHotspotStyles();
+}
+
+function refreshHotspotStyles() {
+  document.querySelectorAll('.btn-hotspot').forEach(g => {
+    const idx = parseInt(g.dataset.idx, 10);
+    g.classList.toggle('selected', idx === state.selectedBtn);
+    g.classList.toggle('modified', !!state.pendingButtons[idx]);
+  });
+}
+
+// --- ASSIGNMENT LIST ---
+function renderAssignments() {
+  const list = document.getElementById('assignments-list');
+  list.innerHTML = '';
+
+  const DISPLAY_ORDER = [
+    7, 6, 10, 11,
+    0, 1, 2, 3, 4, 5,
+    8, 9, 12, 13, 14, 15,
+  ];
+
+  for (const i of DISPLAY_ORDER) {
+    const row = document.createElement('div');
+    row.className = 'assign-row';
+    const pending = state.pendingButtons[i];
+    const effective = state.effectiveButtons[i];
+    if (pending) row.classList.add('modified');
+
+    const lbl = document.createElement('div');
+    lbl.className = 'assign-label';
+    lbl.textContent = BUTTON_LABELS[i];
+
+    const action = document.createElement('div');
+    action.className = 'assign-action';
+    if (pending) {
+      action.textContent = pending.raw;
+    } else if (effective) {
+      action.textContent = effective.raw;
+    } else {
+      action.textContent = FACTORY_DEFAULTS[i] || 'none';
+    }
+
+    const reset = document.createElement('button');
+    reset.className = 'reset-mark';
+    reset.title = 'Set to none (button will do nothing)';
+    reset.textContent = '✕';
+    reset.addEventListener('click', e => {
+      e.stopPropagation();
+      const parsed = parseAction('none');
+      state.pendingButtons[i] = { ...parsed, raw: 'none' };
       refresh();
-    }
+    });
 
-    // Backward-compat alias for the input listeners that read from the DOM.
-    const autoApply = () => applyAction();
+    row.appendChild(lbl); row.appendChild(action); row.appendChild(reset);
+    row.addEventListener('click', () => selectButton(i));
+    list.appendChild(row);
+  }
+  document.getElementById('pending-count').textContent = Object.keys(state.pendingButtons).length;
+}
 
-    // --- KEY CAPTURE ---
-    // Maps KeyboardEvent.code/key to the action-string token used by parseAction.
-    function eventCodeToToken(e) {
-      const code = e.code;
-      // Letters
-      if (/^Key[A-Z]$/.test(code)) return code.slice(3).toLowerCase();
-      // Digits (top row)
-      if (/^Digit\d$/.test(code)) return code.slice(5);
-      if (/^Numpad\d$/.test(code)) return 'num' + code.slice(6);
-      // Function keys
-      if (/^F\d{1,2}$/.test(code)) return code.toLowerCase();
-      // Arrows
-      const arrows = {
-        ArrowUp: 'arrowup', ArrowDown: 'arrowdown',
-        ArrowLeft: 'arrowleft', ArrowRight: 'arrowright',
-      };
-      if (arrows[code]) return arrows[code];
-      // Common named keys
-      const named = {
-        Enter: 'enter', NumpadEnter: 'enter',
-        Escape: 'escape', Tab: 'tab', Space: 'space', Backspace: 'backspace',
-        Home: 'home', End: 'end', PageUp: 'pageup', PageDown: 'pagedown',
-        Insert: 'insert', Delete: 'delete',
-        CapsLock: 'capslock', PrintScreen: 'printscreen',
-        ScrollLock: 'scrolllock', Pause: 'pause',
-        Minus: 'minus', Equal: 'equal',
-        BracketLeft: 'lbracket', BracketRight: 'rbracket',
-        Backslash: 'backslash', Semicolon: 'semicolon',
-        Quote: 'quote', Backquote: 'grave',
-        Comma: 'comma', Period: 'dot', Slash: 'slash',
-      };
-      if (named[code]) return named[code];
-      return null;
-    }
+function selectButton(idx) {
+  state.selectedBtn = idx;
+  document.getElementById('editor-target').textContent = BUTTON_LABELS[idx];
+  currentEdit = null;
+  capturedKeyboard = null;
+  document.getElementById('raw-input').value = '';
+  const kbd = document.getElementById('captured-kb-display');
+  if (kbd) { kbd.textContent = '— nothing captured yet —'; kbd.classList.remove('has-value'); }
+  document.querySelectorAll('.tab').forEach(t => t.classList.toggle('active', t.dataset.tab === 'keyboard'));
+  document.querySelectorAll('.tab-pane').forEach(p => p.classList.toggle('active', p.dataset.pane === 'keyboard'));
+  refreshPreview();
+  editModal.classList.add('show');
+  refreshHotspotStyles();
+  renderAssignments();
+}
 
-    // === Keyboard capture (single-press) ====================================
-    //
-    // One click on the capture button starts a capture session. The session
-    // finalizes in exactly one of two ways:
-    //
-    //   1) A real (non-modifier) key is pressed
-    //      -> action = current modifiers + that key, end session.
-    //
-    //   2) A modifier was pressed and all modifiers were released without any
-    //      real key in between
-    //      -> action = those modifiers, end session.
-    //
-    // Multi-key combos like A+B (no modifier) are NOT supported here on purpose;
-    // use the Raw tab instead.
+function closeEditor() {
+  state.selectedBtn = null;
+  editModal.classList.remove('show');
+  refresh();
+}
 
-    function modTokenFromKey(key) {
-      if (key === 'Control') return 'ctrl';
-      if (key === 'Shift') return 'shift';
-      if (key === 'Alt') return 'alt';
-      if (key === 'Meta') return 'super';
-      return null;
-    }
+const editModal = document.getElementById('edit-modal');
+document.getElementById('modal-close-x').addEventListener('click', closeEditor);
+document.getElementById('modal-done').addEventListener('click', closeEditor);
+editModal.addEventListener('click', (e) => {
+  if (e.target === editModal) closeEditor();
+});
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'Escape' && editModal.classList.contains('show')) closeEditor();
+});
 
-    let kbCaptureActive = false;
+function refresh() {
+  refreshHotspotStyles();
+  renderAssignments();
+  refreshPreview();
+}
 
-    function startKeyboardCapture() {
-      if (kbCaptureActive) return;
-      kbCaptureActive = true;
+// --- EDITOR ---
+const tabs = document.querySelectorAll('.tab');
+const panes = document.querySelectorAll('.tab-pane');
+tabs.forEach(t => t.addEventListener('click', () => {
+  tabs.forEach(x => x.classList.remove('active'));
+  panes.forEach(x => x.classList.remove('active'));
+  t.classList.add('active');
+  document.querySelector(`.tab-pane[data-pane="${t.dataset.tab}"]`).classList.add('active');
+  refreshPreview();
+}));
 
-      const btn = document.getElementById('capture-kb');
-      const display = document.getElementById('captured-kb-display');
-
-      display.textContent = '— nothing captured yet —';
-      display.classList.remove('has-value');
-      capturedKeyboard = null;
-      btn.classList.add('listening');
-      btn.textContent = '◉ Press a key now…';
-
-      const modsHeld = new Set();
-      const modsEverPressed = [];
-      let realKeyPressed = false;
-
-      function commit(actionString) {
-        capturedKeyboard = actionString;
-        display.textContent = actionString;
-        display.classList.add('has-value');
+function buildQuickGrid() {
+  const grid = document.getElementById('quick-grid');
+  grid.innerHTML = '';
+  const cats = [
+    { label: 'MOUSE', actions: ['left', 'right', 'middle', 'forward', 'backward'] },
+    { label: 'DPI', actions: ['dpi+', 'dpi-', 'dpi-cycle'] },
+    { label: 'MODIFIERS (left/right)', actions: ['ctrl_l', 'ctrl_r', 'shift_l', 'shift_r', 'alt_l', 'alt_r', 'super_l', 'super_r'] },
+    { label: 'SPECIAL', actions: ['fire', 'three_click', 'led_toggle', 'polling_switch'] },
+    { label: 'MEDIA', actions: Object.keys(MEDIA_ACTIONS) },
+  ];
+  for (const c of cats) {
+    const lbl = document.createElement('div');
+    lbl.className = 'cat-label';
+    lbl.textContent = c.label;
+    grid.appendChild(lbl);
+    for (const act of c.actions) {
+      const b = document.createElement('button');
+      b.textContent = act;
+      b.dataset.action = act;
+      b.addEventListener('click', () => {
+        currentEdit = act;
         refreshPreview();
-        autoApply();
+        applyAction(act);
+      });
+      grid.appendChild(b);
+    }
+  }
+}
+
+let currentEdit = null;
+let capturedKeyboard = null;
+
+function buildCurrentEdit() {
+  const activeTab = document.querySelector('.tab.active').dataset.tab;
+  if (activeTab === 'quick') return currentEdit;
+  if (activeTab === 'keyboard') return capturedKeyboard;
+  if (activeTab === 'fire') {
+    const sp = document.getElementById('fire-speed').value;
+    const tm = document.getElementById('fire-times').value;
+    return `fire:${sp}:${tm}`;
+  }
+  if (activeTab === 'raw') {
+    return document.getElementById('raw-input').value.trim().toLowerCase() || null;
+  }
+  return null;
+}
+
+function refreshPreview() {
+  const txt = buildCurrentEdit();
+  const previewText = document.getElementById('preview-action-text');
+  const previewBytes = document.getElementById('preview-bytes');
+  if (!txt) {
+    previewText.textContent = '—';
+    previewText.className = 'val';
+    previewBytes.textContent = '';
+    return;
+  }
+  const parsed = parseAction(txt);
+  if (!parsed) {
+    previewText.textContent = `${txt} (invalid)`;
+    previewText.className = 'val err';
+    previewBytes.textContent = '';
+  } else {
+    previewText.textContent = txt;
+    previewText.className = 'val';
+    previewBytes.innerHTML = '<span class="lbl">BYTES</span> ' + parsed.ab.map(b=>b.toString(16).padStart(2,'0')).join(' ');
+  }
+}
+
+document.querySelectorAll('#raw-input, #fire-speed, #fire-times')
+  .forEach(el => el.addEventListener('input', () => {
+    refreshPreview();
+    autoApply();
+  }));
+
+function applyAction(forcedAction) {
+  if (state.selectedBtn === null) return;
+  const txt = forcedAction !== undefined ? forcedAction : buildCurrentEdit();
+  if (!txt) return;
+  const parsed = parseAction(txt);
+  if (!parsed) return;
+  state.pendingButtons[state.selectedBtn] = { ...parsed, raw: txt };
+  refresh();
+}
+
+const autoApply = () => applyAction();
+
+// --- KEY CAPTURE ---
+function eventCodeToToken(e) {
+  const code = e.code;
+  if (/^Key[A-Z]$/.test(code)) return code.slice(3).toLowerCase();
+  if (/^Digit\d$/.test(code)) return code.slice(5);
+  if (/^Numpad\d$/.test(code)) return 'num' + code.slice(6);
+  if (/^F\d{1,2}$/.test(code)) return code.toLowerCase();
+  const arrows = {
+    ArrowUp: 'arrowup', ArrowDown: 'arrowdown',
+    ArrowLeft: 'arrowleft', ArrowRight: 'arrowright',
+  };
+  if (arrows[code]) return arrows[code];
+  const named = {
+    Enter: 'enter', NumpadEnter: 'enter',
+    Escape: 'escape', Tab: 'tab', Space: 'space', Backspace: 'backspace',
+    Home: 'home', End: 'end', PageUp: 'pageup', PageDown: 'pagedown',
+    Insert: 'insert', Delete: 'delete',
+    CapsLock: 'capslock', PrintScreen: 'printscreen',
+    ScrollLock: 'scrolllock', Pause: 'pause',
+    Minus: 'minus', Equal: 'equal',
+    BracketLeft: 'lbracket', BracketRight: 'rbracket',
+    Backslash: 'backslash', Semicolon: 'semicolon',
+    Quote: 'quote', Backquote: 'grave',
+    Comma: 'comma', Period: 'dot', Slash: 'slash',
+  };
+  if (named[code]) return named[code];
+  return null;
+}
+
+function modTokenFromKey(key) {
+  if (key === 'Control') return 'ctrl';
+  if (key === 'Shift')   return 'shift';
+  if (key === 'Alt')     return 'alt';
+  if (key === 'Meta')    return 'super';
+  return null;
+}
+
+let kbCaptureActive = false;
+
+function startKeyboardCapture() {
+  if (kbCaptureActive) return;
+  kbCaptureActive = true;
+
+  const btn = document.getElementById('capture-kb');
+  const display = document.getElementById('captured-kb-display');
+
+  display.textContent = '— nothing captured yet —';
+  display.classList.remove('has-value');
+  capturedKeyboard = null;
+  btn.classList.add('listening');
+  btn.textContent = '◉ Press a key now…';
+
+  const modsHeld = new Set();
+  const modsEverPressed = [];
+  let realKeyPressed = false;
+
+  function commit(actionString) {
+    capturedKeyboard = actionString;
+    display.textContent = actionString;
+    display.classList.add('has-value');
+    refreshPreview();
+    autoApply();
+  }
+
+  function endSession() {
+    if (!kbCaptureActive) return;
+    kbCaptureActive = false;
+    document.removeEventListener('keydown', onDown, true);
+    document.removeEventListener('keyup', onUp, true);
+    window.removeEventListener('blur', onBlur);
+    btn.classList.remove('listening');
+    btn.textContent = '▸ Press a key combination';
+  }
+
+  function onDown(e) {
+    e.preventDefault();
+    e.stopPropagation();
+    if (e.repeat) return;
+
+    const modTok = modTokenFromKey(e.key);
+    if (modTok) {
+      if (!modsHeld.has(modTok)) {
+        modsHeld.add(modTok);
+        modsEverPressed.push(modTok);
       }
-
-      function endSession() {
-        if (!kbCaptureActive) return;
-        kbCaptureActive = false;
-        document.removeEventListener('keydown', onDown, true);
-        document.removeEventListener('keyup', onUp, true);
-        window.removeEventListener('blur', onBlur);
-        btn.classList.remove('listening');
-        btn.textContent = '▸ Press a key combination';
-      }
-
-      function onDown(e) {
-        e.preventDefault();
-        e.stopPropagation();
-        if (e.repeat) return;
-
-        const modTok = modTokenFromKey(e.key);
-        if (modTok) {
-          if (!modsHeld.has(modTok)) {
-            modsHeld.add(modTok);
-            modsEverPressed.push(modTok);
-          }
-          return;
-        }
-
-        const token = eventCodeToToken(e);
-        if (!token) {
-          toast('Unsupported key: ' + e.code, 'error');
-          endSession();
-          return;
-        }
-
-        realKeyPressed = true;
-        const parts = [];
-        if (e.ctrlKey) parts.push('ctrl');
-        if (e.shiftKey) parts.push('shift');
-        if (e.altKey) parts.push('alt');
-        if (e.metaKey) parts.push('super');
-        parts.push(token);
-
-        commit(parts.join('+'));
-        endSession();
-      }
-
-      function onUp(e) {
-        const modTok = modTokenFromKey(e.key);
-        if (!modTok) return;
-        if (!modsHeld.has(modTok)) return;
-        modsHeld.delete(modTok);
-
-        if (realKeyPressed) return;
-        if (modsHeld.size > 0) return;
-
-        e.preventDefault();
-        e.stopPropagation();
-        const order = ['ctrl', 'shift', 'alt', 'super'];
-        const parts = order.filter(m => modsEverPressed.includes(m));
-        if (parts.length === 0) { endSession(); return; }
-        commit(parts.join('+'));
-        endSession();
-      }
-
-      function onBlur() { endSession(); }
-
-      document.addEventListener('keydown', onDown, true);
-      document.addEventListener('keyup', onUp, true);
-      window.addEventListener('blur', onBlur);
+      return;
     }
 
-    document.getElementById('capture-kb').addEventListener('click', startKeyboardCapture);
+    const token = eventCodeToToken(e);
+    if (!token) {
+      toast('Unsupported key: ' + e.code, 'error');
+      endSession();
+      return;
+    }
+
+    realKeyPressed = true;
+    const parts = [];
+    if (e.ctrlKey) parts.push('ctrl');
+    if (e.shiftKey) parts.push('shift');
+    if (e.altKey) parts.push('alt');
+    if (e.metaKey) parts.push('super');
+    parts.push(token);
+
+    commit(parts.join('+'));
+    endSession();
+  }
+
+  function onUp(e) {
+    const modTok = modTokenFromKey(e.key);
+    if (!modTok) return;
+    if (!modsHeld.has(modTok)) return;
+    modsHeld.delete(modTok);
+
+    if (realKeyPressed) return;
+    if (modsHeld.size > 0) return;
+
+    e.preventDefault();
+    e.stopPropagation();
+    const order = ['ctrl', 'shift', 'alt', 'super'];
+    const parts = order.filter(m => modsEverPressed.includes(m));
+    if (parts.length === 0) { endSession(); return; }
+    commit(parts.join('+'));
+    endSession();
+  }
+
+  function onBlur() { endSession(); }
+
+  document.addEventListener('keydown', onDown, true);
+  document.addEventListener('keyup', onUp, true);
+  window.addEventListener('blur', onBlur);
+}
+
+document.getElementById('capture-kb').addEventListener('click', startKeyboardCapture);
 
 
-    // --- DPI / LED / POLLING panels ---
-    function buildDpiPanel() {
-      const root = document.getElementById('dpi-slots');
-      root.innerHTML = '';
-      for (let i = 0; i < 5; i++) {
-        const slot = document.createElement('div');
-        slot.className = 'dpi-slot';
-        slot.innerHTML = `
-      <span class="lbl">${i + 1}</span>
+// --- DPI / LED / POLLING panels ---
+function buildDpiPanel() {
+  const root = document.getElementById('dpi-slots');
+  root.innerHTML = '';
+  for (let i = 0; i < 5; i++) {
+    const slot = document.createElement('div');
+    slot.className = 'dpi-slot';
+    slot.innerHTML = `
+      <span class="lbl">${i+1}</span>
       <input type="range" min="0" max="${VALID_DPI_VALUES.length - 1}" value="${VALID_DPI_VALUES.indexOf(nearestDpi(state.dpi.values[i]))}" data-dpi-idx="${i}">
       <span class="val" id="dpi-val-${i}">${state.dpi.values[i]}</span>
       <input type="checkbox" ${state.dpi.enabled[i] ? 'checked' : ''} data-dpi-enabled="${i}" title="Slot enabled">
     `;
-        root.appendChild(slot);
-      }
-      const note = document.createElement('div');
-      note.className = 'small-note';
-      note.style.marginTop = '8px';
-      note.innerHTML = '<strong>Note:</strong> the M913 supports a contiguous range of enabled slots starting from slot 1.';
-      root.appendChild(note);
+    root.appendChild(slot);
+  }
+  const note = document.createElement('div');
+  note.className = 'small-note';
+  note.style.marginTop = '8px';
+  note.innerHTML = '<strong>Note:</strong> the M913 supports a contiguous range of enabled slots starting from slot 1.';
+  root.appendChild(note);
 
-      root.querySelectorAll('input[type="range"]').forEach(r => {
-        r.addEventListener('input', () => {
-          const idx = parseInt(r.dataset.dpiIdx, 10);
-          const dpi = VALID_DPI_VALUES[parseInt(r.value, 10)];
-          state.dpi.values[idx] = dpi;
-          document.getElementById(`dpi-val-${idx}`).textContent = dpi;
-        });
-      });
-      root.querySelectorAll('input[type="checkbox"]').forEach(c => {
-        c.addEventListener('change', () => {
-          const idx = parseInt(c.dataset.dpiEnabled, 10);
-          if (c.checked) {
-            for (let i = 0; i <= idx; i++) state.dpi.enabled[i] = true;
-          } else {
-            for (let i = idx; i < 5; i++) state.dpi.enabled[i] = false;
-          }
-          state.dpi.enabled[0] = true;
-          root.querySelectorAll('input[type="checkbox"]').forEach(box => {
-            const i = parseInt(box.dataset.dpiEnabled, 10);
-            box.checked = state.dpi.enabled[i];
-          });
-        });
-      });
-    }
-
-    // Generic "exclusive button group" helper: only one button can be .active.
-    function bindToggleGroup(selector, onPick) {
-      const buttons = document.querySelectorAll(selector);
-      buttons.forEach(b => b.addEventListener('click', () => {
-        buttons.forEach(x => x.classList.remove('active'));
-        b.classList.add('active');
-        onPick(b);
-      }));
-    }
-
-    bindToggleGroup('.led-mode-btn', b => { state.led.mode = b.dataset.mode; });
-    bindToggleGroup('.polling-btn', b => { state.polling = parseInt(b.dataset.hz, 10); });
-
-    document.getElementById('led-color').addEventListener('input', e => {
-      state.led.color = parseInt(e.target.value.slice(1), 16);
+  root.querySelectorAll('input[type="range"]').forEach(r => {
+    r.addEventListener('input', () => {
+      const idx = parseInt(r.dataset.dpiIdx, 10);
+      const dpi = VALID_DPI_VALUES[parseInt(r.value, 10)];
+      state.dpi.values[idx] = dpi;
+      document.getElementById(`dpi-val-${idx}`).textContent = dpi;
     });
-    document.getElementById('led-brightness').addEventListener('input', e => {
-      state.led.brightness = parseInt(e.target.value, 10);
-      document.getElementById('led-brightness-val').textContent = e.target.value;
-    });
-    document.getElementById('led-speed').addEventListener('input', e => {
-      state.led.speed = parseInt(e.target.value, 10);
-      document.getElementById('led-speed-val').textContent = e.target.value;
-    });
-
-    // --- COMMIT / EXPORT / IMPORT ---
-    const NAMES = ['side1', 'side2', 'side3', 'side4', 'side5', 'side6', 'right', 'left', 'side7', 'side8', 'middle', 'fire', 'side9', 'side10', 'side11', 'side12'];
-
-    // Factory reset: load all buttons with their factory default actions into pending.
-    // User still needs to click "Apply to mouse" to actually write the reset.
-    document.getElementById('reset-factory').addEventListener('click', () => {
-      const ok = confirm(
-        'Reset all 16 buttons to factory defaults?\n\n' +
-        'This will queue a reset for every button. You still need to click ' +
-        '"Apply to mouse" to write it to the device.'
-      );
-      if (!ok) return;
-      state.pendingButtons = {};
-      state.effectiveButtons = {};
-      for (const [idxStr, action] of Object.entries(FACTORY_DEFAULTS)) {
-        const idx = parseInt(idxStr, 10);
-        const parsed = parseAction(action);
-        if (!parsed) continue;
-        state.pendingButtons[idx] = { ...parsed, raw: action };
-      }
-      refresh();
-      toast('Factory reset queued. Click "Apply to mouse" to write it.', 'info');
-    });
-
-    document.getElementById('commit-btn').addEventListener('click', async () => {
-      if (!state.device) { toast('Device not connected', 'error'); return; }
-      const btn = document.getElementById('commit-btn');
-      btn.disabled = true;
-      try {
-        // Always send the full button mapping (effective + pending merged), not just
-        // the pending changes. The protocol always rewrites all 16 button slots from
-        // a fixed 8-packet template, so omitting a button means resetting it to the
-        // template default — which would silently undo previous applies.
-        const merged = { ...state.effectiveButtons, ...state.pendingButtons };
-        if (Object.keys(merged).length > 0) {
-          const pkts = buildButtonMapping(merged);
-          await sendSequence(pkts, 'Button mapping');
-        }
-        const dpiPkts = buildDpiPackets(state.dpi);
-        await sendSequence(dpiPkts, 'DPI');
-        const ledPkts = buildLedPackets(state.led.mode, state.led.color, state.led.brightness, state.led.speed);
-        await sendSequence(ledPkts, 'LED ' + state.led.mode);
-        await sendPacket(buildPollingRatePacket(state.polling), `Polling ${state.polling}Hz`);
-        const commit = buildCommitPacket();
-        await sendPacket(commit, 'Commit 1/2');
-        await new Promise(r => setTimeout(r, 150));
-        await sendPacket(commit, 'Commit 2/2');
-        await new Promise(r => setTimeout(r, 150));
-
-        // Move pending changes into the effective config (for future export).
-        for (const [k, v] of Object.entries(state.pendingButtons)) {
-          state.effectiveButtons[k] = v;
-        }
-        state.pendingButtons = {};
-        saveState();
-        refresh();
-        toast('Configuration applied!', 'ok');
-        log('=== Apply OK ===', 'ok');
-      } catch (err) {
-        log(`Apply error: ${err.message}`, 'err');
-        toast(`Error: ${err.message}`, 'error');
-      } finally {
-        btn.disabled = false;
-      }
-    });
-
-    document.getElementById('export-config').addEventListener('click', () => {
-      const lines = [];
-      lines.push('; M913 config exported from web configurator');
-      lines.push(`; ${new Date().toISOString()}`);
-      lines.push('');
-      lines.push('[mouse]');
-      lines.push(`polling_rate=${state.polling}`);
-      lines.push('');
-      lines.push('[dpi]');
-      for (let i = 0; i < 5; i++) {
-        if (state.dpi.enabled[i]) lines.push(`dpi${i + 1}=${state.dpi.values[i]}`);
-      }
-      lines.push('');
-      lines.push('[led]');
-      lines.push(`mode=${state.led.mode}`);
-      if (state.led.mode === 'steady' || state.led.mode === 'respiration') {
-        lines.push(`color=${state.led.color.toString(16).padStart(6, '0')}`);
-        lines.push(`brightness=${state.led.brightness}`);
-      }
-      if (state.led.mode === 'respiration') lines.push(`speed=${state.led.speed}`);
-      lines.push('');
-      lines.push('[buttons]');
-      // Effective + pending (pending has precedence, it's the most recent edit).
-      const merged = { ...state.effectiveButtons, ...state.pendingButtons };
-      for (let i = 0; i < 16; i++) {
-        if (merged[i]) {
-          lines.push(`button_${NAMES[i]}=${merged[i].raw}`);
-        }
-      }
-      const blob = new Blob([lines.join('\n')], { type: 'text/plain' });
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url; a.download = 'm913-config.ini';
-      a.click();
-      URL.revokeObjectURL(url);
-      toast('Exported m913-config.ini', 'ok');
-    });
-
-    // -------------------- IMPORT --------------------
-    function parseIni(text) {
-      const cfg = { mouse: {}, dpi: {}, led: {}, buttons: {} };
-      let section = null;
-      for (const rawLine of text.split(/\r?\n/)) {
-        const line = rawLine.trim();
-        if (!line || line.startsWith(';') || line.startsWith('#')) continue;
-        const sec = line.match(/^\[([^\]]+)\]$/);
-        if (sec) { section = sec[1].toLowerCase(); continue; }
-        const eq = line.indexOf('=');
-        if (eq < 0 || !section) continue;
-        const key = line.slice(0, eq).trim().toLowerCase();
-        const val = line.slice(eq + 1).trim();
-        if (cfg[section]) cfg[section][key] = val;
-      }
-      return cfg;
-    }
-
-    function applyImportedConfig(cfg) {
-      const issues = [];
-
-      if (cfg.mouse.polling_rate) {
-        const hz = parseInt(cfg.mouse.polling_rate, 10);
-        if ([125, 250, 500, 1000].includes(hz)) {
-          state.polling = hz;
-          document.querySelectorAll('.polling-btn').forEach(b => {
-            b.classList.toggle('active', parseInt(b.dataset.hz, 10) === hz);
-          });
-        } else issues.push(`polling_rate=${cfg.mouse.polling_rate} (invalid)`);
-      }
-
-      const dpiKeys = ['dpi1', 'dpi2', 'dpi3', 'dpi4', 'dpi5'];
-      const incoming = dpiKeys.map(k => cfg.dpi[k] ? parseInt(cfg.dpi[k], 10) : null);
-      const enabled = incoming.map(v => v !== null);
-      let firstGap = enabled.indexOf(false);
-      if (firstGap === -1) firstGap = 5;
-      for (let i = 0; i < 5; i++) {
-        state.dpi.enabled[i] = i < firstGap;
-        if (incoming[i] != null && VALID_DPI_VALUES.includes(incoming[i])) {
-          state.dpi.values[i] = incoming[i];
-        } else if (incoming[i] != null) {
-          const snapped = nearestDpi(incoming[i]);
-          state.dpi.values[i] = snapped;
-          issues.push(`dpi${i + 1}=${incoming[i]} → snapped to ${snapped}`);
-        }
+  });
+  root.querySelectorAll('input[type="checkbox"]').forEach(c => {
+    c.addEventListener('change', () => {
+      const idx = parseInt(c.dataset.dpiEnabled, 10);
+      if (c.checked) {
+        for (let i = 0; i <= idx; i++) state.dpi.enabled[i] = true;
+      } else {
+        for (let i = idx; i < 5; i++) state.dpi.enabled[i] = false;
       }
       state.dpi.enabled[0] = true;
-      buildDpiPanel();
-
-      if (cfg.led.mode) {
-        const mode = cfg.led.mode.toLowerCase();
-        if (['off', 'steady', 'respiration', 'rainbow'].includes(mode)) {
-          state.led.mode = mode;
-          document.querySelectorAll('.led-mode-btn').forEach(b => {
-            b.classList.toggle('active', b.dataset.mode === mode);
-          });
-        } else issues.push(`led mode=${cfg.led.mode} (invalid)`);
-      }
-      if (cfg.led.color) {
-        const c = parseInt(cfg.led.color.replace(/^#/, ''), 16);
-        if (!isNaN(c)) {
-          state.led.color = c;
-          document.getElementById('led-color').value = '#' + c.toString(16).padStart(6, '0');
-        }
-      }
-      if (cfg.led.brightness) {
-        const b = Math.max(0, Math.min(255, parseInt(cfg.led.brightness, 10) || 0));
-        state.led.brightness = b;
-        document.getElementById('led-brightness').value = b;
-        document.getElementById('led-brightness-val').textContent = b;
-      }
-      if (cfg.led.speed) {
-        const s = Math.max(1, Math.min(5, parseInt(cfg.led.speed, 10) || 3));
-        state.led.speed = s;
-        document.getElementById('led-speed').value = s;
-        document.getElementById('led-speed-val').textContent = s;
-      }
-
-      // Reset both effective and pending: the import file becomes the source of truth.
-      state.effectiveButtons = {};
-      state.pendingButtons = {};
-      for (const [key, val] of Object.entries(cfg.buttons)) {
-        const m = key.match(/^button_(.+)$/);
-        if (!m) continue;
-        const btnName = m[1];
-        const idx = NAMES.indexOf(btnName);
-        if (idx < 0) { issues.push(`unknown button: ${btnName}`); continue; }
-        const parsed = parseAction(val);
-        if (!parsed) { issues.push(`${btnName}=${val} (invalid action)`); continue; }
-        state.pendingButtons[idx] = { ...parsed, raw: val };
-      }
-
-      refresh();
-      saveState();
-
-      if (issues.length === 0) {
-        toast('Configuration imported. Click "Apply to mouse" to write.', 'ok');
-        log('=== Import OK ===', 'ok');
-      } else {
-        toast(`Imported with ${issues.length} warning(s) — see debug log`, 'info');
-        log('=== Import completed with warnings ===', 'info');
-        for (const i of issues) log(`  · ${i}`, 'info');
-      }
-    }
-
-    document.getElementById('import-config').addEventListener('click', () => {
-      document.getElementById('import-file-input').click();
+      root.querySelectorAll('input[type="checkbox"]').forEach(box => {
+        const i = parseInt(box.dataset.dpiEnabled, 10);
+        box.checked = state.dpi.enabled[i];
+      });
     });
+  });
+}
 
-    document.getElementById('import-file-input').addEventListener('change', async (e) => {
-      const file = e.target.files[0];
-      if (!file) return;
-      try {
-        const text = await file.text();
-        const cfg = parseIni(text);
-        applyImportedConfig(cfg);
-      } catch (err) {
-        log(`Import error: ${err.message}`, 'err');
-        toast(`Import failed: ${err.message}`, 'error');
-      } finally {
-        e.target.value = '';
-      }
-    });
+function bindToggleGroup(selector, onPick) {
+  const buttons = document.querySelectorAll(selector);
+  buttons.forEach(b => b.addEventListener('click', () => {
+    buttons.forEach(x => x.classList.remove('active'));
+    b.classList.add('active');
+    onPick(b);
+  }));
+}
 
-    // --- INIT ---
-    document.getElementById('connect-btn').addEventListener('click', connect);
+bindToggleGroup('.led-mode-btn', b => { state.led.mode = b.dataset.mode; });
+bindToggleGroup('.polling-btn',  b => { state.polling = parseInt(b.dataset.hz, 10); });
 
-    if (!('hid' in navigator)) {
-      setStatus('WebHID not supported', 'error');
-      log('This browser does not support WebHID. Use Chrome, Edge or Brave.', 'err');
-      document.getElementById('browser-unsupported').style.display = 'block';
-      // Hide connect-related UI: it's useless without WebHID
-      document.getElementById('connect-btn').style.display = 'none';
-      document.getElementById('os-line-default').style.display = 'none';
-      const linuxSetup = document.getElementById('linux-setup');
-      if (linuxSetup) linuxSetup.style.display = 'none';
-    } else {
-      setStatus('Disconnected · ready');
-      log('WebHID available. Ready.', 'ok');
+document.getElementById('led-color').addEventListener('input', e => {
+  state.led.color = parseInt(e.target.value.slice(1), 16);
+});
+document.getElementById('led-brightness').addEventListener('input', e => {
+  state.led.brightness = parseInt(e.target.value, 10);
+  document.getElementById('led-brightness-val').textContent = e.target.value;
+});
+document.getElementById('led-speed').addEventListener('input', e => {
+  state.led.speed = parseInt(e.target.value, 10);
+  document.getElementById('led-speed-val').textContent = e.target.value;
+});
+
+// --- COMMIT / EXPORT / IMPORT ---
+const NAMES = ['side1','side2','side3','side4','side5','side6','right','left','side7','side8','middle','fire','side9','side10','side11','side12'];
+
+document.getElementById('reset-factory').addEventListener('click', () => {
+  const ok = confirm(
+    'Reset all 16 buttons to factory defaults?\n\n' +
+    'This will queue a reset for every button. You still need to click ' +
+    '"Apply to mouse" to write it to the device.'
+  );
+  if (!ok) return;
+  state.pendingButtons = {};
+  state.effectiveButtons = {};
+  for (const [idxStr, action] of Object.entries(FACTORY_DEFAULTS)) {
+    const idx = parseInt(idxStr, 10);
+    const parsed = parseAction(action);
+    if (!parsed) continue;
+    state.pendingButtons[idx] = { ...parsed, raw: action };
+  }
+  refresh();
+  toast('Factory reset queued. Click "Apply to mouse" to write it.', 'info');
+});
+
+document.getElementById('commit-btn').addEventListener('click', async () => {
+  if (!state.device) { toast('Device not connected', 'error'); return; }
+  const btn = document.getElementById('commit-btn');
+  btn.disabled = true;
+  try {
+    const merged = { ...state.effectiveButtons, ...state.pendingButtons };
+    if (Object.keys(merged).length > 0) {
+      const pkts = buildButtonMapping(merged);
+      await sendSequence(pkts, 'Button mapping');
     }
+    const dpiPkts = buildDpiPackets(state.dpi);
+    await sendSequence(dpiPkts, 'DPI');
+    const ledPkts = buildLedPackets(state.led.mode, state.led.color, state.led.brightness, state.led.speed);
+    await sendSequence(ledPkts, 'LED ' + state.led.mode);
+    await sendPacket(buildPollingRatePacket(state.polling), `Polling ${state.polling}Hz`);
+    const commit = buildCommitPacket();
+    await sendPacket(commit, 'Commit 1/2');
+    await new Promise(r => setTimeout(r, 150));
+    await sendPacket(commit, 'Commit 2/2');
+    await new Promise(r => setTimeout(r, 150));
 
-    if ('hid' in navigator) {
-      navigator.hid.getDevices().then(devs => {
-        const m913s = devs.filter(d => d.vendorId === M913_VID && M913_PIDS.includes(d.productId));
-        if (m913s.length > 0) {
-          log(`Found previously authorized M913 (${m913s.length} interface).`, 'info');
-        }
-      }).catch(err => {
-        log(`Could not list HID devices: ${err.message}`, 'err');
-      });
-      navigator.hid.addEventListener('disconnect', e => {
-        if (state.device && e.device === state.device) {
-          log('Mouse disconnected.', 'err');
-          setStatus('Disconnected');
-          state.device = null;
-          document.getElementById('not-connected').style.display = 'block';
-          document.getElementById('app').style.display = 'none';
-        }
-      });
+    for (const [k, v] of Object.entries(state.pendingButtons)) {
+      state.effectiveButtons[k] = v;
     }
+    state.pendingButtons = {};
+    saveState();
+    refresh();
+    toast('Configuration applied!', 'ok');
+    log('=== Apply OK ===', 'ok');
+  } catch (err) {
+    log(`Apply error: ${err.message}`, 'err');
+    toast(`Error: ${err.message}`, 'error');
+  } finally {
+    btn.disabled = false;
+  }
+});
 
-    setupOSAwareUI();
-    buildQuickGrid();
-    const loaded = loadState();
-    buildDpiPanel();
-    if (loaded) {
-      // Reflect loaded values into the DOM that's been built
-      document.querySelectorAll('.led-mode-btn').forEach(b => {
-        b.classList.toggle('active', b.dataset.mode === state.led.mode);
-      });
+document.getElementById('export-config').addEventListener('click', () => {
+  const lines = [];
+  lines.push('; M913 config exported from web configurator');
+  lines.push(`; ${new Date().toISOString()}`);
+  lines.push('');
+  lines.push('[mouse]');
+  lines.push(`polling_rate=${state.polling}`);
+  lines.push('');
+  lines.push('[dpi]');
+  for (let i = 0; i < 5; i++) {
+    if (state.dpi.enabled[i]) lines.push(`dpi${i+1}=${state.dpi.values[i]}`);
+  }
+  lines.push('');
+  lines.push('[led]');
+  lines.push(`mode=${state.led.mode}`);
+  if (state.led.mode === 'steady' || state.led.mode === 'respiration') {
+    lines.push(`color=${state.led.color.toString(16).padStart(6, '0')}`);
+    lines.push(`brightness=${state.led.brightness}`);
+  }
+  if (state.led.mode === 'respiration') lines.push(`speed=${state.led.speed}`);
+  lines.push('');
+  lines.push('[buttons]');
+  const merged = { ...state.effectiveButtons, ...state.pendingButtons };
+  for (let i = 0; i < 16; i++) {
+    if (merged[i]) {
+      lines.push(`button_${NAMES[i]}=${merged[i].raw}`);
+    }
+  }
+  const blob = new Blob([lines.join('\n')], { type: 'text/plain' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url; a.download = 'm913-config.ini';
+  a.click();
+  URL.revokeObjectURL(url);
+  toast('Exported m913-config.ini', 'ok');
+});
+
+function parseIni(text) {
+  const cfg = { mouse: {}, dpi: {}, led: {}, buttons: {} };
+  let section = null;
+  for (const rawLine of text.split(/\r?\n/)) {
+    const line = rawLine.trim();
+    if (!line || line.startsWith(';') || line.startsWith('#')) continue;
+    const sec = line.match(/^\[([^\]]+)\]$/);
+    if (sec) { section = sec[1].toLowerCase(); continue; }
+    const eq = line.indexOf('=');
+    if (eq < 0 || !section) continue;
+    const key = line.slice(0, eq).trim().toLowerCase();
+    const val = line.slice(eq + 1).trim();
+    if (cfg[section]) cfg[section][key] = val;
+  }
+  return cfg;
+}
+
+function applyImportedConfig(cfg) {
+  const issues = [];
+
+  if (cfg.mouse.polling_rate) {
+    const hz = parseInt(cfg.mouse.polling_rate, 10);
+    if ([125, 250, 500, 1000].includes(hz)) {
+      state.polling = hz;
       document.querySelectorAll('.polling-btn').forEach(b => {
-        b.classList.toggle('active', parseInt(b.dataset.hz, 10) === state.polling);
+        b.classList.toggle('active', parseInt(b.dataset.hz, 10) === hz);
       });
-      document.getElementById('led-color').value = '#' + state.led.color.toString(16).padStart(6, '0');
-      document.getElementById('led-brightness').value = state.led.brightness;
-      document.getElementById('led-brightness-val').textContent = state.led.brightness;
-      document.getElementById('led-speed').value = state.led.speed;
-      document.getElementById('led-speed-val').textContent = state.led.speed;
-      const ts = typeof loaded === 'string' ? new Date(loaded).toLocaleString() : 'previously';
-      log(`Loaded saved config (${ts}). Connect the mouse to verify it matches.`, 'info');
-    }
+    } else issues.push(`polling_rate=${cfg.mouse.polling_rate} (invalid)`);
+  }
 
-  </script>
+  const dpiKeys = ['dpi1','dpi2','dpi3','dpi4','dpi5'];
+  const incoming = dpiKeys.map(k => cfg.dpi[k] ? parseInt(cfg.dpi[k], 10) : null);
+  const enabled = incoming.map(v => v !== null);
+  let firstGap = enabled.indexOf(false);
+  if (firstGap === -1) firstGap = 5;
+  for (let i = 0; i < 5; i++) {
+    state.dpi.enabled[i] = i < firstGap;
+    if (incoming[i] != null && VALID_DPI_VALUES.includes(incoming[i])) {
+      state.dpi.values[i] = incoming[i];
+    } else if (incoming[i] != null) {
+      const snapped = nearestDpi(incoming[i]);
+      state.dpi.values[i] = snapped;
+      issues.push(`dpi${i+1}=${incoming[i]} → snapped to ${snapped}`);
+    }
+  }
+  state.dpi.enabled[0] = true;
+  buildDpiPanel();
+
+  if (cfg.led.mode) {
+    const mode = cfg.led.mode.toLowerCase();
+    if (['off','steady','respiration','rainbow'].includes(mode)) {
+      state.led.mode = mode;
+      document.querySelectorAll('.led-mode-btn').forEach(b => {
+        b.classList.toggle('active', b.dataset.mode === mode);
+      });
+    } else issues.push(`led mode=${cfg.led.mode} (invalid)`);
+  }
+  if (cfg.led.color) {
+    const c = parseInt(cfg.led.color.replace(/^#/, ''), 16);
+    if (!isNaN(c)) {
+      state.led.color = c;
+      document.getElementById('led-color').value = '#' + c.toString(16).padStart(6, '0');
+    }
+  }
+  if (cfg.led.brightness) {
+    const b = Math.max(0, Math.min(255, parseInt(cfg.led.brightness, 10) || 0));
+    state.led.brightness = b;
+    document.getElementById('led-brightness').value = b;
+    document.getElementById('led-brightness-val').textContent = b;
+  }
+  if (cfg.led.speed) {
+    const s = Math.max(1, Math.min(5, parseInt(cfg.led.speed, 10) || 3));
+    state.led.speed = s;
+    document.getElementById('led-speed').value = s;
+    document.getElementById('led-speed-val').textContent = s;
+  }
+
+  state.effectiveButtons = {};
+  state.pendingButtons = {};
+  for (const [key, val] of Object.entries(cfg.buttons)) {
+    const m = key.match(/^button_(.+)$/);
+    if (!m) continue;
+    const btnName = m[1];
+    const idx = NAMES.indexOf(btnName);
+    if (idx < 0) { issues.push(`unknown button: ${btnName}`); continue; }
+    const parsed = parseAction(val);
+    if (!parsed) { issues.push(`${btnName}=${val} (invalid action)`); continue; }
+    state.pendingButtons[idx] = { ...parsed, raw: val };
+  }
+
+  refresh();
+  saveState();
+
+  if (issues.length === 0) {
+    toast('Configuration imported. Click "Apply to mouse" to write.', 'ok');
+    log('=== Import OK ===', 'ok');
+  } else {
+    toast(`Imported with ${issues.length} warning(s) — see debug log`, 'info');
+    log('=== Import completed with warnings ===', 'info');
+    for (const i of issues) log(`  · ${i}`, 'info');
+  }
+}
+
+document.getElementById('import-config').addEventListener('click', () => {
+  document.getElementById('import-file-input').click();
+});
+
+document.getElementById('import-file-input').addEventListener('change', async (e) => {
+  const file = e.target.files[0];
+  if (!file) return;
+  try {
+    const text = await file.text();
+    const cfg = parseIni(text);
+    applyImportedConfig(cfg);
+  } catch (err) {
+    log(`Import error: ${err.message}`, 'err');
+    toast(`Import failed: ${err.message}`, 'error');
+  } finally {
+    e.target.value = '';
+  }
+});
+
+// --- INIT ---
+document.getElementById('connect-btn').addEventListener('click', connect);
+
+if (!('hid' in navigator)) {
+  setStatus('WebHID not supported', 'error');
+  log('This browser does not support WebHID. Use Chrome, Edge or Brave.', 'err');
+  document.getElementById('browser-unsupported').style.display = 'block';
+  document.getElementById('connect-btn').style.display = 'none';
+  document.getElementById('os-line-default').style.display = 'none';
+  const linuxSetup = document.getElementById('linux-setup');
+  if (linuxSetup) linuxSetup.style.display = 'none';
+} else {
+  setStatus('Disconnected · ready');
+  log('WebHID available. Ready.', 'ok');
+}
+
+if ('hid' in navigator) {
+  navigator.hid.getDevices().then(devs => {
+    const m913s = devs.filter(d => d.vendorId === M913_VID && M913_PIDS.includes(d.productId));
+    if (m913s.length > 0) {
+      log(`Found previously authorized M913 (${m913s.length} interface).`, 'info');
+    }
+  }).catch(err => {
+    log(`Could not list HID devices: ${err.message}`, 'err');
+  });
+  navigator.hid.addEventListener('disconnect', e => {
+    if (state.device && e.device === state.device) {
+      log('Mouse disconnected.', 'err');
+      setStatus('Disconnected');
+      state.device = null;
+      document.getElementById('not-connected').style.display = 'block';
+      document.getElementById('app').style.display = 'none';
+    }
+  });
+}
+
+setupOSAwareUI();
+buildQuickGrid();
+const loaded = loadState();
+buildDpiPanel();
+if (loaded) {
+  document.querySelectorAll('.led-mode-btn').forEach(b => {
+    b.classList.toggle('active', b.dataset.mode === state.led.mode);
+  });
+  document.querySelectorAll('.polling-btn').forEach(b => {
+    b.classList.toggle('active', parseInt(b.dataset.hz, 10) === state.polling);
+  });
+  document.getElementById('led-color').value = '#' + state.led.color.toString(16).padStart(6, '0');
+  document.getElementById('led-brightness').value = state.led.brightness;
+  document.getElementById('led-brightness-val').textContent = state.led.brightness;
+  document.getElementById('led-speed').value = state.led.speed;
+  document.getElementById('led-speed-val').textContent = state.led.speed;
+  const ts = typeof loaded === 'string' ? new Date(loaded).toLocaleString() : 'previously';
+  log(`Loaded saved config (${ts}). Connect the mouse to verify it matches.`, 'info');
+}
+</script>
 
 </body>
-
 </html>
