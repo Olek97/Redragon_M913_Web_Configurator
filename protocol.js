@@ -114,6 +114,12 @@ export const KEY_CODES = {
   printscreen: 0x46, scrolllock: 0x47, pause: 0x48, insert: 0x49,
   home: 0x4a, pageup: 0x4b, delete: 0x4c, end: 0x4d, pagedown: 0x4e,
   arrowright: 0x4f, arrowleft: 0x50, arrowdown: 0x51, arrowup: 0x52,
+  // Numpad
+  numlock: 0x53, numdiv: 0x54, nummul: 0x55, numminus: 0x56, numplus: 0x57,
+  numenter: 0x58,
+  num1: 0x59, num2: 0x5a, num3: 0x5b, num4: 0x5c, num5: 0x5d,
+  num6: 0x5e, num7: 0x5f, num8: 0x60, num9: 0x61, num0: 0x62,
+  numdot: 0x63,
 };
 
 // Parses an action string ("ctrl+c", "f1", "media_play", "fire:58:3", ...).
@@ -121,19 +127,6 @@ export const KEY_CODES = {
 // (if present) describes a keyboard-type sub-packet to emit.
 export function parseAction(actionStr) {
   const action = actionStr.toLowerCase().trim();
-
-  // EXPERIMENTAL: hex: prefix lets you write 4 raw action bytes directly.
-  // Examples: "hex:03 00 00 52" or "hex:03000052". Only the first 3 bytes
-  // matter (the 4th, byte[3], is the inner checksum and is recomputed).
-  if (action.startsWith('hex:')) {
-    const hex = action.slice(4).replace(/[\s,]/g, '');
-    if (!/^[0-9a-f]{6,8}$/.test(hex)) return null;
-    const b0 = parseInt(hex.slice(0, 2), 16);
-    const b1 = parseInt(hex.slice(2, 4), 16);
-    const b2 = parseInt(hex.slice(4, 6), 16);
-    const cs = (0x55 - (b0 + b1 + b2)) & 0xff;
-    return { ab: [b0, b1, b2, cs] };
-  }
 
   if (action.startsWith('fire:')) {
     const parts = action.split(':');
@@ -338,7 +331,12 @@ const DPI_TEMPLATES = [
   [0x08,0x07,0x00,0x00,0x02,0x02, 0x05,0x50,0x00,0x00, 0x00,0x00,0x00,0x00, 0x00,0x00,0xed],
 ];
 
-const DPI_UNKNOWN2 = [
+// 3 trailer packets that the official Redragon software always sends after
+// the main DPI config block. Their exact purpose is not documented (likely
+// related to DPI LED indicator colors or sensor calibration), but omitting
+// them appears to break DPI configuration on some firmware revisions.
+// Captured verbatim from the official Windows software's USB traffic.
+const DPI_TRAILER_PACKETS = [
   [0x08,0x07,0x00,0x00,0x2c,0x08, 0xff,0x00,0x00,0x56, 0x00,0x00,0xff,0x56, 0x00,0x00,0x68],
   [0x08,0x07,0x00,0x00,0x34,0x08, 0x00,0xff,0x00,0x56, 0xff,0xff,0x00,0x57, 0x00,0x00,0x60],
   [0x08,0x07,0x00,0x00,0x3c,0x04, 0xff,0x55,0x7d,0x84, 0x00,0x00,0x00,0x00, 0x00,0x00,0xb1],
@@ -376,7 +374,7 @@ export function buildDpiPackets(dpi) {
 
   for (let i = 0; i < 4; i++) finalizePacket(buf[i]);
   const result = [...buf];
-  for (const t of DPI_UNKNOWN2) result.push(fromTemplate(t));
+  for (const t of DPI_TRAILER_PACKETS) result.push(fromTemplate(t));
   return result;
 }
 

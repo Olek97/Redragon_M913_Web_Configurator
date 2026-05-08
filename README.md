@@ -22,7 +22,7 @@ Based on reverse engineering of the open-source projects [`m913-ctl`](https://gi
 
 On Linux, the first time you open the app you'll see a setup card with a "Download install-m913-udev.sh" button. Download it, run it once with `sudo`, unplug and re-plug the mouse, and you're done — permanently for your user.
 
-The script installs one rule in `/etc/udev/rules.d/99-m913.rules` using `TAG+="uaccess"`, which grants access to whichever user owns the active local session. Works on any modern systemd-based distro (Debian, Ubuntu, Fedora, Arch, openSUSE, etc.) without any per-distro tweaks.
+The script installs a rule in `/etc/udev/rules.d/99-m913.rules` that grants device access through two complementary mechanisms: `TAG+="uaccess"` (which works on most modern systemd-based distros by handing access to the user owning the active local session) and `GROUP="plugdev"` with automatic group membership (which acts as a fallback on systems where `uaccess` doesn't activate the device's ACL — a real-world edge case observed on some Ubuntu setups). The combination works on Debian, Ubuntu, Fedora, Arch, openSUSE and any other modern distro without per-distro tweaks.
 
 ---
 
@@ -53,13 +53,13 @@ To publish it, deploy to any static host with HTTPS (Netlify, Vercel, GitHub Pag
 - **Full button mapping** for all 16 firmware-addressable buttons: 12 side buttons, LMB, RMB, middle (scroll click), fire
 - **Interactive mouse SVG**: click any visible button to edit it, with hover preview and visual feedback for modified/selected state
 - **Keyboard capture**: press a key combo on your keyboard while editing — modifiers, single keys, and modifier-only bindings are detected automatically
-- **Quick actions** ("Other" tab): mouse buttons, DPI cycle, multimedia keys, fire button, special functions, and **left/right modifier variants** (`ctrl_l` vs `ctrl_r`, etc.)
+- **Quick actions** ("Other" tab): mouse buttons, DPI cycle, **full numeric keypad** (`num0`–`num9`, `numplus`, `numminus`, `nummul`, `numdiv`, `numdot`, `numenter`, `numlock`), multimedia keys, fire button, special functions, and **left/right modifier variants** (`ctrl_l` vs `ctrl_r`, etc.)
 - **Raw input** for advanced syntax: multi-key combos like `a+b+c`, custom fire profiles like `fire:50:2`
 - **Custom fire button**: speed (3–255) and repeat count (0–3)
 - **DPI**: 5 slots, 100–16000 in steps of 100, per-slot enable (contiguous slots from slot 1, enforced)
 - **RGB lighting**: off / steady / breathe / rainbow + 16M color picker + brightness + animation speed
 - **Polling rate**: 125 / 250 / 500 / 1000 Hz
-- **Factory reset**: one click to queue a full reset of all 16 buttons
+- **Factory reset**: one click to queue a full restore of all 16 buttons, DPI levels, RGB lighting and polling rate to their factory defaults
 - **Configuration import/export** as `.ini` files, compatible with `m913-ctl --config`
 - **State persistence**: configurations are cached in `localStorage` so the UI shows what you last applied across page reloads
 
@@ -88,7 +88,7 @@ The two profiles live in separate flash regions inside the mouse and don't inter
 
 **The two DPI buttons** (above/below the scroll wheel) **cannot be remapped**. They are hardwired to the chip and have no address in the mapping protocol. They change DPI and that's it.
 
-**No N-key rollover for remapped buttons.** Confirmed on a brand-new M913 with factory firmware: the mouse cannot register two remapped buttons pressed simultaneously. While you hold one remapped side button, the second one is ignored until the first is released. This is a firmware limitation of the M913 itself — the same behaviour occurs with the official Redragon Windows software. Workaround: put multi-key combos inside a single button using the Raw tab (e.g. `shift+space`), or keep held modifiers on your keyboard.
+**No N-key rollover for remapped buttons.** Confirmed on a brand-new M913 with factory firmware: the mouse cannot register two remapped buttons pressed simultaneously. While you hold one remapped side button, the second one is ignored until the first is released. This is a firmware limitation of the M913 itself — the same behaviour occurs with the official Redragon Windows software. Workaround: when you need a held modifier with a tap, put the whole combo (e.g. `shift+space`) on a single button via the Raw tab or keyboard capture, or just keep the held modifier on your physical keyboard.
 
 **Reading the current configuration from the mouse is not possible.** The M913's read protocol is undocumented and not implemented in any open-source project. The app maintains a best-effort cache in `localStorage` of what was last applied, but if you reset the mouse via different software, the cache won't reflect it.
 
@@ -100,7 +100,7 @@ The two profiles live in separate flash regions inside the mouse and don't inter
 
 ## Reverse engineering
 
-The protocol is a JavaScript port of [`m913-ctl`](https://github.com/Qehbr/m913-ctl) (GPL-3.0), which itself derives from [`mouse_m908`](https://github.com/dokutan/mouse_m908). The 70 parity tests in `test_protocol.mjs` confirm that every packet generated is bit-for-bit identical to the C++ CLI's output.
+The protocol is a JavaScript port of [`m913-ctl`](https://github.com/Qehbr/m913-ctl) (GPL-3.0), which itself derives from [`mouse_m908`](https://github.com/dokutan/mouse_m908). The port was validated against the C++ reference with 70 parity tests during development to confirm that every packet generated is bit-for-bit identical to the CLI's output.
 
 Protocol frame:
 
@@ -125,11 +125,13 @@ The full button mapping must always be sent on every Apply: the protocol rewrite
 ## Project structure
 
 ```
-protocol.js       ← M913 protocol in JavaScript (port of m913-ctl)
-index.html        ← Complete UI (CSS + JS in one file) with integrated setup wizard
-test_protocol.mjs ← 70 parity tests against m913-ctl templates
-README.md         ← this file
+index.html    ← Complete UI in a single file (CSS + JS), with the integrated
+                Linux setup wizard and an embedded debug log
+protocol.js   ← M913 protocol in pure JavaScript (port of m913-ctl)
+README.md     ← this file
 ```
+
+Three files, no build step, no dependencies. Drop them on any static host and serve them over HTTPS.
 
 ---
 
