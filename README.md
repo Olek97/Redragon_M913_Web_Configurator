@@ -86,7 +86,7 @@ The two profiles live in separate flash regions inside the mouse and don't inter
 
 ## Known limitations
 
-**The two DPI buttons** (above/below the scroll wheel) **cannot be remapped**. They are hardwired to the chip and have no address in the mapping protocol. They change DPI and that's it.
+**The two DPI buttons cannot be remapped**. They are hardwired to the chip and have no address in the mapping protocol. They change DPI and that's it.
 
 **No N-key rollover for remapped buttons.** Confirmed on a brand-new M913 with factory firmware: the mouse cannot register two remapped buttons pressed simultaneously. While you hold one remapped side button, the second one is ignored until the first is released. This is a firmware limitation of the M913 itself — the same behaviour occurs with the official Redragon Windows software. Workaround: when you need a held modifier with a tap, put the whole combo (e.g. `shift+space`) on a single button via the Raw tab or keyboard capture, or just keep the held modifier on your physical keyboard.
 

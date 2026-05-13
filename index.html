@@ -10,21 +10,28 @@
   <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
   <style>
     :root {
-      /* GitHub-inspired dark dimmed palette */
-      --bg: #22272e;
-      --bg-soft: #2d333b;
-      --bg-hover: #373e47;
-      --border: #444c56;
-      --border-2: #545d68;
-      --text: #adbac7;
-      --text-soft: #768390;
-      --text-mute: #545d68;
-      --link: #539bf5;
-      --accent: #316dca;
-      --accent-h: #4184e4;
-      --good: #57ab5a;
-      --bad: #e5534b;
-      --warn: #c69026;
+      /* Shared Putyak 5-color palette */
+      --white: #f0f0f0;
+      --dark: #242f42;
+      --blue: #252f52;
+      --light-blue: #64c8ff;
+      --gray: #7d7d7d;
+
+      /* Semantic aliases mapped to the shared palette */
+      --bg: var(--dark);
+      --bg-soft: var(--blue);
+      --bg-hover: rgba(100, 200, 255, 0.08);
+      --border: var(--gray);
+      --border-2: var(--light-blue);
+      --text: var(--white);
+      --text-soft: var(--gray);
+      --text-mute: var(--gray);
+      --link: var(--light-blue);
+      --accent: var(--light-blue);
+      --accent-h: var(--light-blue);
+      --good: var(--light-blue);
+      --bad: var(--gray);
+      --warn: var(--white);
     }
 
     * {
@@ -43,7 +50,7 @@
 
     ::selection {
       background: var(--accent);
-      color: #fff;
+      color: var(--white);
     }
 
     code,
@@ -70,7 +77,7 @@
     .brand h1 {
       font-size: 15px;
       font-weight: 600;
-      color: #cdd9e5;
+      color: var(--white);
     }
 
     .brand .accent {
@@ -139,7 +146,7 @@
     .panel-title {
       font-size: 13px;
       font-weight: 600;
-      color: #cdd9e5;
+      color: var(--white);
       margin-bottom: 14px;
       padding-bottom: 10px;
       border-bottom: 1px solid var(--border);
@@ -194,11 +201,11 @@
 
     .btn-hotspot:hover .hot-label,
     .btn-hotspot.selected .hot-label {
-      fill: #fff;
+      fill: var(--white);
     }
 
     .hot-fill {
-      fill: rgba(68, 76, 86, 0.7);
+      fill: rgba(125, 125, 125, 0.4);
       stroke: var(--border-2);
       stroke-width: 1;
     }
@@ -298,7 +305,7 @@
     }
 
     .assign-row.modified .assign-action {
-      color: #cdd9e5;
+      color: var(--white);
       font-weight: 500;
     }
 
@@ -365,7 +372,7 @@
     }
 
     .modal-title .target {
-      color: #cdd9e5;
+      color: var(--white);
       font-weight: 600;
       margin-left: 4px;
     }
@@ -410,7 +417,7 @@
     }
 
     .tab.active {
-      color: #cdd9e5;
+      color: var(--white);
       border-bottom-color: var(--link);
       font-weight: 600;
     }
@@ -475,7 +482,7 @@
     .capture-btn.listening {
       background: var(--bad);
       border-color: var(--bad);
-      color: #fff;
+      color: var(--white);
       animation: pulse 1s ease-in-out infinite;
     }
 
@@ -503,7 +510,7 @@
     }
 
     .captured-display.has-value {
-      color: #cdd9e5;
+      color: var(--white);
       font-style: normal;
       font-weight: 600;
       font-size: 16px;
@@ -572,7 +579,7 @@
     }
 
     .preview-action .val {
-      color: #cdd9e5;
+      color: var(--white);
       font-weight: 600;
       font-family: ui-monospace, monospace;
     }
@@ -614,7 +621,7 @@
 
     .btn-primary {
       background: var(--accent);
-      color: #fff;
+      color: var(--white);
       border-color: var(--accent);
       font-weight: 500;
     }
@@ -626,14 +633,14 @@
 
     .btn-cyan {
       background: var(--good);
-      color: #fff;
+      color: var(--white);
       border-color: var(--good);
       font-weight: 500;
     }
 
     .btn-cyan:hover {
-      background: #6cbe6f;
-      border-color: #6cbe6f;
+      background: var(--light-blue);
+      border-color: var(--light-blue);
     }
 
     .dpi-slot {
@@ -660,7 +667,7 @@
     }
 
     .dpi-slot .val {
-      color: #cdd9e5;
+      color: var(--white);
       font-weight: 600;
       text-align: right;
       font-family: ui-monospace, monospace;
@@ -699,7 +706,7 @@
     .led-modes button.active,
     .polling-modes button.active {
       background: var(--accent);
-      color: #fff;
+      color: var(--white);
       border-color: var(--accent);
       font-weight: 500;
     }
@@ -744,7 +751,7 @@
     }
 
     .slider-row .val {
-      color: #cdd9e5;
+      color: var(--white);
       font-weight: 600;
       text-align: right;
       font-family: ui-monospace, monospace;
@@ -859,7 +866,7 @@
 
     .empty-state h2 {
       font-size: 22px;
-      color: #cdd9e5;
+      color: var(--white);
       margin-bottom: 8px;
       font-weight: 600;
     }
@@ -893,13 +900,13 @@
       gap: 10px;
       margin-bottom: 12px;
       font-size: 13px;
-      color: #cdd9e5;
+      color: var(--white);
       font-weight: 600;
     }
 
     .badge {
       background: var(--link);
-      color: #fff;
+      color: var(--white);
       padding: 2px 8px;
       font-size: 11px;
       font-weight: 600;
@@ -997,7 +1004,7 @@
 
     .copy-btn.copied {
       background: var(--good);
-      color: #fff;
+      color: var(--white);
       border-color: var(--good);
     }
 
@@ -1202,9 +1209,9 @@
           <svg class="mouse-svg" viewBox="0 0 540 510" aria-label="Redragon M913 Impact Elite diagram">
             <defs>
               <linearGradient id="bodyGrad" x1="0%" y1="0%" x2="0%" y2="100%">
-                <stop offset="0%" stop-color="#3a4250" />
-                <stop offset="50%" stop-color="#2d333b" />
-                <stop offset="100%" stop-color="#1c2128" />
+                <stop offset="0%" stop-color="#7d7d7d" />
+                <stop offset="50%" stop-color="#252f52" />
+                <stop offset="100%" stop-color="#242f42" />
               </linearGradient>
             </defs>
 
@@ -1218,24 +1225,24 @@
                    C 302 468, 320 478, 348 478
                    C 428 478, 478 410, 478 312
                    C 478 222, 458 154, 438 104
-                   C 418 54, 340 32, 270 32 Z" fill="url(#bodyGrad)" stroke="#545d68" stroke-width="1.5" />
+                   C 418 54, 340 32, 270 32 Z" fill="url(#bodyGrad)" stroke="#7d7d7d" stroke-width="1.5" />
 
-            <path d="M 278 32 Q 282 150 282 248" stroke="rgba(84,93,104,0.5)" stroke-width="1" fill="none" />
+            <path d="M 278 32 Q 282 150 282 248" stroke="rgba(125,125,125,0.5)" stroke-width="1" fill="none" />
 
-            <rect x="266" y="98" width="32" height="56" rx="6" fill="#1c2128" stroke="#545d68" stroke-width="1" />
-            <line x1="270" y1="115" x2="294" y2="115" stroke="#373e47" stroke-width="0.8" />
-            <line x1="270" y1="125" x2="294" y2="125" stroke="#373e47" stroke-width="0.8" />
-            <line x1="270" y1="135" x2="294" y2="135" stroke="#373e47" stroke-width="0.8" />
-            <line x1="270" y1="145" x2="294" y2="145" stroke="#373e47" stroke-width="0.8" />
+            <rect x="266" y="98" width="32" height="56" rx="6" fill="#242f42" stroke="#7d7d7d" stroke-width="1" />
+            <line x1="270" y1="115" x2="294" y2="115" stroke="#252f52" stroke-width="0.8" />
+            <line x1="270" y1="125" x2="294" y2="125" stroke="#252f52" stroke-width="0.8" />
+            <line x1="270" y1="135" x2="294" y2="135" stroke="#252f52" stroke-width="0.8" />
+            <line x1="270" y1="145" x2="294" y2="145" stroke="#252f52" stroke-width="0.8" />
 
             <g opacity="0.4">
-              <rect x="270" y="86" width="24" height="8" rx="2" fill="none" stroke="#768390" stroke-width="0.8"
+              <rect x="270" y="86" width="24" height="8" rx="2" fill="none" stroke="#7d7d7d" stroke-width="0.8"
                 stroke-dasharray="2 2" />
-              <text x="282" y="80" fill="#768390" font-family="JetBrains Mono" font-size="7"
+              <text x="282" y="80" fill="#7d7d7d" font-family="JetBrains Mono" font-size="7"
                 text-anchor="middle">DPI+</text>
-              <rect x="270" y="158" width="24" height="8" rx="2" fill="none" stroke="#768390" stroke-width="0.8"
+              <rect x="270" y="158" width="24" height="8" rx="2" fill="none" stroke="#7d7d7d" stroke-width="0.8"
                 stroke-dasharray="2 2" />
-              <text x="282" y="178" fill="#768390" font-family="JetBrains Mono" font-size="7"
+              <text x="282" y="178" fill="#7d7d7d" font-family="JetBrains Mono" font-size="7"
                 text-anchor="middle">DPI−</text>
             </g>
 
