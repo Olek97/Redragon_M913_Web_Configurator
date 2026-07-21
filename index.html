@@ -1540,10 +1540,10 @@ echo ">> Writing udev rule to $RULES_FILE"
 cat > "$RULES_FILE" <<'EOF'
 # Redragon M913 Impact Elite — grant access to the local interactive user.
 # Matches both wireless (fa07) and wired/dual-mode (fa08) variants.
-KERNEL=="hidraw*", ATTRS{idVendor}=="25a7", ATTRS{idProduct}=="fa07", TAG+="uaccess", GROUP="plugdev", MODE="0660"
-SUBSYSTEM=="usb",  ATTRS{idVendor}=="25a7", ATTRS{idProduct}=="fa07", TAG+="uaccess", GROUP="plugdev", MODE="0660"
-KERNEL=="hidraw*", ATTRS{idVendor}=="25a7", ATTRS{idProduct}=="fa08", TAG+="uaccess", GROUP="plugdev", MODE="0660"
-SUBSYSTEM=="usb",  ATTRS{idVendor}=="25a7", ATTRS{idProduct}=="fa08", TAG+="uaccess", GROUP="plugdev", MODE="0660"
+KERNEL=="hidraw*", ATTRS{idVendor}=="25a7", ATTRS{idProduct}=="fa07", MODE="0666", TAG+="uaccess"
+SUBSYSTEM=="usb",  ATTRS{idVendor}=="25a7", ATTRS{idProduct}=="fa07", MODE="0666", TAG+="uaccess"
+KERNEL=="hidraw*", ATTRS{idVendor}=="25a7", ATTRS{idProduct}=="fa08", MODE="0666", TAG+="uaccess"
+SUBSYSTEM=="usb",  ATTRS{idVendor}=="25a7", ATTRS{idProduct}=="fa08", MODE="0666", TAG+="uaccess"
 EOF
 
 echo ">> Reloading udev rules"
