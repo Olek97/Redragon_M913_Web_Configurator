@@ -4,34 +4,55 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Redragon M913 Impact Elite — Configurator</title>
+  <title>Redragon M913 Impact Elite · Web Configurator</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Rajdhani:wght@500;600;700&display=swap" rel="stylesheet">
   <style>
+    /* ==========================================================================
+       CYBER-TECH DESIGN TOKENS
+       ========================================================================== */
     :root {
-      /* Shared Putyak 5-color palette */
-      --white: #f0f0f0;
-      --dark: #242f42;
-      --blue: #252f52;
-      --light-blue: #64c8ff;
-      --gray: #7d7d7d;
+      --bg-base: #08090d;
+      --bg-surface: rgba(15, 18, 28, 0.75);
+      --bg-surface-elevated: rgba(22, 28, 44, 0.85);
+      --bg-card: rgba(18, 22, 34, 0.6);
+      --bg-glass: rgba(13, 16, 26, 0.65);
+      --bg-input: #0e111a;
 
-      /* Semantic aliases mapped to the shared palette */
-      --bg: var(--dark);
-      --bg-soft: var(--blue);
-      --bg-hover: rgba(100, 200, 255, 0.08);
-      --border: var(--gray);
-      --border-2: var(--light-blue);
-      --text: var(--white);
-      --text-soft: var(--gray);
-      --text-mute: var(--gray);
-      --link: var(--light-blue);
-      --accent: var(--light-blue);
-      --accent-h: var(--light-blue);
-      --good: var(--light-blue);
-      --bad: var(--gray);
-      --warn: var(--white);
+      --border-hairline: rgba(255, 255, 255, 0.08);
+      --border-subtle: rgba(255, 255, 255, 0.12);
+      --border-active: #ff2449;
+      --border-cyan: #00f0ff;
+
+      --text-main: #f3f4f6;
+      --text-muted: #94a3b8;
+      --text-soft: #64748b;
+      --text-dim: #475569;
+
+      --accent-red: #ff2449;
+      --accent-red-glow: rgba(255, 36, 73, 0.4);
+      --accent-red-subtle: rgba(255, 36, 73, 0.12);
+
+      --accent-cyan: #00f0ff;
+      --accent-cyan-glow: rgba(0, 240, 255, 0.35);
+      --accent-cyan-subtle: rgba(0, 240, 255, 0.1);
+
+      --accent-emerald: #10b981;
+      --accent-emerald-glow: rgba(16, 185, 129, 0.35);
+      --accent-amber: #f59e0b;
+
+      --radius-sm: 4px;
+      --radius-md: 8px;
+      --radius-lg: 12px;
+      --radius-xl: 16px;
+
+      --font-display: 'Rajdhani', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      --font-mono: 'JetBrains Mono', ui-monospace, Menlo, Consolas, monospace;
+      --font-sans: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+
+      --transition-fast: 0.15s cubic-bezier(0.4, 0, 0.2, 1);
+      --transition-normal: 0.25s cubic-bezier(0.4, 0, 0.2, 1);
     }
 
     * {
@@ -40,129 +61,471 @@
       padding: 0;
     }
 
-    html,
-    body {
-      background: var(--bg);
-      color: var(--text);
-      font: 14px/1.5 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    html, body {
+      background-color: var(--bg-base);
+      background-image: 
+        radial-gradient(circle at 50% 0%, rgba(255, 36, 73, 0.08), transparent 45%),
+        radial-gradient(circle at 10% 30%, rgba(0, 240, 255, 0.04), transparent 35%),
+        linear-gradient(rgba(255, 255, 255, 0.015) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255, 255, 255, 0.015) 1px, transparent 1px);
+      background-size: 100% 100%, 100% 100%, 32px 32px, 32px 32px;
+      color: var(--text-main);
+      font-family: var(--font-sans);
+      font-size: 13px;
+      line-height: 1.5;
       min-height: 100vh;
+      overflow-x: hidden;
     }
 
     ::selection {
-      background: var(--accent);
-      color: var(--white);
+      background: var(--accent-red);
+      color: #fff;
     }
 
-    code,
-    kbd {
-      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
-      font-size: 0.92em;
-      background: var(--bg);
-      padding: 1px 5px;
-      border-radius: 3px;
+    code, kbd {
+      font-family: var(--font-mono);
+      font-size: 0.9em;
+      background: rgba(0, 0, 0, 0.4);
+      padding: 2px 6px;
+      border-radius: var(--radius-sm);
+      border: 1px solid var(--border-hairline);
     }
 
+    /* ==========================================================================
+       HEADER & NAVIGATION BAR
+       ========================================================================== */
     header {
-      border-bottom: 1px solid var(--border);
-      padding: 12px 24px;
+      background: rgba(10, 12, 18, 0.82);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border-bottom: 1px solid var(--border-hairline);
+      padding: 12px 28px;
       display: flex;
       justify-content: space-between;
       align-items: center;
-      background: var(--bg-soft);
       position: sticky;
       top: 0;
-      z-index: 50;
+      z-index: 100;
     }
 
-    .brand h1 {
-      font-size: 15px;
-      font-weight: 600;
-      color: var(--white);
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 14px;
     }
 
-    .brand .accent {
-      color: var(--link);
+    .brand-logo-icon {
+      width: 32px;
+      height: 32px;
+      background: linear-gradient(135deg, var(--accent-red), #99001e);
+      border-radius: var(--radius-md);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 0 16px var(--accent-red-glow);
     }
 
-    .brand .sub {
-      display: block;
-      font-size: 11px;
-      color: var(--text-soft);
-      margin-top: 2px;
-      font-weight: 400;
+    .brand-logo-icon svg {
+      width: 18px;
+      height: 18px;
+      fill: #fff;
     }
 
-    .conn-status {
+    .brand-text h1 {
+      font-family: var(--font-display);
+      font-size: 18px;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: #fff;
       display: flex;
       align-items: center;
       gap: 8px;
-      font-size: 12px;
-      color: var(--text-soft);
     }
 
-    .dot {
+    .brand-text h1 .model-pill {
+      font-size: 11px;
+      font-weight: 600;
+      padding: 1px 7px;
+      background: var(--accent-red-subtle);
+      border: 1px solid var(--accent-red);
+      color: var(--accent-red);
+      border-radius: var(--radius-sm);
+      letter-spacing: 0.05em;
+    }
+
+    .brand-text .sub {
+      font-size: 11px;
+      color: var(--text-soft);
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      font-family: var(--font-display);
+    }
+
+    .header-telemetry {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+
+    .battery-pill {
+      display: none;
+      align-items: center;
+      gap: 8px;
+      padding: 5px 12px;
+      background: var(--bg-card);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-md);
+      font-family: var(--font-mono);
+      font-size: 12px;
+      color: var(--text-main);
+      cursor: pointer;
+      user-select: none;
+      transition: var(--transition-fast);
+    }
+
+    .battery-pill:hover {
+      background: var(--bg-surface-elevated);
+      border-color: var(--accent-cyan);
+      box-shadow: 0 0 12px var(--accent-cyan-glow);
+    }
+
+    .battery-meter {
+      display: flex;
+      gap: 2px;
+      align-items: center;
+      padding: 2px;
+      background: rgba(0,0,0,0.5);
+      border-radius: 2px;
+    }
+
+    .battery-bar-segment {
+      width: 3px;
+      height: 9px;
+      background: rgba(255,255,255,0.15);
+      border-radius: 1px;
+    }
+
+    .battery-bar-segment.active {
+      background: var(--accent-emerald);
+      box-shadow: 0 0 4px var(--accent-emerald);
+    }
+
+    .conn-status-badge {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 5px 12px;
+      background: var(--bg-card);
+      border: 1px solid var(--border-hairline);
+      border-radius: var(--radius-md);
+      font-size: 12px;
+      color: var(--text-muted);
+      font-family: var(--font-mono);
+    }
+
+    .pulse-dot {
       width: 8px;
       height: 8px;
       border-radius: 50%;
-      background: var(--text-mute);
+      background: var(--text-dim);
+      position: relative;
     }
 
-    .dot.connected {
-      background: var(--good);
+    .pulse-dot.connected {
+      background: var(--accent-emerald);
+      box-shadow: 0 0 8px var(--accent-emerald);
     }
 
-    .dot.error {
-      background: var(--bad);
+    .pulse-dot.connected::after {
+      content: '';
+      position: absolute;
+      top: -3px; left: -3px; right: -3px; bottom: -3px;
+      border-radius: 50%;
+      border: 1px solid var(--accent-emerald);
+      animation: pulse-ring 2s infinite ease-out;
     }
 
+    @keyframes pulse-ring {
+      0% { transform: scale(0.8); opacity: 1; }
+      100% { transform: scale(2.2); opacity: 0; }
+    }
+
+    .pulse-dot.error {
+      background: var(--accent-red);
+      box-shadow: 0 0 8px var(--accent-red);
+    }
+
+    /* ==========================================================================
+       MAIN CONTAINER & PANELS
+       ========================================================================== */
     main {
-      display: flex;
-      flex-direction: column;
-      gap: 16px;
-      padding: 24px;
-      max-width: 760px;
+      padding: 24px 32px 100px;
+      max-width: 1440px;
       margin: 0 auto;
     }
 
-    #app {
-      display: flex;
-      flex-direction: column;
-      gap: 16px;
-    }
-
-    aside {
-      display: flex;
-      flex-direction: column;
-      gap: 16px;
-    }
-
     .panel {
-      background: var(--bg-soft);
-      border: 1px solid var(--border);
-      border-radius: 6px;
-      padding: 16px 20px;
+      background: var(--bg-surface);
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+      border: 1px solid var(--border-hairline);
+      border-radius: var(--radius-lg);
+      padding: 18px 20px;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.45);
+      position: relative;
+    }
+
+    .panel-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding-bottom: 12px;
+      margin-bottom: 16px;
+      border-bottom: 1px solid var(--border-hairline);
     }
 
     .panel-title {
-      font-size: 13px;
-      font-weight: 600;
-      color: var(--white);
-      margin-bottom: 14px;
-      padding-bottom: 10px;
-      border-bottom: 1px solid var(--border);
+      font-family: var(--font-display);
+      font-size: 15px;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: #fff;
+      display: flex;
+      align-items: center;
+      gap: 8px;
     }
 
     .panel-title .num {
-      color: var(--text-mute);
-      margin-right: 8px;
-      font-weight: 400;
+      color: var(--accent-red);
+      font-family: var(--font-mono);
+      font-size: 12px;
+      background: var(--accent-red-subtle);
+      padding: 1px 6px;
+      border-radius: var(--radius-sm);
+      border: 1px solid rgba(255, 36, 73, 0.3);
     }
 
-    .mouse-stage {
-      aspect-ratio: 1.1 / 1;
+    .sub-badge {
+      font-family: var(--font-mono);
+      font-size: 11px;
+      color: var(--text-soft);
+      background: rgba(255, 255, 255, 0.04);
+      padding: 2px 8px;
+      border-radius: var(--radius-sm);
+      border: 1px solid var(--border-hairline);
+    }
+
+    /* ==========================================================================
+       COMMAND CENTER (3-COLUMN DASHBOARD)
+       ========================================================================== */
+    .app-layout {
+      display: grid;
+      grid-template-columns: 350px minmax(440px, 1fr) 380px;
+      gap: 20px;
+      align-items: stretch;
+    }
+
+    @media (max-width: 1260px) {
+      .app-layout {
+        grid-template-columns: 340px 1fr;
+      }
+      .col-settings {
+        grid-column: 1 / -1;
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+        gap: 16px;
+      }
+    }
+
+    @media (max-width: 860px) {
+      .app-layout {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    /* ==========================================================================
+       COLUMN 1: KEY ASSIGNMENTS LIST
+       ========================================================================== */
+    .col-assignments-panel {
+      display: flex;
+      flex-direction: column;
+      height: 100%;
+    }
+
+    .assignments-container {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .assignments {
+      display: flex;
+      flex-direction: column;
+      gap: 7px;
+      flex: 1;
+      justify-content: space-between;
+    }
+
+    .assign-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 9px 12px;
+      background: var(--bg-card);
+      border: 1px solid var(--border-hairline);
+      border-radius: var(--radius-md);
+      cursor: pointer;
+      transition: var(--transition-fast);
+      user-select: none;
+    }
+
+    .assign-row:hover,
+    .assign-row.hovered {
+      background: var(--bg-surface-elevated);
+      border-color: var(--accent-cyan);
+      box-shadow: 0 0 12px var(--accent-cyan-subtle);
+      transform: translateX(2px);
+    }
+
+    .assign-row.selected {
+      background: var(--bg-surface-elevated);
+      border-color: var(--accent-red);
+      box-shadow: 0 0 14px var(--accent-red-glow);
+    }
+
+    .assign-row.modified {
+      border-left: 3px solid var(--accent-emerald);
+    }
+
+    .assign-key-tag {
+      font-family: var(--font-mono);
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--text-muted);
+      background: rgba(0, 0, 0, 0.4);
+      padding: 3px 8px;
+      border-radius: var(--radius-sm);
+      min-width: 48px;
+      text-align: center;
+      border: 1px solid var(--border-hairline);
+    }
+
+    .assign-row.selected .assign-key-tag {
+      color: var(--accent-red);
+      border-color: rgba(255, 36, 73, 0.4);
+    }
+
+    .assign-action-text {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      overflow: hidden;
+      min-width: 0;
+    }
+
+    .assign-action-name {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--text-main);
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .assign-action-raw {
+      font-family: var(--font-mono);
+      font-size: 10px;
+      color: var(--text-dim);
+      padding: 1px 6px;
+      background: rgba(255, 255, 255, 0.05);
+      border-radius: var(--radius-sm);
+      border: 1px solid var(--border-hairline);
+      white-space: nowrap;
+    }
+
+    .assign-row.modified .assign-action-name {
+      color: var(--accent-emerald);
+    }
+
+    .assign-reset-btn {
+      width: 22px;
+      height: 22px;
+      border-radius: var(--radius-sm);
+      border: 1px solid transparent;
+      background: transparent;
+      color: var(--text-soft);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 11px;
+      transition: var(--transition-fast);
+    }
+
+    .assign-reset-btn:hover {
+      background: rgba(255, 36, 73, 0.2);
+      color: var(--accent-red);
+      border-color: var(--accent-red);
+    }
+
+    /* ==========================================================================
+       COLUMN 2: CENTRAL HERO MOUSE VIEWPORT
+       ========================================================================== */
+    .col-center-panel {
+      display: flex;
+      flex-direction: column;
+      height: 100%;
+    }
+
+    .mouse-viewport {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: space-between;
       position: relative;
-      margin: 4px auto 8px;
-      max-width: 380px;
+      flex: 1;
+      padding: 10px 0 4px;
+    }
+
+    .mouse-hero-stage {
+      position: relative;
+      width: 100%;
+      max-width: 480px;
+      aspect-ratio: 540 / 510;
+      margin: auto 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .pedestal-glow {
+      position: absolute;
+      width: 320px;
+      height: 320px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(0, 240, 255, 0.08) 0%, rgba(255, 36, 73, 0.05) 45%, transparent 70%);
+      filter: blur(24px);
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .pedestal-ring {
+      position: absolute;
+      width: 340px;
+      height: 340px;
+      border-radius: 50%;
+      border: 1px dashed rgba(255, 255, 255, 0.06);
+      pointer-events: none;
+      z-index: 0;
+      animation: slow-rotate 90s linear infinite;
+    }
+
+    @keyframes slow-rotate {
+      from { transform: rotate(0deg); }
+      to { transform: rotate(360deg); }
     }
 
     .mouse-svg {
@@ -170,757 +533,565 @@
       height: 100%;
       display: block;
       overflow: visible;
+      position: relative;
+      z-index: 1;
     }
 
+    /* Hotspot styling */
     .btn-hotspot {
       cursor: pointer;
     }
 
-    .btn-hotspot rect,
-    .btn-hotspot circle,
-    .btn-hotspot path {
-      transition: fill 0.12s, stroke 0.12s;
-    }
-
-    .btn-hotspot:hover .hot-fill {
-      fill: rgba(83, 155, 245, 0.25);
-      stroke: var(--link);
-    }
-
-    .btn-hotspot.modified .hot-fill {
-      fill: rgba(87, 171, 90, 0.25);
-      stroke: var(--good);
-    }
-
-    .btn-hotspot.selected .hot-fill,
-    .btn-hotspot.modified.selected .hot-fill {
-      fill: var(--accent);
-      stroke: var(--link);
-      stroke-width: 2;
-    }
-
-    .btn-hotspot:hover .hot-label,
-    .btn-hotspot.selected .hot-label {
-      fill: var(--white);
-    }
-
     .hot-fill {
-      fill: rgba(125, 125, 125, 0.4);
-      stroke: var(--border-2);
-      stroke-width: 1;
+      fill: rgba(30, 36, 52, 0.7);
+      stroke: rgba(255, 255, 255, 0.18);
+      stroke-width: 1.2;
+      transition: fill 0.15s, stroke 0.15s, filter 0.15s;
     }
 
     .hot-label {
-      fill: var(--text);
-      font-family: ui-monospace, monospace;
+      fill: var(--text-muted);
+      font-family: var(--font-mono);
       font-weight: 600;
       font-size: 10px;
       text-anchor: middle;
       dominant-baseline: middle;
       pointer-events: none;
       user-select: none;
+      transition: fill 0.15s;
     }
 
-    .legend {
+    .btn-hotspot:hover .hot-fill,
+    .btn-hotspot.hovered .hot-fill {
+      fill: rgba(0, 240, 255, 0.28);
+      stroke: var(--accent-cyan);
+      filter: drop-shadow(0 0 6px var(--accent-cyan));
+    }
+
+    .btn-hotspot:hover .hot-label,
+    .btn-hotspot.hovered .hot-label {
+      fill: #fff;
+    }
+
+    .btn-hotspot.modified .hot-fill {
+      fill: rgba(16, 185, 129, 0.28);
+      stroke: var(--accent-emerald);
+      filter: drop-shadow(0 0 6px var(--accent-emerald));
+    }
+
+    .btn-hotspot.modified .hot-label {
+      fill: #fff;
+    }
+
+    .btn-hotspot.selected .hot-fill,
+    .btn-hotspot.modified.selected .hot-fill {
+      fill: var(--accent-red);
+      stroke: #fff;
+      stroke-width: 1.8;
+      filter: drop-shadow(0 0 10px var(--accent-red));
+    }
+
+    .btn-hotspot.selected .hot-label {
+      fill: #fff;
+      font-weight: 700;
+    }
+
+    .legend-bar {
       display: flex;
       gap: 16px;
       font-size: 11px;
       color: var(--text-soft);
-      margin-top: 8px;
-      justify-content: center;
-    }
-
-    .legend span {
-      display: flex;
-      align-items: center;
-      gap: 6px;
-    }
-
-    .legend .swatch {
-      width: 8px;
-      height: 8px;
-      border-radius: 2px;
-    }
-
-    .legend .cur {
-      color: var(--link);
-    }
-
-    .legend .mod {
-      color: var(--good);
-    }
-
-    .legend .cur .swatch {
-      background: var(--accent);
-    }
-
-    .legend .mod .swatch {
-      background: var(--good);
-    }
-
-    .assignments {
-      display: grid;
-      gap: 1px;
-      margin-top: 12px;
-      background: var(--border);
-      border: 1px solid var(--border);
-      border-radius: 6px;
-      overflow: hidden;
-    }
-
-    .assign-row {
-      display: grid;
-      grid-template-columns: 80px 1fr auto;
-      gap: 12px;
-      align-items: center;
-      padding: 8px 12px;
-      background: var(--bg-soft);
-      cursor: pointer;
-    }
-
-    .assign-row:hover {
-      background: var(--bg-hover);
-    }
-
-    .assign-row.modified {
-      background: rgba(87, 171, 90, 0.08);
-    }
-
-    .assign-label {
-      font-size: 12px;
-      color: var(--text-soft);
-      font-weight: 600;
-    }
-
-    .assign-row.modified .assign-label {
-      color: var(--good);
-    }
-
-    .assign-action {
-      color: var(--text);
-      font-size: 13px;
-      overflow: hidden;
-      text-overflow: ellipsis;
-      white-space: nowrap;
-    }
-
-    .assign-row.modified .assign-action {
-      color: var(--white);
-      font-weight: 500;
-    }
-
-    .reset-mark {
-      color: var(--text-mute);
-      font-size: 14px;
-      padding: 2px 6px;
-      background: none;
-      border: none;
-      cursor: pointer;
-      line-height: 1;
-      border-radius: 3px;
-      opacity: 0;
-      transition: opacity 0.1s;
-    }
-
-    .assign-row:hover .reset-mark {
-      opacity: 1;
-    }
-
-    .reset-mark:hover {
-      color: var(--bad);
-      background: rgba(229, 83, 75, 0.15);
-    }
-
-    .modal-backdrop {
-      position: fixed;
-      inset: 0;
-      background: rgba(0, 0, 0, 0.5);
-      z-index: 100;
-      display: none;
-      align-items: center;
-      justify-content: center;
-      padding: 20px;
-    }
-
-    .modal-backdrop.show {
-      display: flex;
-    }
-
-    .modal {
-      background: var(--bg-soft);
-      border: 1px solid var(--border);
-      border-radius: 6px;
-      width: 100%;
-      max-width: 560px;
-      max-height: 90vh;
-      overflow-y: auto;
-      padding: 20px;
-    }
-
-    .modal-head {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 16px;
-      padding-bottom: 12px;
-      border-bottom: 1px solid var(--border);
-    }
-
-    .modal-title {
-      font-size: 13px;
-      color: var(--text-soft);
-    }
-
-    .modal-title .target {
-      color: var(--white);
-      font-weight: 600;
-      margin-left: 4px;
-    }
-
-    .modal-close {
-      background: none;
-      border: none;
-      color: var(--text-soft);
-      cursor: pointer;
-      font-size: 18px;
-      padding: 4px 8px;
-      line-height: 1;
-      border-radius: 3px;
-    }
-
-    .modal-close:hover {
-      color: var(--bad);
-      background: rgba(229, 83, 75, 0.15);
-    }
-
-    .tabs {
-      display: flex;
-      gap: 0;
-      margin-bottom: 16px;
-      border-bottom: 1px solid var(--border);
-    }
-
-    .tab {
-      background: none;
-      color: var(--text-soft);
-      border: none;
-      border-bottom: 2px solid transparent;
-      padding: 8px 14px;
-      font: inherit;
-      font-size: 13px;
-      cursor: pointer;
-      margin-bottom: -1px;
-    }
-
-    .tab:hover {
-      color: var(--text);
-    }
-
-    .tab.active {
-      color: var(--white);
-      border-bottom-color: var(--link);
-      font-weight: 600;
-    }
-
-    .tab-pane {
-      display: none;
-    }
-
-    .tab-pane.active {
-      display: block;
-    }
-
-    .quick-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
-      gap: 6px;
-    }
-
-    .quick-grid button {
-      background: var(--bg);
-      color: var(--text);
-      border: 1px solid var(--border);
-      padding: 7px 10px;
-      font: inherit;
-      font-size: 12px;
-      cursor: pointer;
-      text-align: left;
-      border-radius: 4px;
-    }
-
-    .quick-grid button:hover {
-      background: var(--bg-hover);
-      border-color: var(--border-2);
-    }
-
-    .quick-grid .cat-label {
-      grid-column: 1 / -1;
-      font-size: 11px;
-      color: var(--text-soft);
-      font-weight: 600;
-      margin-top: 8px;
-      padding-bottom: 4px;
-      border-bottom: 1px solid var(--border);
-    }
-
-    .quick-grid .cat-label:first-child {
-      margin-top: 0;
-    }
-
-    .combo-builder {
-      display: flex;
-      flex-direction: column;
-      gap: 12px;
-    }
-
-    .capture-btn {
-      width: 100%;
-      padding: 12px;
-      font-size: 13px;
-    }
-
-    .capture-btn.listening {
-      background: var(--bad);
-      border-color: var(--bad);
-      color: var(--white);
-      animation: pulse 1s ease-in-out infinite;
-    }
-
-    @keyframes pulse {
-
-      0%,
-      100% {
-        opacity: 1;
-      }
-
-      50% {
-        opacity: 0.6;
-      }
-    }
-
-    .captured-display {
-      background: var(--bg);
-      border: 1px dashed var(--border);
-      padding: 14px 16px;
-      text-align: center;
-      font-size: 14px;
-      color: var(--text-mute);
-      font-style: italic;
-      border-radius: 4px;
-    }
-
-    .captured-display.has-value {
-      color: var(--white);
-      font-style: normal;
-      font-weight: 600;
-      font-size: 16px;
-      border-style: solid;
-      border-color: var(--good);
-      font-family: ui-monospace, monospace;
-    }
-
-    .key-input {
-      background: var(--bg);
-      color: var(--text);
-      border: 1px solid var(--border);
-      padding: 8px 12px;
-      font: inherit;
-      font-size: 13px;
-      border-radius: 4px;
-      width: 100%;
-    }
-
-    .key-input:focus {
-      outline: none;
-      border-color: var(--link);
-      box-shadow: 0 0 0 2px rgba(83, 155, 245, 0.2);
-    }
-
-    .fire-row {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 12px;
-    }
-
-    .fire-row label {
-      display: flex;
-      flex-direction: column;
-      gap: 4px;
-      font-size: 12px;
-      color: var(--text-soft);
-    }
-
-    .fire-row input {
-      background: var(--bg);
-      color: var(--text);
-      border: 1px solid var(--border);
-      padding: 7px 10px;
-      font: inherit;
-      font-size: 13px;
-      border-radius: 4px;
-    }
-
-    .preview-action {
-      background: var(--bg);
-      border: 1px solid var(--border);
-      border-radius: 4px;
-      padding: 10px 14px;
       margin-top: 14px;
-      font-size: 12px;
+      padding: 6px 14px;
+      background: rgba(0, 0, 0, 0.35);
+      border-radius: var(--radius-md);
+      border: 1px solid var(--border-hairline);
+      font-family: var(--font-display);
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+    }
+
+    .legend-bar span {
       display: flex;
       align-items: center;
-      gap: 12px;
+      gap: 6px;
     }
 
-    .preview-action .lbl {
-      font-size: 11px;
-      color: var(--text-soft);
-      font-weight: 600;
+    .legend-swatch {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
     }
 
-    .preview-action .val {
-      color: var(--white);
-      font-weight: 600;
-      font-family: ui-monospace, monospace;
-    }
+    .legend-swatch.cur { background: var(--accent-red); box-shadow: 0 0 6px var(--accent-red); }
+    .legend-swatch.mod { background: var(--accent-emerald); box-shadow: 0 0 6px var(--accent-emerald); }
+    .legend-swatch.fix { background: var(--text-dim); }
 
-    .preview-action .err {
-      color: var(--bad);
-      font-style: italic;
-    }
-
-    .modal-footer {
+    /* ==========================================================================
+       COLUMN 3: SETTINGS ASIDE (DPI, RGB, POLLING)
+       ========================================================================== */
+    .col-settings {
       display: flex;
-      justify-content: flex-end;
-      gap: 8px;
-      margin-top: 16px;
-      padding-top: 14px;
-      border-top: 1px solid var(--border);
+      flex-direction: column;
+      gap: 16px;
+      height: 100%;
+      justify-content: space-between;
     }
 
-    .btn {
-      background: var(--bg);
-      color: var(--text);
-      border: 1px solid var(--border);
-      padding: 7px 14px;
-      font: inherit;
-      font-size: 13px;
-      cursor: pointer;
-      border-radius: 4px;
-    }
-
-    .btn:hover {
-      background: var(--bg-hover);
-      border-color: var(--border-2);
-    }
-
-    .btn:disabled {
-      opacity: 0.5;
-      cursor: not-allowed;
-    }
-
-    .btn-primary {
-      background: var(--accent);
-      color: var(--white);
-      border-color: var(--accent);
-      font-weight: 500;
-    }
-
-    .btn-primary:hover {
-      background: var(--accent-h);
-      border-color: var(--accent-h);
-    }
-
-    .btn-cyan {
-      background: var(--good);
-      color: var(--white);
-      border-color: var(--good);
-      font-weight: 500;
-    }
-
-    .btn-cyan:hover {
-      background: var(--light-blue);
-      border-color: var(--light-blue);
-    }
-
+    /* DPI Slots */
     .dpi-slot {
-      display: grid;
-      grid-template-columns: 24px 1fr 80px 50px;
-      gap: 12px;
+      display: flex;
       align-items: center;
-      padding: 8px 0;
-      border-bottom: 1px solid var(--border);
+      gap: 12px;
+      padding: 10px 12px;
+      background: var(--bg-card);
+      border: 1px solid var(--border-hairline);
+      border-radius: var(--radius-md);
+      margin-bottom: 8px;
+      transition: var(--transition-fast);
     }
 
-    .dpi-slot:last-of-type {
-      border-bottom: none;
+    .dpi-slot:hover {
+      border-color: rgba(255, 255, 255, 0.2);
     }
 
     .dpi-slot .lbl {
-      color: var(--text-soft);
+      font-family: var(--font-mono);
       font-size: 12px;
+      font-weight: 700;
+      color: var(--text-soft);
+      width: 14px;
     }
 
-    .dpi-slot input[type="range"] {
-      width: 100%;
-      accent-color: var(--accent);
+    .dpi-slot-body {
+      flex: 1;
+    }
+
+    .dpi-axis-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .dpi-axis-row input[type="range"] {
+      flex: 1;
     }
 
     .dpi-slot .val {
-      color: var(--white);
-      font-weight: 600;
-      text-align: right;
-      font-family: ui-monospace, monospace;
+      font-family: var(--font-mono);
       font-size: 12px;
+      font-weight: 600;
+      color: var(--text-main);
+      min-width: 48px;
+      text-align: right;
     }
 
-    .dpi-slot input[type="checkbox"] {
-      accent-color: var(--accent);
-      justify-self: end;
+    /* Physical 4-Bar LED Indicator */
+    .dpi-led-indicator {
+      display: inline-flex;
+      gap: 3px;
+      align-items: center;
+      padding: 4px 6px;
+      background: rgba(0, 0, 0, 0.5);
+      border-radius: var(--radius-sm);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      flex-shrink: 0;
     }
 
-    .led-controls {
-      display: flex;
-      flex-direction: column;
-      gap: 12px;
+    .dpi-led-bar {
+      width: 3px;
+      height: 12px;
+      background: rgba(255, 255, 255, 0.12);
+      border-radius: 1px;
     }
 
+    .dpi-led-bar.on {
+      background: #ef4444;
+      box-shadow: 0 0 6px #ef4444;
+    }
+
+    /* Checkboxes */
+    input[type="checkbox"] {
+      accent-color: var(--accent-red);
+      width: 16px;
+      height: 16px;
+      cursor: pointer;
+    }
+
+    /* LED Controls */
     .led-modes {
       display: grid;
       grid-template-columns: repeat(4, 1fr);
-      gap: 4px;
+      gap: 6px;
+      margin-bottom: 14px;
     }
 
-    .led-modes button,
-    .polling-modes button {
-      background: var(--bg);
-      color: var(--text);
-      border: 1px solid var(--border);
-      padding: 8px 6px;
-      font: inherit;
+    .led-mode-btn {
+      background: var(--bg-card);
+      border: 1px solid var(--border-hairline);
+      color: var(--text-muted);
+      padding: 8px 4px;
+      border-radius: var(--radius-sm);
+      font-family: var(--font-display);
       font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 0.05em;
       cursor: pointer;
-      border-radius: 4px;
+      transition: var(--transition-fast);
+      text-align: center;
     }
 
-    .led-modes button.active,
-    .polling-modes button.active {
-      background: var(--accent);
-      color: var(--white);
-      border-color: var(--accent);
-      font-weight: 500;
+    .led-mode-btn:hover {
+      background: var(--bg-surface-elevated);
+      color: #fff;
     }
 
-    .led-modes button:hover:not(.active),
-    .polling-modes button:hover:not(.active) {
-      background: var(--bg-hover);
+    .led-mode-btn.active {
+      background: var(--accent-red-subtle);
+      border-color: var(--accent-red);
+      color: #fff;
+      box-shadow: 0 0 10px var(--accent-red-subtle);
     }
 
     .led-color-row {
       display: flex;
-      gap: 12px;
       align-items: center;
-      font-size: 12px;
-      color: var(--text-soft);
+      gap: 10px;
+      padding: 10px 12px;
+      background: var(--bg-card);
+      border: 1px solid var(--border-hairline);
+      border-radius: var(--radius-md);
+      margin-bottom: 12px;
     }
 
     .led-color-row input[type="color"] {
-      width: 48px;
-      height: 32px;
+      width: 38px;
+      height: 28px;
       background: transparent;
-      border: 1px solid var(--border);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-sm);
       cursor: pointer;
-      border-radius: 4px;
+    }
+
+    .led-preset-swatches {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      flex: 1;
+    }
+
+    .led-preset-swatches .swatch {
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      cursor: pointer;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      transition: transform 0.15s, box-shadow 0.15s;
+    }
+
+    .led-preset-swatches .swatch:hover {
+      transform: scale(1.25);
+      box-shadow: 0 0 8px currentColor;
     }
 
     .slider-row {
-      display: grid;
-      grid-template-columns: 90px 1fr 50px;
-      gap: 12px;
+      display: flex;
       align-items: center;
+      gap: 12px;
+      padding: 8px 12px;
+      background: var(--bg-card);
+      border: 1px solid var(--border-hairline);
+      border-radius: var(--radius-md);
+      margin-bottom: 8px;
     }
 
     .slider-row .lbl {
-      color: var(--text-soft);
-      font-size: 12px;
+      font-family: var(--font-display);
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--text-muted);
+      width: 80px;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
     }
 
     .slider-row input[type="range"] {
-      accent-color: var(--accent);
-      width: 100%;
+      flex: 1;
     }
 
     .slider-row .val {
-      color: var(--white);
-      font-weight: 600;
-      text-align: right;
-      font-family: ui-monospace, monospace;
+      font-family: var(--font-mono);
       font-size: 12px;
+      font-weight: 600;
+      color: var(--text-main);
+      width: 32px;
+      text-align: right;
     }
 
+    /* Polling buttons */
     .polling-modes {
       display: grid;
       grid-template-columns: repeat(4, 1fr);
-      gap: 4px;
+      gap: 6px;
     }
 
-    .commit-bar {
-      position: sticky;
-      bottom: 16px;
-      padding: 12px 16px;
-      background: var(--bg-soft);
-      border: 1px solid var(--border);
-      border-radius: 6px;
+    .polling-btn {
+      background: var(--bg-card);
+      border: 1px solid var(--border-hairline);
+      color: var(--text-muted);
+      padding: 10px 4px;
+      border-radius: var(--radius-md);
+      font-family: var(--font-mono);
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: var(--transition-fast);
+      text-align: center;
+    }
+
+    .polling-btn:hover {
+      background: var(--bg-surface-elevated);
+      color: #fff;
+    }
+
+    .polling-btn.active {
+      background: rgba(0, 240, 255, 0.1);
+      border-color: var(--accent-cyan);
+      color: #fff;
+      box-shadow: 0 0 10px var(--accent-cyan-subtle);
+    }
+
+    /* Range Sliders */
+    input[type="range"] {
+      -webkit-appearance: none;
+      appearance: none;
+      background: rgba(255, 255, 255, 0.08);
+      height: 4px;
+      border-radius: 2px;
+      outline: none;
+    }
+
+    input[type="range"]::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 14px;
+      height: 14px;
+      border-radius: 50%;
+      background: var(--accent-red);
+      cursor: pointer;
+      box-shadow: 0 0 8px var(--accent-red);
+      border: 2px solid #fff;
+      transition: transform 0.1s;
+    }
+
+    input[type="range"]::-webkit-slider-thumb:hover {
+      transform: scale(1.2);
+    }
+
+    /* ==========================================================================
+       FLOATING COMMIT DOCK (APPLY / ACTIONS)
+       ========================================================================== */
+    .commit-dock {
+      position: fixed;
+      bottom: 24px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: calc(100% - 64px);
+      max-width: 1100px;
+      background: rgba(14, 17, 26, 0.88);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      border-radius: var(--radius-xl);
+      padding: 12px 20px;
       display: flex;
-      gap: 12px;
-      align-items: center;
       justify-content: space-between;
-      flex-wrap: wrap;
-      z-index: 10;
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+      align-items: center;
+      box-shadow: 0 12px 40px rgba(0, 0, 0, 0.65);
+      z-index: 90;
     }
 
     .commit-info {
+      display: flex;
+      align-items: center;
+      gap: 10px;
       font-size: 13px;
-      color: var(--text-soft);
+      color: var(--text-muted);
+      font-family: var(--font-display);
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      font-weight: 600;
     }
 
-    .commit-info .count {
-      color: var(--good);
+    .count-pill {
+      font-family: var(--font-mono);
+      font-size: 12px;
       font-weight: 700;
-      margin-left: 4px;
+      color: #fff;
+      background: var(--accent-red);
+      padding: 2px 8px;
+      border-radius: 12px;
+      box-shadow: 0 0 8px var(--accent-red-glow);
     }
 
     .commit-actions {
       display: flex;
-      gap: 8px;
+      align-items: center;
+      gap: 10px;
     }
 
-    .debug-toggle {
-      display: block;
-      background: none;
-      border: 1px dashed var(--border);
-      color: var(--text-soft);
-      font: inherit;
-      font-size: 12px;
-      padding: 8px 12px;
-      cursor: pointer;
-      width: 100%;
-      text-align: center;
-      border-radius: 4px;
-    }
-
-    .debug-toggle:hover {
-      color: var(--text);
-      border-color: var(--border-2);
-    }
-
-    .log-panel {
-      max-height: 220px;
-      overflow-y: auto;
-      background: var(--bg);
-      border: 1px solid var(--border);
-      border-radius: 4px;
-      padding: 10px;
-      font-family: ui-monospace, monospace;
-      font-size: 11px;
-      line-height: 1.6;
-      margin-top: 10px;
-    }
-
-    .log-row {
-      color: var(--text);
-      white-space: pre-wrap;
-      word-break: break-all;
-    }
-
-    .log-row.tx {
-      color: var(--link);
-    }
-
-    .log-row.rx {
-      color: var(--good);
-    }
-
-    .log-row.info {
-      color: var(--text-soft);
-    }
-
-    .log-row.err {
-      color: var(--bad);
-    }
-
-    .log-row.ok {
-      color: var(--good);
-    }
-
-    .log-row .ts {
-      color: var(--text-mute);
-      margin-right: 8px;
-    }
-
-    .empty-state {
-      text-align: center;
-      padding: 32px 20px;
-    }
-
-    .empty-state h2 {
-      font-size: 22px;
-      color: var(--white);
-      margin-bottom: 8px;
-      font-weight: 600;
-    }
-
-    .empty-state .sub {
-      font-size: 12px;
-      color: var(--text-soft);
-      margin-bottom: 8px;
-    }
-
-    .empty-state p {
+    /* Buttons */
+    .btn {
+      font-family: var(--font-display);
       font-size: 13px;
-      color: var(--text);
+      font-weight: 700;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      padding: 8px 16px;
+      border-radius: var(--radius-md);
+      cursor: pointer;
+      border: 1px solid transparent;
+      transition: var(--transition-fast);
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .btn-ghost {
+      background: transparent;
+      color: var(--text-soft);
+      border-color: var(--border-hairline);
+    }
+
+    .btn-ghost:hover {
+      background: rgba(255, 255, 255, 0.06);
+      color: var(--text-main);
+      border-color: var(--border-subtle);
+    }
+
+    .btn-secondary {
+      background: var(--bg-card);
+      color: var(--text-main);
+      border-color: var(--border-hairline);
+    }
+
+    .btn-secondary:hover {
+      background: var(--bg-surface-elevated);
+      border-color: var(--border-subtle);
+    }
+
+    .btn-cyan {
+      background: var(--accent-cyan-subtle);
+      border-color: var(--accent-cyan);
+      color: var(--accent-cyan);
+    }
+
+    .btn-cyan:hover {
+      background: var(--accent-cyan);
+      color: #000;
+      box-shadow: 0 0 16px var(--accent-cyan-glow);
+    }
+
+    .btn-apply {
+      background: linear-gradient(135deg, var(--accent-red), #b90024);
+      color: #fff;
+      padding: 10px 24px;
+      border-radius: var(--radius-md);
+      box-shadow: 0 0 20px var(--accent-red-glow);
+    }
+
+    .btn-apply:hover {
+      background: linear-gradient(135deg, #ff4767, var(--accent-red));
+      box-shadow: 0 0 28px rgba(255, 36, 73, 0.65);
+      transform: translateY(-1px);
+    }
+
+    .btn-apply:active {
+      transform: translateY(0);
+    }
+
+    .btn-apply:disabled {
+      opacity: 0.4;
+      cursor: not-allowed;
+      box-shadow: none;
+      transform: none;
+    }
+
+    /* ==========================================================================
+       NOT CONNECTED STATE
+       ========================================================================== */
+    #not-connected {
+      max-width: 640px;
+      margin: 40px auto 0;
+      text-align: center;
+    }
+
+    .empty-hero-card {
+      background: var(--bg-surface);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border: 1px solid var(--border-hairline);
+      border-radius: var(--radius-xl);
+      padding: 44px 36px;
+      box-shadow: 0 16px 48px rgba(0, 0, 0, 0.6);
+    }
+
+    .empty-icon-shield {
+      width: 72px;
+      height: 72px;
+      margin: 0 auto 20px;
+      background: radial-gradient(circle, var(--accent-red-subtle), transparent 70%);
+      border: 1px solid rgba(255, 36, 73, 0.3);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 0 30px var(--accent-red-glow);
+    }
+
+    .empty-icon-shield svg {
+      width: 36px;
+      height: 36px;
+      fill: var(--accent-red);
+    }
+
+    .empty-hero-card h2 {
+      font-family: var(--font-display);
+      font-size: 26px;
+      font-weight: 700;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: #fff;
       margin-bottom: 6px;
     }
 
+    .empty-hero-card .sub-desc {
+      font-size: 13px;
+      color: var(--text-muted);
+      margin-bottom: 24px;
+    }
+
     .setup-card {
-      background: var(--bg);
-      border: 1px solid var(--border);
-      border-left: 3px solid var(--link);
-      border-radius: 6px;
+      background: var(--bg-card);
+      border: 1px solid var(--border-hairline);
+      border-left: 3px solid var(--accent-cyan);
+      border-radius: var(--radius-md);
       padding: 18px 20px;
-      margin: 24px auto 8px;
       text-align: left;
-      max-width: 520px;
+      margin: 20px 0;
     }
 
     .setup-head {
       display: flex;
       align-items: center;
       gap: 10px;
-      margin-bottom: 12px;
+      font-family: var(--font-display);
       font-size: 13px;
-      color: var(--white);
-      font-weight: 600;
-    }
-
-    .badge {
-      background: var(--link);
-      color: var(--white);
-      padding: 2px 8px;
-      font-size: 11px;
-      font-weight: 600;
-      border-radius: 3px;
-    }
-
-    .setup-text {
-      font-size: 13px;
-      color: var(--text);
-      margin-bottom: 14px;
-    }
-
-    .setup-text strong {
-      color: var(--link);
+      font-weight: 700;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      color: #fff;
+      margin-bottom: 10px;
     }
 
     .setup-steps {
@@ -928,6 +1099,7 @@
       display: flex;
       flex-direction: column;
       gap: 12px;
+      margin-top: 12px;
     }
 
     .setup-steps li {
@@ -937,337 +1109,631 @@
     }
 
     .step-num {
-      flex-shrink: 0;
-      width: 24px;
-      height: 24px;
-      background: var(--bg-soft);
-      border: 1px solid var(--link);
-      color: var(--link);
-      font-weight: 600;
+      width: 22px;
+      height: 22px;
+      background: var(--accent-cyan-subtle);
+      border: 1px solid var(--accent-cyan);
+      color: var(--accent-cyan);
+      border-radius: var(--radius-sm);
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 12px;
-      border-radius: 4px;
+      font-family: var(--font-mono);
+      font-size: 11px;
+      font-weight: 700;
+      flex-shrink: 0;
     }
 
-    .step-body {
-      flex: 1;
+    .code-box {
+      background: rgba(0, 0, 0, 0.45);
+      border: 1px solid var(--border-hairline);
+      border-radius: var(--radius-sm);
+      padding: 8px 12px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      margin-top: 6px;
+    }
+
+    .code-box code {
+      font-size: 11px;
+      color: var(--accent-cyan);
+      border: none;
+      background: transparent;
+      padding: 0;
+    }
+
+    .copy-pill {
+      background: transparent;
+      border: 1px solid var(--border-hairline);
+      color: var(--text-muted);
+      font-size: 10px;
+      font-family: var(--font-mono);
+      padding: 3px 8px;
+      border-radius: var(--radius-sm);
+      cursor: pointer;
+    }
+
+    .copy-pill:hover {
+      border-color: var(--accent-cyan);
+      color: var(--accent-cyan);
+    }
+
+    /* Details tech info */
+    details.tech-specs {
+      margin-top: 24px;
+      background: var(--bg-card);
+      border: 1px solid var(--border-hairline);
+      border-radius: var(--radius-md);
+      padding: 10px 16px;
+      font-size: 12px;
+      text-align: left;
+    }
+
+    details.tech-specs summary {
+      cursor: pointer;
+      color: var(--text-soft);
+      font-family: var(--font-display);
+      font-weight: 600;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+    }
+
+    details.tech-specs[open] summary {
+      margin-bottom: 10px;
+      color: var(--text-main);
+    }
+
+    /* ==========================================================================
+       MODAL DIALOG (REBINDING)
+       ========================================================================== */
+    .modal-backdrop {
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(0, 0, 0, 0.75);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 200;
+      padding: 20px;
+    }
+
+    .modal-backdrop.show {
+      display: flex;
+    }
+
+    .modal-window {
+      background: var(--bg-surface-elevated);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-xl);
+      width: 100%;
+      max-width: 540px;
+      box-shadow: 0 24px 64px rgba(0, 0, 0, 0.85);
+      overflow: hidden;
+      animation: modal-enter 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    @keyframes modal-enter {
+      from { opacity: 0; transform: scale(0.95) translateY(10px); }
+      to { opacity: 1; transform: scale(1) translateY(0); }
+    }
+
+    .modal-head {
+      padding: 16px 20px;
+      border-bottom: 1px solid var(--border-hairline);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: rgba(0, 0, 0, 0.25);
+    }
+
+    .modal-title {
+      font-family: var(--font-display);
+      font-size: 16px;
+      font-weight: 700;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: #fff;
+    }
+
+    .modal-title .target-pill {
+      color: var(--accent-red);
+      font-family: var(--font-mono);
       font-size: 13px;
-      color: var(--text);
+      background: var(--accent-red-subtle);
+      border: 1px solid var(--accent-red);
+      padding: 2px 8px;
+      border-radius: var(--radius-sm);
+      margin-left: 6px;
+    }
+
+    .modal-close-x {
+      background: transparent;
+      border: none;
+      color: var(--text-soft);
+      font-size: 16px;
+      cursor: pointer;
+      width: 28px;
+      height: 28px;
+      border-radius: var(--radius-sm);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: var(--transition-fast);
+    }
+
+    .modal-close-x:hover {
+      background: rgba(255, 36, 73, 0.2);
+      color: var(--accent-red);
+    }
+
+    .modal-tabs {
+      display: flex;
+      border-bottom: 1px solid var(--border-hairline);
+      background: rgba(0, 0, 0, 0.15);
+    }
+
+    .modal-tab-btn {
+      flex: 1;
+      padding: 12px 10px;
+      background: transparent;
+      border: none;
+      border-bottom: 2px solid transparent;
+      color: var(--text-muted);
+      font-family: var(--font-display);
+      font-size: 13px;
+      font-weight: 700;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      cursor: pointer;
+      transition: var(--transition-fast);
+    }
+
+    .modal-tab-btn:hover {
+      color: #fff;
+      background: rgba(255, 255, 255, 0.02);
+    }
+
+    .modal-tab-btn.active {
+      color: var(--accent-cyan);
+      border-bottom-color: var(--accent-cyan);
+      background: var(--accent-cyan-subtle);
+    }
+
+    .modal-tab-pane {
+      display: none;
+      padding: 20px;
+    }
+
+    .modal-tab-pane.active {
+      display: block;
+    }
+
+    .key-capture-box {
+      border: 2px dashed rgba(0, 240, 255, 0.3);
+      border-radius: var(--radius-lg);
+      padding: 24px;
+      text-align: center;
+      background: rgba(0, 0, 0, 0.3);
+      cursor: pointer;
+      transition: var(--transition-fast);
+    }
+
+    .key-capture-box:hover,
+    .key-capture-box.capturing {
+      border-color: var(--accent-cyan);
+      box-shadow: 0 0 20px var(--accent-cyan-subtle);
+      background: rgba(0, 240, 255, 0.05);
+    }
+
+    .captured-key-display {
+      font-family: var(--font-mono);
+      font-size: 18px;
+      font-weight: 700;
+      color: var(--accent-cyan);
+      margin-top: 12px;
+      min-height: 28px;
+    }
+
+    .captured-key-display.empty {
+      color: var(--text-dim);
+      font-size: 13px;
+      font-weight: 400;
+      font-style: italic;
+    }
+
+    .fire-settings-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+      margin-top: 12px;
+    }
+
+    .fire-field {
       display: flex;
       flex-direction: column;
       gap: 6px;
     }
 
-    .step-body strong {
-      color: var(--text);
+    .fire-field label {
+      font-family: var(--font-display);
+      font-size: 12px;
       font-weight: 600;
+      text-transform: uppercase;
+      color: var(--text-muted);
     }
 
-    .code-block {
-      background: var(--bg-soft);
-      border: 1px solid var(--border);
-      border-radius: 4px;
-      padding: 8px 10px;
+    .fire-field input,
+    .raw-input-field {
+      background: var(--bg-input);
+      border: 1px solid var(--border-hairline);
+      border-radius: var(--radius-md);
+      color: #fff;
+      font-family: var(--font-mono);
+      font-size: 13px;
+      padding: 10px 12px;
+      outline: none;
+      width: 100%;
+    }
+
+    .fire-field input:focus,
+    .raw-input-field:focus {
+      border-color: var(--accent-cyan);
+      box-shadow: 0 0 10px var(--accent-cyan-subtle);
+    }
+
+    .quick-categories-grid {
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+      max-height: 280px;
+      overflow-y: auto;
+      padding-right: 4px;
+    }
+
+    .quick-cat-title {
+      font-family: var(--font-display);
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: var(--accent-cyan);
+      margin-bottom: 6px;
+    }
+
+    .quick-action-chips {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+    }
+
+    .quick-chip {
+      background: var(--bg-input);
+      border: 1px solid var(--border-hairline);
+      border-radius: var(--radius-sm);
+      color: var(--text-muted);
+      font-family: var(--font-mono);
+      font-size: 11px;
+      padding: 5px 10px;
+      cursor: pointer;
+      transition: var(--transition-fast);
+    }
+
+    .quick-chip:hover {
+      background: var(--bg-surface);
+      border-color: var(--accent-cyan);
+      color: #fff;
+    }
+
+    .modal-preview-bar {
+      padding: 12px 20px;
+      background: rgba(0, 0, 0, 0.35);
+      border-top: 1px solid var(--border-hairline);
       display: flex;
       align-items: center;
-      gap: 8px;
-      font-family: ui-monospace, monospace;
+      justify-content: space-between;
+      font-family: var(--font-mono);
       font-size: 12px;
     }
 
-    .code-block code {
-      flex: 1;
-      color: var(--text);
-      background: none;
-      padding: 0;
-      word-break: break-all;
-    }
-
-    .copy-btn {
-      background: transparent;
-      color: var(--link);
-      border: 1px solid var(--border);
-      padding: 3px 8px;
-      font: inherit;
-      font-size: 11px;
-      cursor: pointer;
-      border-radius: 3px;
-      flex-shrink: 0;
-    }
-
-    .copy-btn:hover {
-      background: var(--bg);
-      border-color: var(--link);
-    }
-
-    .copy-btn.copied {
-      background: var(--good);
-      color: var(--white);
-      border-color: var(--good);
-    }
-
-    .os-hints {
-      margin-top: 14px;
-      font-size: 11px;
-      color: var(--text-mute);
-      text-align: center;
-    }
-
-    details.tech-info {
-      margin: 18px auto 0;
-      max-width: 520px;
-      padding: 10px 14px;
-      background: var(--bg);
-      border: 1px solid var(--border);
-      border-radius: 6px;
-      font-size: 12px;
-      text-align: left;
-    }
-
-    details.tech-info summary {
-      cursor: pointer;
+    .modal-preview-bar .lbl {
       color: var(--text-soft);
+      font-size: 11px;
+    }
+
+    .modal-preview-bar .val {
+      color: var(--accent-cyan);
       font-weight: 600;
     }
 
-    details.tech-info[open] summary {
-      margin-bottom: 8px;
-      color: var(--text);
+    .modal-footer {
+      padding: 14px 20px;
+      border-top: 1px solid var(--border-hairline);
+      display: flex;
+      justify-content: flex-end;
+      background: rgba(0, 0, 0, 0.25);
     }
 
-    details.tech-info p {
-      margin: 3px 0;
-    }
-
-    .toast {
+    /* Toast Notification */
+    .toast-hud {
       position: fixed;
-      top: 70px;
-      right: 24px;
-      background: var(--bg-soft);
-      border: 1px solid var(--border);
-      border-left: 3px solid var(--link);
-      padding: 12px 16px;
-      font-size: 13px;
-      z-index: 200;
-      max-width: 360px;
-      display: none;
-      border-radius: 4px;
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
-    }
-
-    .toast.show {
-      display: block;
-    }
-
-    .toast.error {
-      border-left-color: var(--bad);
-    }
-
-    .toast.ok {
-      border-left-color: var(--good);
-    }
-
-    input[type="number"]::-webkit-inner-spin-button,
-    input[type="number"]::-webkit-outer-spin-button {
-      -webkit-appearance: none;
-      margin: 0;
-    }
-
-    .small-note {
+      top: 76px;
+      right: 28px;
+      background: rgba(18, 22, 34, 0.95);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border: 1px solid var(--border-hairline);
+      border-left: 3px solid var(--accent-cyan);
+      border-radius: var(--radius-md);
+      padding: 12px 18px;
+      font-family: var(--font-mono);
       font-size: 12px;
+      color: #fff;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6);
+      z-index: 300;
+      display: none;
+      animation: toast-slide 0.25s ease-out;
+    }
+
+    @keyframes toast-slide {
+      from { opacity: 0; transform: translateX(20px); }
+      to { opacity: 1; transform: translateX(0); }
+    }
+
+    .toast-hud.show { display: block; }
+    .toast-hud.ok { border-left-color: var(--accent-emerald); }
+    .toast-hud.error { border-left-color: var(--accent-red); }
+
+    /* Debug Drawer */
+    .debug-drawer {
+      margin-top: 24px;
+      background: var(--bg-card);
+      border: 1px solid var(--border-hairline);
+      border-radius: var(--radius-lg);
+      padding: 14px 18px;
+    }
+
+    .debug-toggle-btn {
+      background: transparent;
+      border: none;
       color: var(--text-soft);
-      margin-top: 6px;
+      font-family: var(--font-display);
+      font-size: 13px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 6px;
     }
 
-    ::-webkit-scrollbar {
-      width: 10px;
-      height: 10px;
+    .debug-toggle-btn:hover {
+      color: #fff;
     }
 
-    ::-webkit-scrollbar-track {
-      background: var(--bg);
+    .log-terminal {
+      max-height: 200px;
+      overflow-y: auto;
+      background: rgba(0, 0, 0, 0.5);
+      border: 1px solid var(--border-hairline);
+      border-radius: var(--radius-md);
+      padding: 10px 14px;
+      margin-top: 10px;
+      font-family: var(--font-mono);
+      font-size: 11px;
+      line-height: 1.6;
     }
 
-    ::-webkit-scrollbar-thumb {
-      background: var(--border-2);
-      border-radius: 5px;
-    }
+    .log-row.tx { color: var(--accent-cyan); }
+    .log-row.rx { color: var(--accent-emerald); }
+    .log-row.err { color: var(--accent-red); }
+    .log-row.ok { color: var(--accent-emerald); }
+    .log-row.info { color: var(--text-soft); }
+    .log-row .ts { color: var(--text-dim); margin-right: 8px; }
 
-    ::-webkit-scrollbar-thumb:hover {
-      background: var(--text-mute);
-    }
+    /* Scrollbars */
+    ::-webkit-scrollbar { width: 6px; height: 6px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb { background: rgba(255, 255, 255, 0.12); border-radius: 3px; }
+    ::-webkit-scrollbar-thumb:hover { background: rgba(255, 255, 255, 0.25); }
   </style>
 </head>
 
 <body>
 
+  <!-- ==========================================================================
+       TOP TELEMETRY HEADER
+       ========================================================================== -->
   <header>
     <div class="brand">
-      <h1>REDRAGON M<span class="accent">913</span></h1>
-      <span class="sub">impact elite · web configurator</span>
+      <div class="brand-logo-icon">
+        <svg viewBox="0 0 24 24"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
+      </div>
+      <div class="brand-text">
+        <h1>REDRAGON <span class="model-pill">M913 IMPACT ELITE</span></h1>
+        <span class="sub">HARDWARE WEB CONFIGURATOR · FLASH MEMORY INTERFACE</span>
+      </div>
     </div>
-    <div class="conn-status">
-      <span class="dot" id="status-dot"></span>
-      <span id="status-text">Disconnected</span>
+
+    <div class="header-telemetry">
+      <div class="battery-pill" id="battery-status" title="Click to refresh battery status">
+        <div class="battery-meter" id="battery-meter">
+          <span class="battery-bar-segment" id="bat-seg-1"></span>
+          <span class="battery-bar-segment" id="bat-seg-2"></span>
+          <span class="battery-bar-segment" id="bat-seg-3"></span>
+          <span class="battery-bar-segment" id="bat-seg-4"></span>
+        </div>
+        <span id="battery-icon">🔋</span>
+        <span id="battery-val">--%</span>
+      </div>
+
+      <div class="conn-status-badge">
+        <span class="pulse-dot" id="status-dot"></span>
+        <span id="status-text">Disconnected</span>
+      </div>
     </div>
   </header>
 
   <main>
-    <!-- =================================================================
-       NOT CONNECTED VIEW — visible until the user authorizes the device
-       ================================================================= -->
+    <!-- ==========================================================================
+         NOT CONNECTED SCREEN (WELCOME & UDEV SETUP)
+         ========================================================================== -->
     <div id="not-connected">
-      <div class="empty-state">
+      <div class="empty-hero-card">
+        <div class="empty-icon-shield">
+          <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/></svg>
+        </div>
+        <h2>DEVICE ACCESS REQUIRED</h2>
+        <p class="sub-desc" id="os-line-default">Connect your Redragon M913 wireless dongle or USB-C cable and authorize device access.</p>
 
-        <div id="browser-unsupported" class="setup-card" style="display:none;border-left-color:var(--bad)">
-          <div class="setup-head">
-            <span class="badge" style="background:var(--bad)">UNSUPPORTED BROWSER</span>
-          </div>
-          <p class="setup-text">
-            This app needs <strong style="color:var(--bad)">WebHID</strong> to talk to the mouse, and your current
-            browser doesn't support it.
-          </p>
-          <p class="setup-text" style="margin-bottom:0">
-            Please open this page with <strong style="color:var(--text)">Chrome</strong>, <strong
-              style="color:var(--text)">Edge</strong>, <strong style="color:var(--text)">Brave</strong> or another
-            Chromium-based browser. Firefox and Safari are <em>not</em> supported.
-          </p>
+        <div id="browser-unsupported" class="setup-card" style="display:none;border-left-color:var(--accent-red)">
+          <div class="setup-head" style="color:var(--accent-red)">UNSUPPORTED BROWSER</div>
+          <p style="color:var(--text-muted);font-size:12px;">This application requires the WebHID API. Please use Chromium-based browsers (Chrome, Edge, Brave, Opera, Vivaldi). Firefox and Safari do not support WebHID.</p>
         </div>
 
-        <h2>Connect your M913</h2>
-        <p class="sub">Redragon M913 Impact Elite</p>
-        <p id="os-line-default">Plug in the mouse and press the button below.</p>
-
         <div id="linux-setup" class="setup-card" style="display:none">
-          <div class="setup-head">
-            <span class="badge">LINUX</span>
-            <span>One-time setup required</span>
-          </div>
-          <p class="setup-text">
-            On Linux the kernel protects HID devices. You need <strong>~30 seconds</strong> to grant your user access to
-            the M913. You only have to do this <strong>once</strong>.
-          </p>
+          <div class="setup-head">LINUX PERMISSION SETUP (ONE-TIME)</div>
+          <p style="color:var(--text-muted);font-size:12px;">On Linux, USB HID raw nodes are protected by default. Grant permission to configure your mouse without root:</p>
           <ol class="setup-steps">
             <li>
               <span class="step-num">1</span>
-              <div class="step-body">
-                <div>Download the installer script:</div>
-                <button class="btn btn-cyan" id="dl-udev">▸ Download install-m913-udev.sh</button>
+              <div>
+                <div style="font-size:12px;margin-bottom:4px;">Download udev rule installer:</div>
+                <button class="btn btn-cyan" id="dl-udev" style="padding:4px 12px;font-size:11px;">▸ Download install-m913-udev.sh</button>
               </div>
             </li>
             <li>
               <span class="step-num">2</span>
-              <div class="step-body">
-                <div>Open a terminal and run:</div>
-                <div class="code-block">
-                  <code>cd ~/Downloads &amp;&amp; chmod +x install-m913-udev.sh &amp;&amp; sudo ./install-m913-udev.sh</code>
-                  <button class="copy-btn"
-                    data-copy="cd ~/Downloads && chmod +x install-m913-udev.sh && sudo ./install-m913-udev.sh">copy</button>
+              <div style="flex:1;">
+                <div style="font-size:12px;">Run in terminal:</div>
+                <div class="code-box">
+                  <code>cd ~/Downloads && chmod +x install-m913-udev.sh && sudo ./install-m913-udev.sh</code>
+                  <button class="copy-pill" data-copy="cd ~/Downloads && chmod +x install-m913-udev.sh && sudo ./install-m913-udev.sh">COPY</button>
                 </div>
               </div>
             </li>
             <li>
               <span class="step-num">3</span>
-              <div class="step-body">
-                <div><strong>Unplug and re-plug</strong> the M913 USB dongle. Required.</div>
-              </div>
-            </li>
-            <li>
-              <span class="step-num">4</span>
-              <div class="step-body">
-                <div>Press the connect button below.</div>
-              </div>
+              <div style="font-size:12px;color:var(--accent-cyan);font-weight:600;">Unplug and replug the M913 USB receiver.</div>
             </li>
           </ol>
         </div>
 
-        <button class="btn btn-primary" id="connect-btn" style="margin-top:24px;padding:14px 32px;font-size:12px">▸
-          Request device access</button>
+        <button class="btn btn-apply" id="connect-btn" style="padding:14px 36px;font-size:14px;margin-top:12px;">▸ CONNECT M913</button>
 
-        <div class="os-hints" id="os-hints"></div>
+        <div id="os-hints" style="margin-top:16px;font-size:11px;color:var(--text-dim);font-family:var(--font-mono);"></div>
 
-        <details class="tech-info">
-          <summary>Protocol details</summary>
-          <p>Device: Redragon M913 Impact Elite · VID/PID <code>25a7:fa07</code> (wireless) or <code>25a7:fa08</code>
-            (wired)</p>
-          <p>Frame: 17 bytes · Report ID <code>0x08</code> (Feature)</p>
-          <p>Transport: <code>device.sendFeatureReport(0x08, payload[16])</code></p>
-          <p>Checksum: <code>(0x55 - sum(bytes[0..15])) &amp; 0xFF</code></p>
+        <details class="tech-specs">
+          <summary>HARDWARE TELEMETRY & SPECS</summary>
+          <p style="margin-top:6px;color:var(--text-muted);">VID: <code>0x25A7</code> (Areson) · PID: <code>0xFA07</code> (Wireless) / <code>0xFA08</code> (Wired)</p>
+          <p style="color:var(--text-muted);">HID Report: <code>0x08</code> · EEPROM Flash Size: 160 Bytes (0x00..0x9F)</p>
         </details>
       </div>
     </div>
 
-    <!-- =================================================================
-       APP VIEW — all configuration panels, shown only once connected
-       ================================================================= -->
-    <div id="app" style="display:none">
-      <section class="panel">
-        <div class="panel-title"><span class="num">01</span>Button mapping</div>
-        <div class="mouse-stage">
-          <svg class="mouse-svg" viewBox="0 0 540 510" aria-label="Redragon M913 Impact Elite diagram">
-            <defs>
-              <linearGradient id="bodyGrad" x1="0%" y1="0%" x2="0%" y2="100%">
-                <stop offset="0%" stop-color="#7d7d7d" />
-                <stop offset="50%" stop-color="#252f52" />
-                <stop offset="100%" stop-color="#242f42" />
-              </linearGradient>
-            </defs>
+    <!-- ==========================================================================
+         COMMAND CENTER (CONNECTED APPLICATION VIEW)
+         ========================================================================== -->
+    <div id="app" class="app-layout" style="display:none">
 
-            <ellipse cx="275" cy="478" rx="190" ry="10" fill="rgba(0,0,0,0.4)" />
-
-            <path d="M 270 32
-                   C 200 32, 152 54, 132 104
-                   C 112 154, 92 222, 92 312
-                   C 92 410, 142 478, 222 478
-                   C 250 478, 268 468, 285 468
-                   C 302 468, 320 478, 348 478
-                   C 428 478, 478 410, 478 312
-                   C 478 222, 458 154, 438 104
-                   C 418 54, 340 32, 270 32 Z" fill="url(#bodyGrad)" stroke="#7d7d7d" stroke-width="1.5" />
-
-            <path d="M 278 32 Q 282 150 282 248" stroke="rgba(125,125,125,0.5)" stroke-width="1" fill="none" />
-
-            <rect x="266" y="98" width="32" height="56" rx="6" fill="#242f42" stroke="#7d7d7d" stroke-width="1" />
-            <line x1="270" y1="115" x2="294" y2="115" stroke="#252f52" stroke-width="0.8" />
-            <line x1="270" y1="125" x2="294" y2="125" stroke="#252f52" stroke-width="0.8" />
-            <line x1="270" y1="135" x2="294" y2="135" stroke="#252f52" stroke-width="0.8" />
-            <line x1="270" y1="145" x2="294" y2="145" stroke="#252f52" stroke-width="0.8" />
-
-            <g opacity="0.4">
-              <rect x="270" y="86" width="24" height="8" rx="2" fill="none" stroke="#7d7d7d" stroke-width="0.8"
-                stroke-dasharray="2 2" />
-              <text x="282" y="80" fill="#7d7d7d" font-family="JetBrains Mono" font-size="7"
-                text-anchor="middle">DPI+</text>
-              <rect x="270" y="158" width="24" height="8" rx="2" fill="none" stroke="#7d7d7d" stroke-width="0.8"
-                stroke-dasharray="2 2" />
-              <text x="282" y="178" fill="#7d7d7d" font-family="JetBrains Mono" font-size="7"
-                text-anchor="middle">DPI−</text>
-            </g>
-
-            <g id="hotspots"></g>
-          </svg>
+      <!-- LEFT COLUMN: BUTTON MAPPING -->
+      <section class="panel col-assignments-panel">
+        <div class="panel-header">
+          <div class="panel-title"><span class="num">01</span>KEY ASSIGNMENTS</div>
+          <span class="sub-badge" id="pending-badge-counter">16 KEYS</span>
         </div>
-        <div class="legend">
-          <span class="cur"><span class="swatch"></span>selected</span>
-          <span class="mod"><span class="swatch"></span>modified</span>
-          <span style="color:var(--ink-2)"><span class="swatch"></span>dpi (not remappable)</span>
+        <div class="assignments-container">
+          <div class="assignments" id="assignments-list"></div>
         </div>
-
-        <div class="assignments" id="assignments-list"></div>
-
       </section>
 
-      <!-- RIGHT: SETTINGS -->
-      <aside>
+      <!-- CENTER HERO: MOUSE SVG VIEWPORT -->
+      <section class="panel col-center-panel" style="overflow:hidden;">
+        <div class="panel-header">
+          <div class="panel-title"><span class="num">00</span>DEVICE INTERFACE</div>
+          <span class="sub-badge" style="color:var(--accent-cyan);border-color:rgba(0,240,255,0.3);">ACTIVE ONBOARD PROFILE</span>
+        </div>
+
+        <div class="mouse-viewport">
+          <div class="pedestal-glow"></div>
+          <div class="pedestal-ring"></div>
+
+          <div class="mouse-hero-stage">
+            <svg class="mouse-svg" viewBox="0 0 540 510" aria-label="Redragon M913 Impact Elite diagram">
+              <defs>
+                <linearGradient id="bodyGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+                  <stop offset="0%" stop-color="#2a3042" />
+                  <stop offset="45%" stop-color="#141824" />
+                  <stop offset="100%" stop-color="#0b0e17" />
+                </linearGradient>
+              </defs>
+
+              <!-- Base shadow -->
+              <ellipse cx="275" cy="478" rx="190" ry="12" fill="rgba(0,0,0,0.6)" />
+
+              <!-- Outer chassis outline -->
+              <path d="M 270 32
+                     C 200 32, 152 54, 132 104
+                     C 112 154, 92 222, 92 312
+                     C 92 410, 142 478, 222 478
+                     C 250 478, 268 468, 285 468
+                     C 302 468, 320 478, 348 478
+                     C 428 478, 478 410, 478 312
+                     C 478 222, 458 154, 438 104
+                     C 418 54, 340 32, 270 32 Z" fill="url(#bodyGrad)" stroke="#384259" stroke-width="1.8" />
+
+              <!-- Center division line -->
+              <path d="M 278 32 Q 282 150 282 248" stroke="rgba(255,255,255,0.12)" stroke-width="1.2" fill="none" />
+
+              <!-- Scroll Wheel chassis -->
+              <rect x="266" y="98" width="32" height="56" rx="6" fill="#0d111a" stroke="rgba(0,240,255,0.3)" stroke-width="1.2" />
+              <line x1="270" y1="115" x2="294" y2="115" stroke="rgba(255,36,73,0.6)" stroke-width="1" />
+              <line x1="270" y1="125" x2="294" y2="125" stroke="rgba(255,36,73,0.6)" stroke-width="1" />
+              <line x1="270" y1="135" x2="294" y2="135" stroke="rgba(255,36,73,0.6)" stroke-width="1" />
+              <line x1="270" y1="145" x2="294" y2="145" stroke="rgba(255,36,73,0.6)" stroke-width="1" />
+
+              <!-- Fixed hardware DPI buttons marking -->
+              <g opacity="0.5">
+                <rect x="270" y="84" width="24" height="9" rx="2" fill="none" stroke="rgba(255,255,255,0.3)" stroke-width="0.8" stroke-dasharray="2 2" />
+                <text x="282" y="78" fill="var(--text-soft)" font-family="JetBrains Mono" font-size="7" font-weight="600" text-anchor="middle">DPI+</text>
+                <rect x="270" y="160" width="24" height="9" rx="2" fill="none" stroke="rgba(255,255,255,0.3)" stroke-width="0.8" stroke-dasharray="2 2" />
+                <text x="282" y="180" fill="var(--text-soft)" font-family="JetBrains Mono" font-size="7" font-weight="600" text-anchor="middle">DPI−</text>
+              </g>
+
+              <!-- Interactive Hotspots injected dynamically -->
+              <g id="hotspots"></g>
+            </svg>
+          </div>
+
+          <div class="legend-bar">
+            <span><span class="legend-swatch cur"></span> Selected</span>
+            <span><span class="legend-swatch mod"></span> Modified</span>
+            <span><span class="legend-swatch fix"></span> DPI (Hardware Fixed)</span>
+          </div>
+        </div>
+      </section>
+
+      <!-- RIGHT COLUMN: PERFORMANCE, RGB & POLLING -->
+      <aside class="col-settings">
+
+        <!-- DPI PANEL -->
         <div class="panel">
-          <div class="panel-title"><span class="num">02</span>DPI · 5 slots</div>
+          <div class="panel-header">
+            <div class="panel-title"><span class="num">02</span>DPI SENSITIVITY</div>
+            <span class="sub-badge">5 STAGES</span>
+          </div>
           <div id="dpi-slots"></div>
         </div>
 
+        <!-- RGB LIGHTING PANEL -->
         <div class="panel">
-          <div class="panel-title"><span class="num">03</span>RGB lighting</div>
+          <div class="panel-header">
+            <div class="panel-title"><span class="num">03</span>LOGO RGB LIGHTING</div>
+          </div>
           <div class="led-controls">
             <div class="led-modes">
               <button class="led-mode-btn" data-mode="off">OFF</button>
@@ -1275,136 +1741,160 @@
               <button class="led-mode-btn" data-mode="respiration">BREATHE</button>
               <button class="led-mode-btn active" data-mode="rainbow">RAINBOW</button>
             </div>
-            <div class="led-color-row">
-              <input type="color" id="led-color" value="#ff0000">
-              <span style="font-size:12px;color:var(--text-soft)">color (steady/breathe)</span>
+
+            <div class="led-color-row" id="led-color-row" style="display:none;">
+              <input type="color" id="led-color" value="#ff0000" title="Custom color picker">
+              <div class="led-preset-swatches">
+                <span class="swatch" data-color="#ff0000" style="background:#ff0000" title="Crimson Red"></span>
+                <span class="swatch" data-color="#ff7b00" style="background:#ff7b00" title="Orange"></span>
+                <span class="swatch" data-color="#ffd500" style="background:#ffd500" title="Yellow"></span>
+                <span class="swatch" data-color="#00ff66" style="background:#00ff66" title="Green"></span>
+                <span class="swatch" data-color="#00f0ff" style="background:#00f0ff" title="Cyan"></span>
+                <span class="swatch" data-color="#0066ff" style="background:#0066ff" title="Blue"></span>
+                <span class="swatch" data-color="#9900ff" style="background:#9900ff" title="Purple"></span>
+                <span class="swatch" data-color="#ffffff" style="background:#ffffff" title="White"></span>
+              </div>
             </div>
-            <div class="slider-row">
+
+            <div class="slider-row" id="led-brightness-row" style="display:none;">
               <span class="lbl">Brightness</span>
               <input type="range" id="led-brightness" min="0" max="255" value="255">
               <span class="val" id="led-brightness-val">255</span>
             </div>
-            <div class="slider-row">
+
+            <div class="slider-row" id="led-speed-row">
               <span class="lbl">Speed</span>
               <input type="range" id="led-speed" min="1" max="5" value="3">
               <span class="val" id="led-speed-val">3</span>
             </div>
+
+            <div class="small-note" id="led-mode-note" style="color:var(--text-soft);font-size:11px;margin-top:4px;">
+              Rainbow / neon cycle: continuous spectrum loop with adjustable cycle speed.
+            </div>
           </div>
         </div>
 
+        <!-- POLLING RATE PANEL -->
         <div class="panel">
-          <div class="panel-title"><span class="num">04</span>Polling rate</div>
+          <div class="panel-header">
+            <div class="panel-title"><span class="num">04</span>USB POLLING RATE</div>
+          </div>
           <div class="polling-modes">
-            <button class="polling-btn" data-hz="125">125 Hz</button>
-            <button class="polling-btn" data-hz="250">250 Hz</button>
-            <button class="polling-btn" data-hz="500">500 Hz</button>
-            <button class="polling-btn active" data-hz="1000">1000 Hz</button>
-          </div>
-        </div>
-
-        <div class="commit-bar" id="commit-bar">
-          <div class="commit-info">
-            Pending changes <span class="count" id="pending-count">0</span>
-          </div>
-          <div class="commit-actions">
-            <input type="file" id="import-file-input" accept=".ini,.txt" style="display:none">
-            <button class="btn" id="reset-factory" title="Restore all buttons to their factory defaults">↺ Factory
-              reset</button>
-            <button class="btn" id="import-config">Import configuration</button>
-            <button class="btn" id="export-config">Export configuration</button>
-            <button class="btn btn-primary" id="commit-btn">▸ Apply to mouse</button>
+            <button class="polling-btn" data-hz="125">125 Hz<br><span style="font-size:10px;color:var(--text-dim)">8.0ms</span></button>
+            <button class="polling-btn" data-hz="250">250 Hz<br><span style="font-size:10px;color:var(--text-dim)">4.0ms</span></button>
+            <button class="polling-btn" data-hz="500">500 Hz<br><span style="font-size:10px;color:var(--text-dim)">2.0ms</span></button>
+            <button class="polling-btn active" data-hz="1000">1000 Hz<br><span style="font-size:10px;color:var(--accent-cyan)">1.0ms</span></button>
           </div>
         </div>
 
       </aside>
     </div>
 
-    <!-- DEBUG LOG (always visible, even before connection) -->
-    <div style="max-width:760px;margin:0 auto;padding:0 24px 24px">
-      <button class="debug-toggle" id="debug-toggle">▸ Show debug log</button>
+    <!-- FLOATING ACTION DOCK -->
+    <div class="commit-dock" id="commit-bar" style="display:none">
+      <div class="commit-info">
+        <span class="pulse-dot" style="background:var(--accent-red);box-shadow:0 0 6px var(--accent-red)"></span>
+        Pending Changes <span class="count-pill" id="pending-count">0</span>
+      </div>
+
+      <div class="commit-actions">
+        <input type="file" id="import-file-input" accept=".ini,.txt" style="display:none">
+        <button class="btn btn-ghost" id="reset-factory" title="Restore factory defaults">↺ Reset</button>
+        <button class="btn btn-secondary" id="import-config">↑ Import INI</button>
+        <button class="btn btn-secondary" id="export-config">↓ Export INI</button>
+        <button class="btn btn-apply" id="commit-btn">▸ APPLY TO MOUSE</button>
+      </div>
+    </div>
+
+    <!-- DEBUG LOG DRAWER -->
+    <div class="debug-drawer">
+      <button class="debug-toggle-btn" id="debug-toggle">▸ Telemetry & Debug Log</button>
       <div id="log-section" style="display:none">
-        <div class="log-panel" id="log-panel">
-          <div class="log-row info"><span class="ts">00:00</span>// waiting for connection…</div>
+        <div class="log-terminal" id="log-panel">
+          <div class="log-row info"><span class="ts">00:00</span>// System initialized. Connect Redragon M913...</div>
         </div>
       </div>
     </div>
   </main>
 
-  <!-- EDIT MODAL -->
+  <!-- ==========================================================================
+       KEY REBINDING MODAL
+       ========================================================================== -->
   <div class="modal-backdrop" id="edit-modal">
-    <div class="modal">
+    <div class="modal-window">
       <div class="modal-head">
-        <div class="modal-title">EDIT <span class="target" id="editor-target">side1</span></div>
-        <button class="modal-close" id="modal-close-x" title="Close">✕</button>
+        <div class="modal-title">REBIND <span class="target-pill" id="editor-target">Side 1</span></div>
+        <button class="modal-close-x" id="modal-close-x" title="Close">✕</button>
       </div>
 
-      <div class="tabs">
-        <button class="tab active" data-tab="keyboard">Keyboard</button>
-        <button class="tab" data-tab="fire">Fire</button>
-        <button class="tab" data-tab="raw">Raw</button>
-        <button class="tab" data-tab="quick">Other</button>
+      <div class="modal-tabs">
+        <button class="modal-tab-btn active" data-tab="keyboard">Keyboard</button>
+        <button class="modal-tab-btn" data-tab="fire">Rapid Fire</button>
+        <button class="modal-tab-btn" data-tab="raw">Raw</button>
+        <button class="modal-tab-btn" data-tab="quick">Functions</button>
       </div>
 
-      <div class="tab-pane active" data-pane="keyboard">
-        <div class="combo-builder">
-          <div class="small-note">Press a key, or a modifier combination (e.g. <code>Ctrl+C</code>, <code>F5</code>,
-            just <code>Shift</code>). Multi-key combos like A+B require the Raw tab.</div>
-          <button class="btn btn-cyan capture-btn" id="capture-kb" type="button">
-            ▸ Press a key combination
-          </button>
-          <div class="captured-display" id="captured-kb-display">— nothing captured yet —</div>
+      <div class="modal-tab-pane active" data-pane="keyboard">
+        <div class="key-capture-box" id="capture-kb">
+          <div style="font-family:var(--font-display);font-size:14px;font-weight:700;color:#fff;">PRESS ANY KEY OR COMBINATION</div>
+          <div style="color:var(--text-soft);font-size:11px;margin-top:2px;">Captures single keys, combinations (Ctrl+C, Alt+F4) or modifiers.</div>
+          <div class="captured-key-display empty" id="captured-kb-display">— Click to record keystroke —</div>
         </div>
       </div>
 
-      <div class="tab-pane" data-pane="fire">
-        <div class="small-note">Auto-repeats left click. Use default <code>fire</code> for hardware behaviour, or
-          customize:</div>
-        <div class="fire-row" style="margin-top:14px">
-          <label>SPEED (3=fast → 255=slow)
+      <div class="modal-tab-pane" data-pane="fire">
+        <div style="font-size:12px;color:var(--text-muted);">Auto-repeats left click continuously with hardware pacing:</div>
+        <div class="fire-settings-grid">
+          <div class="fire-field">
+            <label>SPEED (3 = Fastest → 255 = Slow)</label>
             <input type="number" id="fire-speed" min="3" max="255" value="58">
-          </label>
-          <label>REPEAT (0–3 clicks per press)
+          </div>
+          <div class="fire-field">
+            <label>REPEAT COUNT (0–3 clicks)</label>
             <input type="number" id="fire-times" min="0" max="3" value="3">
-          </label>
+          </div>
         </div>
       </div>
 
-      <div class="tab-pane" data-pane="raw">
-        <div class="small-note">Action string compatible with m913-ctl. E.g. <code>ctrl+shift+t</code>,
-          <code>media_play</code>, <code>fire:80:2</code></div>
-        <input type="text" class="key-input" id="raw-input" placeholder="e.g. ctrl+c" style="margin-top:10px"
-          autocomplete="off">
+      <div class="modal-tab-pane" data-pane="raw">
+        <div style="font-size:12px;color:var(--text-muted);">Direct action string syntax (e.g. <code>ctrl+shift+t</code>, <code>media_play</code>, <code>profile_switch</code>):</div>
+        <input type="text" class="raw-input-field" id="raw-input" placeholder="e.g. ctrl+c" autocomplete="off" style="margin-top:10px;">
       </div>
 
-      <div class="tab-pane" data-pane="quick">
-        <div class="quick-grid" id="quick-grid"></div>
+      <div class="modal-tab-pane" data-pane="quick">
+        <div class="quick-categories-grid" id="quick-grid"></div>
       </div>
 
-      <div class="preview-action">
-        <span class="lbl">PREVIEW</span>
+      <div class="modal-preview-bar">
+        <span class="lbl">ACTIVE SELECTION:</span>
         <span class="val" id="preview-action-text">—</span>
-        <span style="margin-left:auto" id="preview-bytes"></span>
+        <span id="preview-bytes" style="color:var(--text-dim);font-size:11px;"></span>
       </div>
 
       <div class="modal-footer">
-        <button class="btn btn-cyan" id="modal-done">▸ Done</button>
+        <button class="btn btn-cyan" id="modal-done">▸ Save Assignment</button>
       </div>
     </div>
   </div>
 
-  <div class="toast" id="toast"></div>
+  <div class="toast-hud" id="toast"></div>
 
+  <!-- ==========================================================================
+       APPLICATION LOGIC & WEBHID ENGINE
+       ========================================================================== -->
   <script type="module">
     import {
-      M913_VID, M913_PID, M913_PID_WIRED, M913_PIDS, REPORT_ID, PACKET_SIZE,
-      BUTTONS, BUTTON_LABELS,
+      M913_VID, M913_PID_WIRED, M913_PIDS, REPORT_ID,
+      BUTTON_LABELS, KB_KEY_ADDR,
       parseAction, buildButtonMapping,
       buildDpiPackets, buildLedPackets, buildPollingRatePacket, buildCommitPacket,
       packetToHex, nearestDpi, VALID_DPI_VALUES,
-      DIRECT_ACTIONS, MEDIA_ACTIONS, MODIFIERS,
+      MEDIA_ACTIONS,
+      buildReadPacket, parseReadResponse, parseProfileEEPROM,
+      buildBatteryQueryPacket, parseBatteryResponse,
     } from './protocol.js';
 
-    // --- STATE ---
+    // --- APPLICATION STATE ---
     const state = {
       device: null,
       selectedBtn: null,
@@ -1419,21 +1909,14 @@
     };
 
     const FACTORY_DEFAULTS = {
-      // Side 1..6 → digits 1..6
       0: '1', 1: '2', 2: '3', 3: '4', 4: '5', 5: '6',
-      // Primary buttons
       6: 'right', 7: 'left',
-      // Side 7..8 → digits 7..8
       8: '7', 9: '8',
-      // Middle + Fire
       10: 'middle', 11: 'fire',
-      // Side 9..10 → digits 9, 0
       12: '9', 13: '0',
-      // Side 11..12 → numpad +/-
       14: 'numplus', 15: 'numminus',
     };
 
-    // Factory defaults for everything that isn't a button.
     const FACTORY_DPI = {
       values: [1000, 2000, 4000, 8000, 16000],
       enabled: [true, true, true, true, true],
@@ -1441,290 +1924,335 @@
     const FACTORY_LED = { mode: 'rainbow', color: 0xff0000, brightness: 255, speed: 3 };
     const FACTORY_POLLING = 1000;
 
-    // --- PERSISTENCE ---
-    const STORAGE_KEY = 'm913-effective-config';
-
-    function saveState() {
-      try {
-        const snapshot = {
-          effectiveButtons: state.effectiveButtons,
-          dpi: state.dpi,
-          led: state.led,
-          polling: state.polling,
-          savedAt: new Date().toISOString(),
-        };
-        localStorage.setItem(STORAGE_KEY, JSON.stringify(snapshot));
-      } catch (e) {
-        console.warn('Could not save state:', e);
-      }
-    }
-
-    function loadState() {
-      try {
-        const raw = localStorage.getItem(STORAGE_KEY);
-        if (!raw) return false;
-        const snap = JSON.parse(raw);
-        if (snap.effectiveButtons) state.effectiveButtons = snap.effectiveButtons;
-        if (snap.dpi) state.dpi = snap.dpi;
-        if (snap.led) state.led = snap.led;
-        if (typeof snap.polling === 'number') state.polling = snap.polling;
-        return snap.savedAt || true;
-      } catch (e) {
-        console.warn('Could not load state:', e);
-        return false;
-      }
-    }
-
-    // --- LOG / TOAST ---
+    // --- LOG & TELEMETRY ---
     const logEl = document.getElementById('log-panel');
     function log(msg, level = 'info') {
+      const now = new Date();
+      const ts = `${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}:${String(now.getSeconds()).padStart(2, '0')}`;
       const row = document.createElement('div');
       row.className = `log-row ${level}`;
-      const t = new Date();
-      const ts = `${String(t.getHours()).padStart(2, '0')}:${String(t.getMinutes()).padStart(2, '0')}:${String(t.getSeconds()).padStart(2, '0')}`;
       row.innerHTML = `<span class="ts">${ts}</span>${msg}`;
       logEl.appendChild(row);
       logEl.scrollTop = logEl.scrollHeight;
-      while (logEl.children.length > 200) logEl.removeChild(logEl.firstChild);
     }
 
-    function toast(msg, level = 'info') {
-      const el = document.getElementById('toast');
-      el.textContent = msg;
-      el.className = `toast show ${level}`;
-      clearTimeout(el._t);
-      el._t = setTimeout(() => { el.className = 'toast'; }, 3000);
+    let toastTimer = null;
+    function toast(msg, type = 'info') {
+      const t = document.getElementById('toast');
+      t.textContent = msg;
+      t.className = `toast-hud show ${type}`;
+      clearTimeout(toastTimer);
+      toastTimer = setTimeout(() => t.classList.remove('show'), 3500);
     }
 
+    // Toggle debug log drawer
     document.getElementById('debug-toggle').addEventListener('click', () => {
       const sec = document.getElementById('log-section');
-      const btn = document.getElementById('debug-toggle');
-      const visible = sec.style.display !== 'none';
-      sec.style.display = visible ? 'none' : 'block';
-      btn.textContent = visible ? '▸ Show debug log' : '▾ Hide debug log';
+      const isHidden = sec.style.display === 'none';
+      sec.style.display = isHidden ? 'block' : 'none';
+      document.getElementById('debug-toggle').textContent = isHidden ? '▾ Hide Telemetry & Debug Log' : '▸ Telemetry & Debug Log';
     });
 
-    // --- OS DETECTION + UDEV INSTALLER ---
+    // --- OS DETECTION ---
     function detectOS() {
-      const ua = navigator.userAgent.toLowerCase();
-      const platform = (navigator.platform || '').toLowerCase();
-      if (platform.includes('linux') || ua.includes('linux')) {
-        if (ua.includes('android')) return 'android';
-        return 'linux';
-      }
-      if (platform.includes('mac') || ua.includes('mac os')) return 'mac';
-      if (platform.includes('win') || ua.includes('windows')) return 'windows';
-      return 'unknown';
+      const ua = navigator.userAgent || '';
+      if (/linux/i.test(ua)) return 'linux';
+      if (/macintosh|mac os x/i.test(ua)) return 'macos';
+      if (/windows/i.test(ua)) return 'windows';
+      return 'other';
     }
 
-    const UDEV_SCRIPT = `#!/bin/bash
-# install-m913-udev.sh
-# Grants your user access to the Redragon M913 Impact Elite (VID 25a7,
-# PID fa07 wireless / fa08 wired).
-# Uses two complementary mechanisms for maximum compatibility across distros:
-#   - TAG+="uaccess" : on systemd-logind systems with proper local sessions,
-#                      grants ACL to whichever user owns the active session
-#   - GROUP="plugdev": fallback that works on Debian/Ubuntu/Mint and any other
-#                      distro where 'plugdev' exists. Adds the user to the group.
+    function setupOSAwareUI() {
+      const os = detectOS();
+      const hints = document.getElementById('os-hints');
+      const defLine = document.getElementById('os-line-default');
 
+      if (os === 'linux') {
+        hints.textContent = 'Linux detected: udev rule recommended for direct user-space access.';
+        defLine.textContent = 'Linux detected. If permission fails, run the 30-second udev setup below.';
+      } else if (os === 'windows') {
+        hints.textContent = 'Windows detected: driverless WebHID direct interface.';
+      } else if (os === 'macos') {
+        hints.textContent = 'macOS detected: native WebHID direct interface.';
+      }
+    }
+
+    const UDEV_SCRIPT = `#!/bin/sh
 set -e
-if [ "$EUID" -ne 0 ]; then
-  echo "Must be run as root: sudo $0"
-  exit 1
-fi
-
-RULES_FILE="/etc/udev/rules.d/99-m913.rules"
-TARGET_USER="\${SUDO_USER:-\$USER}"
-
-echo ">> Writing udev rule to $RULES_FILE"
-cat > "$RULES_FILE" <<'EOF'
-# Redragon M913 Impact Elite — grant access to the local interactive user.
-# Matches both wireless (fa07) and wired/dual-mode (fa08) variants.
-KERNEL=="hidraw*", ATTRS{idVendor}=="25a7", ATTRS{idProduct}=="fa07", MODE="0666", TAG+="uaccess"
-SUBSYSTEM=="usb",  ATTRS{idVendor}=="25a7", ATTRS{idProduct}=="fa07", MODE="0666", TAG+="uaccess"
-KERNEL=="hidraw*", ATTRS{idVendor}=="25a7", ATTRS{idProduct}=="fa08", MODE="0666", TAG+="uaccess"
-SUBSYSTEM=="usb",  ATTRS{idVendor}=="25a7", ATTRS{idProduct}=="fa08", MODE="0666", TAG+="uaccess"
+RULE_FILE="/etc/udev/rules.d/99-m913.rules"
+echo "Installing Redragon M913 udev rule to \$RULE_FILE..."
+cat << 'EOF' | sudo tee "\$RULE_FILE" > /dev/null
+# Redragon M913 Impact Elite - user access for WebHID
+SUBSYSTEM=="hidraw", ATTRS{idVendor}=="25a7", ATTRS{idProduct}=="fa07", MODE="0660", TAG+="uaccess"
+SUBSYSTEM=="hidraw", ATTRS{idVendor}=="25a7", ATTRS{idProduct}=="fa08", MODE="0660", TAG+="uaccess"
 EOF
-
-echo ">> Reloading udev rules"
-udevadm control --reload-rules
-udevadm trigger
-
-if getent group plugdev > /dev/null 2>&1; then
-  if id -nG "$TARGET_USER" | grep -qw plugdev; then
-    echo ">> User $TARGET_USER is already in the plugdev group."
-  else
-    echo ">> Adding $TARGET_USER to the plugdev group"
-    usermod -aG plugdev "$TARGET_USER"
-    echo "!! IMPORTANT: log out and log back in for the group change to take effect."
-  fi
-else
-  echo ">> No 'plugdev' group on this system. Relying on 'uaccess' alone."
-fi
-
-echo ""
-echo "Setup complete. Now UNPLUG and RE-PLUG the M913 (USB dongle or cable)."
-echo "Then go back to the browser and click 'Request device access'."
+sudo udevadm control --reload-rules
+sudo udevadm trigger
+echo "udev rule installed successfully. Please replug your M913 USB dongle or cable."
 `;
 
-    function downloadUdevScript() {
-      const blob = new Blob([UDEV_SCRIPT], { type: 'text/x-shellscript' });
+    document.getElementById('dl-udev')?.addEventListener('click', () => {
+      const blob = new Blob([UDEV_SCRIPT], { type: 'text/x-sh' });
       const url = URL.createObjectURL(blob);
       const a = document.createElement('a');
       a.href = url;
       a.download = 'install-m913-udev.sh';
       a.click();
       URL.revokeObjectURL(url);
-      toast('Script downloaded. Run the command from step 2.', 'ok');
+    });
+
+    document.querySelectorAll('.copy-pill').forEach(btn => {
+      btn.addEventListener('click', () => {
+        navigator.clipboard.writeText(btn.dataset.copy).then(() => {
+          btn.textContent = 'COPIED!';
+          setTimeout(() => btn.textContent = 'COPY', 2000);
+        });
+      });
+    });
+
+    // --- HARDWARE WEBHID TRANSPORT ---
+    async function sendPacket(pkt, label = '') {
+      if (!state.device) throw new Error('No device connected');
+      log(`TX [${label || 'cmd'}]: ${packetToHex(pkt)}`, 'tx');
+      const payload = pkt.slice(1);
+      await state.device.sendFeatureReport(REPORT_ID, payload);
+      await new Promise(r => setTimeout(r, 10));
     }
 
-    function setupOSAwareUI() {
-      const os = detectOS();
-      const linuxSetup = document.getElementById('linux-setup');
-      const osHints = document.getElementById('os-hints');
-      const defaultLine = document.getElementById('os-line-default');
+    async function sendSequence(packets, name) {
+      log(`Writing ${packets.length} packets for: ${name}...`, 'info');
+      for (let i = 0; i < packets.length; i++) {
+        await sendPacket(packets[i], `${name} ${i + 1}/${packets.length}`);
+      }
+    }
 
-      if (os === 'linux') {
-        linuxSetup.style.display = 'block';
-        defaultLine.textContent = 'Already installed the udev rule? Just continue.';
-        osHints.textContent = '// linux detected · udev setup required on first run';
-      } else if (os === 'windows') {
-        osHints.textContent = '// windows detected · no setup required';
-      } else if (os === 'mac') {
-        osHints.textContent = '// macos detected · no setup required';
-      } else if (os === 'android') {
-        osHints.textContent = '// ⚠ android: WebHID does not work reliably on mobile';
+    // Pending read resolver queue: [{ addr, resolve, timer }]
+    const pendingReadResolvers = [];
+
+    function handleInputReport(e) {
+      const { data, reportId } = e;
+      const u8 = new Uint8Array(data.buffer, data.byteOffset, data.byteLength);
+      const hex = Array.from(u8.slice(0, 17)).map(b => b.toString(16).padStart(2, '0')).join(' ');
+      log(`◀ ACK[${reportId.toString(16)}] ${hex}`, 'rx');
+
+      const off = (u8.length === 17 && (u8[0] === 0x08 || u8[0] === 0x09)) ? 1 : 0;
+      const subCmd = u8[off];
+
+      // Battery query response (sub-command 0x04)
+      if (subCmd === 0x04) {
+        const bat = parseBatteryResponse(u8, off);
+        if (bat && bat.percent !== null) {
+          updateBatteryDisplay(bat.percent, bat.rawPow);
+        }
       }
 
-      const dlBtn = document.getElementById('dl-udev');
-      if (dlBtn) dlBtn.addEventListener('click', downloadUdevScript);
+      // Read EEPROM response (sub-command 0x08)
+      if (subCmd === 0x08) {
+        const addr = (u8[off + 2] << 8) | u8[off + 3];
+        const idx = pendingReadResolvers.findIndex(r => r.addr === addr);
+        if (idx >= 0) {
+          const item = pendingReadResolvers.splice(idx, 1)[0];
+          clearTimeout(item.timer);
+          item.resolve(u8);
+        } else if (pendingReadResolvers.length > 0) {
+          const item = pendingReadResolvers.shift();
+          clearTimeout(item.timer);
+          item.resolve(u8);
+        }
+      }
+    }
 
-      document.querySelectorAll('.copy-btn').forEach(btn => {
-        btn.addEventListener('click', async () => {
-          const text = btn.dataset.copy;
-          try {
-            await navigator.clipboard.writeText(text);
-            const orig = btn.textContent;
-            btn.textContent = '✓ copied';
-            btn.classList.add('copied');
-            setTimeout(() => { btn.textContent = orig; btn.classList.remove('copied'); }, 1500);
-          } catch (err) {
-            toast('Copy failed: select the text manually', 'error');
-          }
-        });
+    function readChunk(addr, len = 10, timeoutMs = 800) {
+      return new Promise(async (resolve, reject) => {
+        const timer = setTimeout(() => {
+          const idx = pendingReadResolvers.findIndex(r => r.addr === addr);
+          if (idx >= 0) pendingReadResolvers.splice(idx, 1);
+          reject(new Error(`Timeout reading EEPROM at address 0x${addr.toString(16).padStart(2, '0')}`));
+        }, timeoutMs);
+
+        pendingReadResolvers.push({ addr, resolve, timer });
+
+        try {
+          const reqPkt = buildReadPacket(addr, len);
+          log(`Read chunk 0x${addr.toString(16).padStart(2, '0')} (${len}B): ${packetToHex(reqPkt)}`, 'tx');
+          const payload = reqPkt.slice(1);
+          await state.device.sendFeatureReport(REPORT_ID, payload);
+        } catch (err) {
+          clearTimeout(timer);
+          const idx = pendingReadResolvers.findIndex(r => r.addr === addr);
+          if (idx >= 0) pendingReadResolvers.splice(idx, 1);
+          reject(err);
+        }
       });
     }
 
-    // --- WEBHID ---
-    async function connect() {
-      if (!('hid' in navigator)) {
-        toast('WebHID is not available. Use Chrome/Edge/Brave.', 'error');
-        return;
-      }
-      try {
-        const filters = [];
-        for (const productId of M913_PIDS) {
-          for (const usagePage of [0xff00, 0xff01, 0xff02, 0xff03, 0xff04]) {
-            filters.push({ vendorId: M913_VID, productId, usagePage });
-          }
-        }
-        const devices = await navigator.hid.requestDevice({ filters });
-        if (!devices || devices.length === 0) {
-          log('No device selected.', 'info');
-          return;
-        }
-
-        const describe = (dev) => {
-          const colls = (dev.collections || []).map(c =>
-            `up=0x${(c.usagePage ?? 0).toString(16)} u=0x${(c.usage ?? 0).toString(16)}`
-          ).join(' | ');
-          return `[${colls || 'no collections'}]`;
-        };
-        const hasVendor = (dev) => (dev.collections || []).some(c => {
-          const up = c.usagePage ?? 0;
-          return up >= 0xff00 && up <= 0xffff;
-        });
-        const hasReportId = (dev) => (dev.collections || []).some(c => [
-          ...(c.featureReports?.map(r => r.reportId) ?? []),
-          ...(c.outputReports?.map(r => r.reportId) ?? []),
-        ].includes(REPORT_ID));
-
-        log(`Found ${devices.length} authorized interface(s).`, 'info');
-        for (const d of devices) log(`  · ${describe(d)}`, 'info');
-
-        const chosen = devices.find(d => hasVendor(d) && hasReportId(d))
-          || devices.find(hasVendor)
-          || devices.find(hasReportId)
-          || devices[0];
-
-        log(`Selected interface: ${describe(chosen)}`, 'info');
-
+    async function readChunkWithRetry(addr, len = 10, maxRetries = 3) {
+      for (let attempt = 1; attempt <= maxRetries; attempt++) {
         try {
-          await chosen.open();
-        } catch (openErr) {
-          const os = detectOS();
-          if (os === 'linux') {
-            const setupCard = document.getElementById('linux-setup');
-            if (setupCard) {
-              setupCard.style.display = 'block';
-              setupCard.scrollIntoView({ behavior: 'smooth', block: 'center' });
+          return await readChunk(addr, len, 800);
+        } catch (err) {
+          if (attempt === maxRetries) throw err;
+          log(`Retrying chunk 0x${addr.toString(16).padStart(2, '0')} (${attempt}/${maxRetries})...`, 'info');
+          await new Promise(r => setTimeout(r, 40));
+        }
+      }
+    }
+
+    let batteryPollInterval = null;
+
+    async function queryBattery() {
+      if (!state.device) return;
+      try {
+        const queryPkt = buildBatteryQueryPacket();
+        const payload = queryPkt.slice(1);
+        await state.device.sendFeatureReport(REPORT_ID, payload);
+      } catch (err) {
+        log(`Battery query warning: ${err.message}`, 'info');
+      }
+    }
+
+    function updateBatteryDisplay(bat, rawPow = null) {
+      const batEl = document.getElementById('battery-status');
+      const batVal = document.getElementById('battery-val');
+      const batIcon = document.getElementById('battery-icon');
+      if (!batEl || !batVal) return;
+
+      const isWired = state.device && state.device.productId === M913_PID_WIRED;
+      let icon = '🔋';
+      let color = 'var(--accent-emerald)';
+
+      if (isWired) {
+        icon = '⚡';
+        batVal.textContent = `${bat}% (Wired)`;
+      } else {
+        if (bat > 40) {
+          icon = '🔋';
+          color = 'var(--accent-emerald)';
+        } else if (bat > 20) {
+          icon = '🔋';
+          color = 'var(--accent-amber)';
+        } else {
+          icon = '🪫';
+          color = 'var(--accent-red)';
+        }
+        batVal.textContent = `${bat}%`;
+      }
+
+      if (batIcon) batIcon.textContent = icon;
+      batVal.style.color = color;
+      batEl.style.borderColor = color;
+      batEl.style.display = 'flex';
+
+      // Update 4-segment meter
+      for (let s = 1; s <= 4; s++) {
+        const seg = document.getElementById(`bat-seg-${s}`);
+        if (seg) seg.classList.toggle('active', bat >= (s * 25));
+      }
+
+      const rawInfo = rawPow !== null ? ` (Level ${rawPow}/10)` : '';
+      batEl.title = `Battery: ${bat}%${rawInfo} · Click to refresh`;
+    }
+
+    async function openDevice(chosen) {
+      try {
+        await chosen.open();
+      } catch (openErr) {
+        const os = detectOS();
+        if (os === 'linux') {
+          const setupCard = document.getElementById('linux-setup');
+          if (setupCard) setupCard.style.display = 'block';
+          throw new Error(openErr.message + '\n→ Insufficient permissions on /dev/hidraw*. Run the Linux setup above.');
+        } else {
+          throw new Error(openErr.message + '\n→ Ensure the mouse is not held open by another program.');
+        }
+      }
+
+      state.device = chosen;
+      log(`Connection opened: ${chosen.productName || 'Redragon M913'}`, 'ok');
+      chosen.addEventListener('inputreport', handleInputReport);
+
+      const isWired = chosen.productId === M913_PID_WIRED;
+      const modeLabel = isWired ? 'USB Wired Mode' : '2.4GHz Wireless';
+      setStatus(`Connected · ${modeLabel}`, 'connected');
+
+      showConnectedUI();
+      queryBattery();
+      if (batteryPollInterval) clearInterval(batteryPollInterval);
+      batteryPollInterval = setInterval(queryBattery, 30000);
+
+      // Read current onboard flash configuration
+      await readFromMouse();
+    }
+
+    async function readFromMouse() {
+      if (!state.device) return;
+      log('Reading full profile from mouse flash memory (160 bytes)...', 'info');
+      toast('Reading onboard configuration...', 'info');
+
+      try {
+        const fullEeprom = new Uint8Array(160);
+        for (let i = 0; i < 16; i++) {
+          const addr = i * 10;
+          const chunkData = await readChunkWithRetry(addr, 10);
+          const parsedRes = parseReadResponse(chunkData);
+          for (let j = 0; j < parsedRes.bytes.length && (addr + j) < 160; j++) {
+            fullEeprom[addr + j] = parsedRes.bytes[j];
+          }
+          await new Promise(r => setTimeout(r, 15));
+        }
+
+        // Check for keyboard macro sub-packets (marker 0x05)
+        const subPacketsMap = {};
+        for (let i = 0; i < 16; i++) {
+          const off = 0x60 + i * 4;
+          if (fullEeprom[off] === 0x05) {
+            const [addrHi, addrLo] = KB_KEY_ADDR[i];
+            const kbAddr = (addrHi << 8) | addrLo;
+            try {
+              const subData = await readChunkWithRetry(kbAddr, 10, 2);
+              const parsedSub = parseReadResponse(subData);
+              subPacketsMap[i] = parsedSub.bytes;
+              await new Promise(r => setTimeout(r, 15));
+            } catch (subErr) {
+              log(`Note: sub-packet read for button ${i}: ${subErr.message}`, 'info');
             }
-            throw new Error(openErr.message + '\n  → Insufficient permissions on /dev/hidraw* (most likely cause). Follow the LINUX setup card above.');
-          } else {
-            throw new Error(openErr.message + '\n  → Make sure the mouse is not in use by another application.');
           }
         }
 
-        state.device = chosen;
-        log(`Connection opened: ${chosen.productName || 'M913'}`, 'ok');
+        const parsedConfig = parseProfileEEPROM(fullEeprom, subPacketsMap);
+        log(`Hardware configuration parsed: Polling=${parsedConfig.polling}Hz, LED=${parsedConfig.led.mode}, DPI=[${parsedConfig.dpi.values.join(', ')}]`, 'ok');
 
-        chosen.addEventListener('inputreport', e => {
-          const data = new Uint8Array(e.data.buffer);
-          const hex = Array.from(data.slice(0, 17)).map(b => b.toString(16).padStart(2, '0')).join(' ');
-          log(`◀ ACK[${e.reportId.toString(16)}] ${hex}`, 'rx');
-        });
+        state.polling = parsedConfig.polling;
+        state.dpi.values = parsedConfig.dpi.values;
+        state.dpi.enabled = parsedConfig.dpi.enabled;
+        state.led = parsedConfig.led;
+        state.effectiveButtons = parsedConfig.buttons;
+        state.pendingButtons = {};
 
-        setStatus('Connected · ' + (chosen.productName || 'M913'), 'connected');
-        showConnectedUI();
+        syncControlsToState();
+        refresh();
+        toast('Configuration read from mouse successfully!', 'ok');
+        queryBattery();
       } catch (err) {
-        log(`Connection error: ${err.message}`, 'err');
-        toast(`Connection failed: ${err.message.split('\n')[0]}`, 'error');
-      }
-    }
-
-    async function sendPacket(pkt, label = '') {
-      if (!state.device) throw new Error('Device not connected');
-      if (pkt[0] !== REPORT_ID) {
-        throw new Error(`Unexpected report ID: 0x${pkt[0].toString(16)}`);
-      }
-      const data = pkt.slice(1);
-      log(`▶ ${label} ${packetToHex(pkt)}`, 'tx');
-      await state.device.sendFeatureReport(REPORT_ID, data);
-    }
-
-    const PACKET_DELAY_MS = 100;
-
-    async function sendSequence(packets, label) {
-      log(`── ${label} (${packets.length} packets) ──`, 'info');
-      for (let i = 0; i < packets.length; i++) {
-        await sendPacket(packets[i], `${label} ${i + 1}/${packets.length}`);
-        await new Promise(r => setTimeout(r, PACKET_DELAY_MS));
+        log(`Read from mouse error: ${err.message}`, 'err');
+        toast(`Read error: ${err.message}`, 'error');
       }
     }
 
     function setStatus(text, cls = '') {
       document.getElementById('status-text').textContent = text;
-      document.getElementById('status-dot').className = 'dot ' + cls;
+      document.getElementById('status-dot').className = 'pulse-dot ' + cls;
     }
 
     function showConnectedUI() {
       document.getElementById('not-connected').style.display = 'none';
-      document.getElementById('app').style.display = 'flex';
+      document.getElementById('app').style.display = 'grid';
+      document.getElementById('commit-bar').style.display = 'flex';
       buildHotspots();
       renderAssignments();
     }
 
-    // --- MOUSE SVG hotspots ---
+    // --- MOUSE SVG HOTSPOTS ---
     const HOTSPOTS = [
       { idx: 7, label: 'LMB', type: 'path', d: 'M 148 82 L 278 50 L 278 244 L 168 232 Z' },
       { idx: 6, label: 'RMB', type: 'path', d: 'M 282 50 L 412 82 L 392 232 L 282 244 Z' },
@@ -1784,10 +2312,74 @@ echo "Then go back to the browser and click 'Request device access'."
         text.textContent = h.label;
         g.appendChild(text);
 
+        // Bi-directional hover highlight
+        g.addEventListener('mouseenter', () => {
+          const row = document.querySelector(`.assign-row[data-idx="${h.idx}"]`);
+          if (row) {
+            row.classList.add('hovered');
+            row.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+          }
+        });
+        g.addEventListener('mouseleave', () => {
+          const row = document.querySelector(`.assign-row[data-idx="${h.idx}"]`);
+          if (row) row.classList.remove('hovered');
+        });
+
         g.addEventListener('click', () => selectButton(h.idx));
         root.appendChild(g);
       }
       refreshHotspotStyles();
+    }
+
+    function formatAction(raw) {
+      if (!raw) return 'Disabled';
+      const MAP = {
+        'left': 'Left Click',
+        'right': 'Right Click',
+        'middle': 'Middle Click',
+        'forward': 'Forward',
+        'backward': 'Backward',
+        'back': 'Backward',
+        'double_click': 'Double Click',
+        'r_double_click': 'R-Double Click',
+        'scroll_up': 'Scroll Up',
+        'scroll_down': 'Scroll Down',
+        'dpi+': 'DPI +',
+        'dpi-': 'DPI -',
+        'dpi-cycle': 'DPI Cycle',
+        'snipe': 'DPI Lock (Snipe)',
+        'profile_switch': 'Profile Switch',
+        'led_toggle': 'RGB On / Off',
+        'polling_switch': 'Polling Switch',
+        'three_click': 'Triple Click',
+        'none': 'Disabled',
+        'media_play': 'Play / Pause',
+        'media_player': 'Media Player',
+        'media_next': 'Next Track',
+        'media_prev': 'Prev Track',
+        'media_stop': 'Stop',
+        'media_vol_up': 'Volume Up',
+        'media_vol_down': 'Volume Down',
+        'media_mute': 'Mute',
+        'media_email': 'Email',
+        'media_calc': 'Calculator',
+        'media_computer': 'My Computer',
+        'media_home': 'Browser Home',
+        'media_search': 'Web Search',
+        'www_forward': 'WWW Forward',
+        'www_back': 'WWW Back',
+        'www_stop': 'WWW Stop',
+        'www_refresh': 'WWW Refresh',
+        'www_favorites': 'Favorites',
+      };
+      if (MAP[raw]) return MAP[raw];
+      if (raw.startsWith('fire')) {
+        const parts = raw.split(':');
+        const times = parts[2] || 3;
+        const speed = parts[1] || 58;
+        return `Rapid Fire (${times}x, ${speed}ms)`;
+      }
+      return raw.toUpperCase();
     }
 
     function refreshHotspotStyles() {
@@ -1795,10 +2387,12 @@ echo "Then go back to the browser and click 'Request device access'."
         const idx = parseInt(g.dataset.idx, 10);
         g.classList.toggle('selected', idx === state.selectedBtn);
         g.classList.toggle('modified', !!state.pendingButtons[idx]);
+        const act = state.pendingButtons[idx]?.raw || state.effectiveButtons[idx]?.raw || FACTORY_DEFAULTS[idx] || 'none';
+        g.setAttribute('title', `${BUTTON_LABELS[idx]}: ${formatAction(act)} (${act})`);
       });
     }
 
-    // --- ASSIGNMENT LIST ---
+    // --- BUTTON ASSIGNMENTS LIST ---
     function renderAssignments() {
       const list = document.getElementById('assignments-list');
       list.innerHTML = '';
@@ -1812,27 +2406,27 @@ echo "Then go back to the browser and click 'Request device access'."
       for (const i of DISPLAY_ORDER) {
         const row = document.createElement('div');
         row.className = 'assign-row';
+        row.dataset.idx = i;
         const pending = state.pendingButtons[i];
         const effective = state.effectiveButtons[i];
         if (pending) row.classList.add('modified');
+        if (state.selectedBtn === i) row.classList.add('selected');
 
-        const lbl = document.createElement('div');
-        lbl.className = 'assign-label';
-        lbl.textContent = BUTTON_LABELS[i];
+        const tag = document.createElement('div');
+        tag.className = 'assign-key-tag';
+        tag.textContent = BUTTON_LABELS[i];
 
-        const action = document.createElement('div');
-        action.className = 'assign-action';
-        if (pending) {
-          action.textContent = pending.raw;
-        } else if (effective) {
-          action.textContent = effective.raw;
-        } else {
-          action.textContent = FACTORY_DEFAULTS[i] || 'none';
-        }
+        const actionText = document.createElement('div');
+        actionText.className = 'assign-action-text';
+        const act = pending ? pending.raw : (effective ? effective.raw : (FACTORY_DEFAULTS[i] || 'none'));
+        actionText.innerHTML = `
+          <span class="assign-action-name">${formatAction(act)}</span>
+          <span class="assign-action-raw">${act}</span>
+        `;
 
         const reset = document.createElement('button');
-        reset.className = 'reset-mark';
-        reset.title = 'Set to none (button will do nothing)';
+        reset.className = 'assign-reset-btn';
+        reset.title = 'Set to none';
         reset.textContent = '✕';
         reset.addEventListener('click', e => {
           e.stopPropagation();
@@ -1841,11 +2435,25 @@ echo "Then go back to the browser and click 'Request device access'."
           refresh();
         });
 
-        row.appendChild(lbl); row.appendChild(action); row.appendChild(reset);
+        // Bi-directional hover highlight
+        row.addEventListener('mouseenter', () => {
+          const spot = document.querySelector(`.btn-hotspot[data-idx="${i}"]`);
+          if (spot) spot.classList.add('hovered');
+        });
+        row.addEventListener('mouseleave', () => {
+          const spot = document.querySelector(`.btn-hotspot[data-idx="${i}"]`);
+          if (spot) spot.classList.remove('hovered');
+        });
+
+        row.appendChild(tag);
+        row.appendChild(actionText);
+        row.appendChild(reset);
         row.addEventListener('click', () => selectButton(i));
         list.appendChild(row);
       }
-      document.getElementById('pending-count').textContent = Object.keys(state.pendingButtons).length;
+
+      const pendingCount = Object.keys(state.pendingButtons).length;
+      document.getElementById('pending-count').textContent = pendingCount;
     }
 
     function selectButton(idx) {
@@ -1855,9 +2463,12 @@ echo "Then go back to the browser and click 'Request device access'."
       capturedKeyboard = null;
       document.getElementById('raw-input').value = '';
       const kbd = document.getElementById('captured-kb-display');
-      if (kbd) { kbd.textContent = '— nothing captured yet —'; kbd.classList.remove('has-value'); }
-      document.querySelectorAll('.tab').forEach(t => t.classList.toggle('active', t.dataset.tab === 'keyboard'));
-      document.querySelectorAll('.tab-pane').forEach(p => p.classList.toggle('active', p.dataset.pane === 'keyboard'));
+      if (kbd) {
+        kbd.textContent = '— Click to record keystroke —';
+        kbd.classList.add('empty');
+      }
+      document.querySelectorAll('.modal-tab-btn').forEach(t => t.classList.toggle('active', t.dataset.tab === 'keyboard'));
+      document.querySelectorAll('.modal-tab-pane').forEach(p => p.classList.toggle('active', p.dataset.pane === 'keyboard'));
       refreshPreview();
       editModal.classList.add('show');
       refreshHotspotStyles();
@@ -1872,7 +2483,13 @@ echo "Then go back to the browser and click 'Request device access'."
 
     const editModal = document.getElementById('edit-modal');
     document.getElementById('modal-close-x').addEventListener('click', closeEditor);
-    document.getElementById('modal-done').addEventListener('click', closeEditor);
+    document.getElementById('modal-done').addEventListener('click', () => {
+      const act = buildCurrentEdit();
+      if (act && state.selectedBtn !== null) {
+        applyAction(act);
+      }
+      closeEditor();
+    });
     editModal.addEventListener('click', (e) => {
       if (e.target === editModal) closeEditor();
     });
@@ -1886,14 +2503,14 @@ echo "Then go back to the browser and click 'Request device access'."
       refreshPreview();
     }
 
-    // --- EDITOR ---
-    const tabs = document.querySelectorAll('.tab');
-    const panes = document.querySelectorAll('.tab-pane');
+    // --- REBIND MODAL TABS & QUICK GRID ---
+    const tabs = document.querySelectorAll('.modal-tab-btn');
+    const panes = document.querySelectorAll('.modal-tab-pane');
     tabs.forEach(t => t.addEventListener('click', () => {
       tabs.forEach(x => x.classList.remove('active'));
       panes.forEach(x => x.classList.remove('active'));
       t.classList.add('active');
-      document.querySelector(`.tab-pane[data-pane="${t.dataset.tab}"]`).classList.add('active');
+      document.querySelector(`.modal-tab-pane[data-pane="${t.dataset.tab}"]`).classList.add('active');
       refreshPreview();
     }));
 
@@ -1901,29 +2518,37 @@ echo "Then go back to the browser and click 'Request device access'."
       const grid = document.getElementById('quick-grid');
       grid.innerHTML = '';
       const cats = [
-        { label: 'MOUSE', actions: ['left', 'right', 'middle', 'forward', 'backward'] },
-        { label: 'DPI', actions: ['dpi+', 'dpi-', 'dpi-cycle'] },
-        { label: 'KEYPAD', actions: ['num0', 'num1', 'num2', 'num3', 'num4', 'num5', 'num6', 'num7', 'num8', 'num9', 'numdot', 'numenter', 'numplus', 'numminus', 'nummul', 'numdiv', 'numlock'] },
-        { label: 'MODIFIERS (left/right)', actions: ['ctrl_l', 'ctrl_r', 'shift_l', 'shift_r', 'alt_l', 'alt_r', 'super_l', 'super_r'] },
-        { label: 'SPECIAL', actions: ['fire', 'three_click', 'led_toggle', 'polling_switch'] },
-        { label: 'MEDIA', actions: Object.keys(MEDIA_ACTIONS) },
+        { label: 'MOUSE', actions: ['left', 'right', 'middle', 'forward', 'backward', 'double_click', 'r_double_click', 'scroll_up', 'scroll_down'] },
+        { label: 'DPI FUNCTIONS', actions: ['dpi+', 'dpi-', 'dpi-cycle', 'snipe'] },
+        { label: 'PROFILE', actions: ['profile_switch'] },
+        { label: 'KEYPAD NUMBERS', actions: ['num0', 'num1', 'num2', 'num3', 'num4', 'num5', 'num6', 'num7', 'num8', 'num9', 'numdot', 'numenter', 'numplus', 'numminus', 'nummul', 'numdiv', 'numlock'] },
+        { label: 'MODIFIERS', actions: ['ctrl_l', 'ctrl_r', 'shift_l', 'shift_r', 'alt_l', 'alt_r', 'super_l', 'super_r'] },
+        { label: 'HARDWARE & SPECIAL', actions: ['fire', 'three_click', 'led_toggle', 'polling_switch', 'none'] },
+        { label: 'MULTIMEDIA & WEB', actions: Object.keys(MEDIA_ACTIONS) },
       ];
       for (const c of cats) {
+        const wrap = document.createElement('div');
         const lbl = document.createElement('div');
-        lbl.className = 'cat-label';
+        lbl.className = 'quick-cat-title';
         lbl.textContent = c.label;
-        grid.appendChild(lbl);
+        wrap.appendChild(lbl);
+
+        const chipsWrap = document.createElement('div');
+        chipsWrap.className = 'quick-action-chips';
         for (const act of c.actions) {
           const b = document.createElement('button');
+          b.className = 'quick-chip';
           b.textContent = act;
-          b.dataset.action = act;
           b.addEventListener('click', () => {
             currentEdit = act;
             refreshPreview();
             applyAction(act);
+            closeEditor();
           });
-          grid.appendChild(b);
+          chipsWrap.appendChild(b);
         }
+        wrap.appendChild(chipsWrap);
+        grid.appendChild(wrap);
       }
     }
 
@@ -1931,7 +2556,7 @@ echo "Then go back to the browser and click 'Request device access'."
     let capturedKeyboard = null;
 
     function buildCurrentEdit() {
-      const activeTab = document.querySelector('.tab.active').dataset.tab;
+      const activeTab = document.querySelector('.modal-tab-btn.active')?.dataset.tab;
       if (activeTab === 'quick') return currentEdit;
       if (activeTab === 'keyboard') return capturedKeyboard;
       if (activeTab === 'fire') {
@@ -1942,7 +2567,7 @@ echo "Then go back to the browser and click 'Request device access'."
       if (activeTab === 'raw') {
         return document.getElementById('raw-input').value.trim().toLowerCase() || null;
       }
-      return null;
+      return currentEdit;
     }
 
     function refreshPreview() {
@@ -1951,194 +2576,117 @@ echo "Then go back to the browser and click 'Request device access'."
       const previewBytes = document.getElementById('preview-bytes');
       if (!txt) {
         previewText.textContent = '—';
-        previewText.className = 'val';
         previewBytes.textContent = '';
         return;
       }
       const parsed = parseAction(txt);
       if (!parsed) {
         previewText.textContent = `${txt} (invalid)`;
-        previewText.className = 'val err';
         previewBytes.textContent = '';
-      } else {
-        previewText.textContent = txt;
-        previewText.className = 'val';
-        previewBytes.innerHTML = '<span class="lbl">BYTES</span> ' + parsed.ab.map(b => b.toString(16).padStart(2, '0')).join(' ');
+        return;
       }
+      previewText.textContent = txt;
+      previewBytes.textContent = `[${parsed.ab.map(b => b.toString(16).padStart(2, '0')).join(' ')}]`;
     }
 
-    document.querySelectorAll('#raw-input, #fire-speed, #fire-times')
-      .forEach(el => el.addEventListener('input', () => {
-        refreshPreview();
-        autoApply();
-      }));
-
-    function applyAction(forcedAction) {
+    function applyAction(actionStr) {
       if (state.selectedBtn === null) return;
-      const txt = forcedAction !== undefined ? forcedAction : buildCurrentEdit();
-      if (!txt) return;
-      const parsed = parseAction(txt);
-      if (!parsed) return;
-      state.pendingButtons[state.selectedBtn] = { ...parsed, raw: txt };
+      const parsed = parseAction(actionStr);
+      if (!parsed) {
+        toast(`Invalid action: "${actionStr}"`, 'error');
+        return;
+      }
+      state.pendingButtons[state.selectedBtn] = { ...parsed, raw: actionStr };
       refresh();
+      toast(`Mapped ${BUTTON_LABELS[state.selectedBtn]} to ${actionStr}`, 'ok');
     }
 
-    const autoApply = () => applyAction();
+    // Keyboard capture recorder
+    const captureBox = document.getElementById('capture-kb');
+    const capturedDisplay = document.getElementById('captured-kb-display');
+    let isCapturing = false;
 
-    // --- KEY CAPTURE ---
-    function eventCodeToToken(e) {
-      const code = e.code;
-      if (/^Key[A-Z]$/.test(code)) return code.slice(3).toLowerCase();
-      if (/^Digit\d$/.test(code)) return code.slice(5);
-      if (/^Numpad\d$/.test(code)) return 'num' + code.slice(6);
-      if (/^F\d{1,2}$/.test(code)) return code.toLowerCase();
-      const arrows = {
-        ArrowUp: 'arrowup', ArrowDown: 'arrowdown',
-        ArrowLeft: 'arrowleft', ArrowRight: 'arrowright',
-      };
-      if (arrows[code]) return arrows[code];
-      const named = {
-        Enter: 'enter', NumpadEnter: 'enter',
-        Escape: 'escape', Tab: 'tab', Space: 'space', Backspace: 'backspace',
-        Home: 'home', End: 'end', PageUp: 'pageup', PageDown: 'pagedown',
-        Insert: 'insert', Delete: 'delete',
-        CapsLock: 'capslock', PrintScreen: 'printscreen',
-        ScrollLock: 'scrolllock', Pause: 'pause',
-        Minus: 'minus', Equal: 'equal',
-        BracketLeft: 'lbracket', BracketRight: 'rbracket',
-        Backslash: 'backslash', Semicolon: 'semicolon',
-        Quote: 'quote', Backquote: 'grave',
-        Comma: 'comma', Period: 'dot', Slash: 'slash',
-      };
-      if (named[code]) return named[code];
-      return null;
-    }
+    captureBox.addEventListener('click', () => {
+      isCapturing = true;
+      captureBox.classList.add('capturing');
+      capturedDisplay.textContent = 'Press keys now...';
+      capturedDisplay.classList.remove('empty');
+    });
 
-    function modTokenFromKey(key) {
-      if (key === 'Control') return 'ctrl';
-      if (key === 'Shift') return 'shift';
-      if (key === 'Alt') return 'alt';
-      if (key === 'Meta') return 'super';
-      return null;
-    }
+    document.addEventListener('keydown', (e) => {
+      if (!isCapturing || !editModal.classList.contains('show')) return;
+      e.preventDefault();
+      e.stopPropagation();
 
-    let kbCaptureActive = false;
+      const parts = [];
+      if (e.ctrlKey) parts.push('ctrl');
+      if (e.shiftKey) parts.push('shift');
+      if (e.altKey) parts.push('alt');
+      if (e.metaKey) parts.push('super');
 
-    function startKeyboardCapture() {
-      if (kbCaptureActive) return;
-      kbCaptureActive = true;
+      let k = e.key.toLowerCase();
+      if (['control', 'shift', 'alt', 'meta'].includes(k)) {
+        // Modifier only
+      } else {
+        const MAP = {
+          ' ': 'space', 'arrowup': 'arrowup', 'arrowdown': 'arrowdown',
+          'arrowleft': 'arrowleft', 'arrowright': 'arrowright',
+        };
+        k = MAP[k] || k;
+        parts.push(k);
+      }
 
-      const btn = document.getElementById('capture-kb');
-      const display = document.getElementById('captured-kb-display');
-
-      display.textContent = '— nothing captured yet —';
-      display.classList.remove('has-value');
-      capturedKeyboard = null;
-      btn.classList.add('listening');
-      btn.textContent = '◉ Press a key now…';
-
-      const modsHeld = new Set();
-      const modsEverPressed = [];
-      let realKeyPressed = false;
-
-      function commit(actionString) {
-        capturedKeyboard = actionString;
-        display.textContent = actionString;
-        display.classList.add('has-value');
+      if (parts.length > 0) {
+        capturedKeyboard = parts.join('+');
+        capturedDisplay.textContent = capturedKeyboard;
+        capturedDisplay.classList.remove('empty');
+        isCapturing = false;
+        captureBox.classList.remove('capturing');
         refreshPreview();
-        autoApply();
       }
+    });
 
-      function endSession() {
-        if (!kbCaptureActive) return;
-        kbCaptureActive = false;
-        document.removeEventListener('keydown', onDown, true);
-        document.removeEventListener('keyup', onUp, true);
-        window.removeEventListener('blur', onBlur);
-        btn.classList.remove('listening');
-        btn.textContent = '▸ Press a key combination';
-      }
+    document.getElementById('raw-input').addEventListener('input', refreshPreview);
+    document.getElementById('fire-speed').addEventListener('input', refreshPreview);
+    document.getElementById('fire-times').addEventListener('input', refreshPreview);
 
-      function onDown(e) {
-        e.preventDefault();
-        e.stopPropagation();
-        if (e.repeat) return;
-
-        const modTok = modTokenFromKey(e.key);
-        if (modTok) {
-          if (!modsHeld.has(modTok)) {
-            modsHeld.add(modTok);
-            modsEverPressed.push(modTok);
-          }
-          return;
-        }
-
-        const token = eventCodeToToken(e);
-        if (!token) {
-          toast('Unsupported key: ' + e.code, 'error');
-          endSession();
-          return;
-        }
-
-        realKeyPressed = true;
-        const parts = [];
-        if (e.ctrlKey) parts.push('ctrl');
-        if (e.shiftKey) parts.push('shift');
-        if (e.altKey) parts.push('alt');
-        if (e.metaKey) parts.push('super');
-        parts.push(token);
-
-        commit(parts.join('+'));
-        endSession();
-      }
-
-      function onUp(e) {
-        const modTok = modTokenFromKey(e.key);
-        if (!modTok) return;
-        if (!modsHeld.has(modTok)) return;
-        modsHeld.delete(modTok);
-
-        if (realKeyPressed) return;
-        if (modsHeld.size > 0) return;
-
-        e.preventDefault();
-        e.stopPropagation();
-        const order = ['ctrl', 'shift', 'alt', 'super'];
-        const parts = order.filter(m => modsEverPressed.includes(m));
-        if (parts.length === 0) { endSession(); return; }
-        commit(parts.join('+'));
-        endSession();
-      }
-
-      function onBlur() { endSession(); }
-
-      document.addEventListener('keydown', onDown, true);
-      document.addEventListener('keyup', onUp, true);
-      window.addEventListener('blur', onBlur);
-    }
-
-    document.getElementById('capture-kb').addEventListener('click', startKeyboardCapture);
-
-
-    // --- DPI / LED / POLLING panels ---
+    // --- DPI PANEL BUILDER ---
     function buildDpiPanel() {
       const root = document.getElementById('dpi-slots');
       root.innerHTML = '';
+
       for (let i = 0; i < 5; i++) {
         const slot = document.createElement('div');
         slot.className = 'dpi-slot';
+
+        const barsHtml = Array.from({ length: 4 }, (_, bIdx) =>
+          `<span class="dpi-led-bar${bIdx < i ? ' on' : ''}"></span>`
+        ).join('');
+
+        const val = nearestDpi(state.dpi.values[i]);
+        const idx = VALID_DPI_VALUES.indexOf(val);
+
         slot.innerHTML = `
-      <span class="lbl">${i + 1}</span>
-      <input type="range" min="0" max="${VALID_DPI_VALUES.length - 1}" value="${VALID_DPI_VALUES.indexOf(nearestDpi(state.dpi.values[i]))}" data-dpi-idx="${i}">
-      <span class="val" id="dpi-val-${i}">${state.dpi.values[i]}</span>
-      <input type="checkbox" ${state.dpi.enabled[i] ? 'checked' : ''} data-dpi-enabled="${i}" title="Slot enabled">
-    `;
+          <span class="lbl">${i + 1}</span>
+          <div class="dpi-slot-body">
+            <div class="dpi-axis-row">
+              <input type="range" min="0" max="${VALID_DPI_VALUES.length - 1}" value="${idx}" data-dpi-idx="${i}">
+              <span class="val" id="dpi-val-${i}">${val} DPI</span>
+            </div>
+          </div>
+          <div class="dpi-led-indicator" title="Hardware indicator (4 red LEDs near DPI buttons): ${i === 0 ? 'All 4 OFF' : `${i}/4 LEDs lit`}">
+            ${barsHtml}
+          </div>
+          <input type="checkbox" ${state.dpi.enabled[i] ? 'checked' : ''} data-dpi-enabled="${i}" title="Slot enabled">
+        `;
         root.appendChild(slot);
       }
+
       const note = document.createElement('div');
-      note.className = 'small-note';
+      note.style.color = 'var(--text-soft)';
+      note.style.fontSize = '11px';
       note.style.marginTop = '8px';
-      note.innerHTML = '<strong>Note:</strong> the M913 supports a contiguous range of enabled slots starting from slot 1.';
+      note.innerHTML = '<strong>Physical DPI LEDs:</strong> 4 red indicator lights next to DPI buttons (Stage 1: All OFF · Stage 2: 1 LED · Stage 3: 2 LEDs · Stage 4: 3 LEDs · Stage 5: 4 LEDs). RGB lighting is dedicated to the Logo in Panel 03.';
       root.appendChild(note);
 
       root.querySelectorAll('input[type="range"]').forEach(r => {
@@ -2146,9 +2694,11 @@ echo "Then go back to the browser and click 'Request device access'."
           const idx = parseInt(r.dataset.dpiIdx, 10);
           const dpi = VALID_DPI_VALUES[parseInt(r.value, 10)];
           state.dpi.values[idx] = dpi;
-          document.getElementById(`dpi-val-${idx}`).textContent = dpi;
+          const el = document.getElementById(`dpi-val-${idx}`);
+          if (el) el.textContent = `${dpi} DPI`;
         });
       });
+
       root.querySelectorAll('input[type="checkbox"]').forEach(c => {
         c.addEventListener('change', () => {
           const idx = parseInt(c.dataset.dpiEnabled, 10);
@@ -2166,98 +2716,141 @@ echo "Then go back to the browser and click 'Request device access'."
       });
     }
 
-    function bindToggleGroup(selector, onPick) {
-      const buttons = document.querySelectorAll(selector);
-      buttons.forEach(b => b.addEventListener('click', () => {
-        buttons.forEach(x => x.classList.remove('active'));
-        b.classList.add('active');
-        onPick(b);
-      }));
+    function updateLedControlVisibility() {
+      const mode = state.led.mode;
+      const colorRow = document.getElementById('led-color-row');
+      const brightnessRow = document.getElementById('led-brightness-row');
+      const speedRow = document.getElementById('led-speed-row');
+      const note = document.getElementById('led-mode-note');
+
+      if (mode === 'off') {
+        if (colorRow) colorRow.style.display = 'none';
+        if (brightnessRow) brightnessRow.style.display = 'none';
+        if (speedRow) speedRow.style.display = 'none';
+        if (note) note.textContent = 'LED illumination turned off (maximizes battery life).';
+      } else if (mode === 'steady') {
+        if (colorRow) colorRow.style.display = 'flex';
+        if (brightnessRow) brightnessRow.style.display = 'flex';
+        if (speedRow) speedRow.style.display = 'none';
+        if (note) note.textContent = 'Steady mode: static solid color with adjustable brightness.';
+      } else if (mode === 'respiration') {
+        if (colorRow) colorRow.style.display = 'flex';
+        if (brightnessRow) brightnessRow.style.display = 'none';
+        if (speedRow) speedRow.style.display = 'flex';
+        if (note) note.textContent = 'Breathe mode: pulsating breathing effect with adjustable cycle speed (brightness is dynamically modulated by hardware from 0% to 100%).';
+      } else if (mode === 'rainbow') {
+        if (colorRow) colorRow.style.display = 'none';
+        if (brightnessRow) brightnessRow.style.display = 'none';
+        if (speedRow) speedRow.style.display = 'flex';
+        if (note) note.textContent = 'Rainbow / neon cycle: continuous spectrum loop with adjustable cycle speed.';
+      }
     }
 
-    bindToggleGroup('.led-mode-btn', b => { state.led.mode = b.dataset.mode; });
-    bindToggleGroup('.polling-btn', b => { state.polling = parseInt(b.dataset.hz, 10); });
+    document.querySelectorAll('.led-mode-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('.led-mode-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        state.led.mode = btn.dataset.mode;
+        updateLedControlVisibility();
+      });
+    });
 
     document.getElementById('led-color').addEventListener('input', e => {
       state.led.color = parseInt(e.target.value.slice(1), 16);
     });
+
+    document.querySelectorAll('.led-preset-swatches .swatch').forEach(s => {
+      s.addEventListener('click', () => {
+        const hex = s.dataset.color;
+        document.getElementById('led-color').value = hex;
+        state.led.color = parseInt(hex.slice(1), 16);
+      });
+    });
+
     document.getElementById('led-brightness').addEventListener('input', e => {
       state.led.brightness = parseInt(e.target.value, 10);
-      document.getElementById('led-brightness-val').textContent = e.target.value;
+      document.getElementById('led-brightness-val').textContent = state.led.brightness;
     });
+
     document.getElementById('led-speed').addEventListener('input', e => {
       state.led.speed = parseInt(e.target.value, 10);
-      document.getElementById('led-speed-val').textContent = e.target.value;
+      document.getElementById('led-speed-val').textContent = state.led.speed;
     });
 
-    // --- COMMIT / EXPORT / IMPORT ---
-    const NAMES = ['side1', 'side2', 'side3', 'side4', 'side5', 'side6', 'right', 'left', 'side7', 'side8', 'middle', 'fire', 'side9', 'side10', 'side11', 'side12'];
+    document.querySelectorAll('.polling-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('.polling-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        state.polling = parseInt(btn.dataset.hz, 10);
+      });
+    });
 
-    // Sync DOM controls (LED panel, polling, DPI sliders) with the current state.
-    // Called after import or factory reset.
     function syncControlsToState() {
-      // LED mode buttons
+      // LED Mode
       document.querySelectorAll('.led-mode-btn').forEach(b => {
         b.classList.toggle('active', b.dataset.mode === state.led.mode);
       });
-      // LED color picker
-      document.getElementById('led-color').value = '#' + state.led.color.toString(16).padStart(6, '0');
-      // LED brightness
+      const hexColor = '#' + state.led.color.toString(16).padStart(6, '0');
+      document.getElementById('led-color').value = hexColor;
       document.getElementById('led-brightness').value = state.led.brightness;
       document.getElementById('led-brightness-val').textContent = state.led.brightness;
-      // LED speed
       document.getElementById('led-speed').value = state.led.speed;
       document.getElementById('led-speed-val').textContent = state.led.speed;
+      updateLedControlVisibility();
+
       // Polling
       document.querySelectorAll('.polling-btn').forEach(b => {
         b.classList.toggle('active', parseInt(b.dataset.hz, 10) === state.polling);
       });
-      // DPI panel rebuilt from scratch (handles enabled checkboxes too)
+
       buildDpiPanel();
     }
 
+    // --- FACTORY RESET ---
     document.getElementById('reset-factory').addEventListener('click', () => {
-      const ok = confirm(
-        'Reset everything to factory defaults?\n\n' +
-        'This queues a reset of all 16 buttons, DPI levels, RGB lighting and ' +
-        'polling rate. You still need to click "Apply to mouse" to write it.'
-      );
+      const ok = confirm('Reset all 16 buttons, DPI levels, RGB lighting, and polling rate to factory defaults?');
       if (!ok) return;
 
-      // Buttons
       state.pendingButtons = {};
       state.effectiveButtons = {};
       for (const [idxStr, action] of Object.entries(FACTORY_DEFAULTS)) {
         const idx = parseInt(idxStr, 10);
         const parsed = parseAction(action);
-        if (!parsed) continue;
-        state.pendingButtons[idx] = { ...parsed, raw: action };
+        if (parsed) state.pendingButtons[idx] = { ...parsed, raw: action };
       }
-      // DPI / LED / polling
-      state.dpi = { values: [...FACTORY_DPI.values], enabled: [...FACTORY_DPI.enabled] };
+
+      state.dpi = {
+        values: [...FACTORY_DPI.values],
+        enabled: [...FACTORY_DPI.enabled],
+      };
       state.led = { ...FACTORY_LED };
       state.polling = FACTORY_POLLING;
 
       syncControlsToState();
       refresh();
-      toast('Factory defaults queued. Click "Apply to mouse" to write them.', 'info');
+      toast('Factory defaults staged. Click "Apply to Mouse" to write.', 'info');
     });
 
+    // --- APPLY CONFIGURATION ---
     document.getElementById('commit-btn').addEventListener('click', async () => {
-      if (!state.device) { toast('Device not connected', 'error'); return; }
+      if (!state.device) {
+        toast('Device not connected', 'error');
+        return;
+      }
       const btn = document.getElementById('commit-btn');
       btn.disabled = true;
       try {
         const merged = { ...state.effectiveButtons, ...state.pendingButtons };
         if (Object.keys(merged).length > 0) {
           const pkts = buildButtonMapping(merged);
-          await sendSequence(pkts, 'Button mapping');
+          await sendSequence(pkts, 'Buttons');
         }
         const dpiPkts = buildDpiPackets(state.dpi);
         await sendSequence(dpiPkts, 'DPI');
         const ledPkts = buildLedPackets(state.led.mode, state.led.color, state.led.brightness, state.led.speed);
         await sendSequence(ledPkts, 'LED ' + state.led.mode);
         await sendPacket(buildPollingRatePacket(state.polling), `Polling ${state.polling}Hz`);
+
         const commit = buildCommitPacket();
         await sendPacket(commit, 'Commit 1/2');
         await new Promise(r => setTimeout(r, 150));
@@ -2268,10 +2861,9 @@ echo "Then go back to the browser and click 'Request device access'."
           state.effectiveButtons[k] = v;
         }
         state.pendingButtons = {};
-        saveState();
         refresh();
-        toast('Configuration applied!', 'ok');
-        log('=== Apply OK ===', 'ok');
+        toast('Configuration written to mouse flash successfully!', 'ok');
+        log('=== Apply to hardware complete ===', 'ok');
       } catch (err) {
         log(`Apply error: ${err.message}`, 'err');
         toast(`Error: ${err.message}`, 'error');
@@ -2280,43 +2872,55 @@ echo "Then go back to the browser and click 'Request device access'."
       }
     });
 
+    // --- EXPORT CONFIG INI ---
     document.getElementById('export-config').addEventListener('click', () => {
-      const lines = [];
-      lines.push('; M913 config exported from web configurator');
-      lines.push(`; ${new Date().toISOString()}`);
-      lines.push('');
-      lines.push('[mouse]');
-      lines.push(`polling_rate=${state.polling}`);
-      lines.push('');
-      lines.push('[dpi]');
+      const lines = [
+        '; Redragon M913 configuration export',
+        `; Exported on ${new Date().toISOString()}`,
+        '',
+        '[mouse]',
+        `polling_rate=${state.polling}`,
+        '',
+        '[dpi]',
+      ];
       for (let i = 0; i < 5; i++) {
-        if (state.dpi.enabled[i]) lines.push(`dpi${i + 1}=${state.dpi.values[i]}`);
-      }
-      lines.push('');
-      lines.push('[led]');
-      lines.push(`mode=${state.led.mode}`);
-      if (state.led.mode === 'steady' || state.led.mode === 'respiration') {
-        lines.push(`color=${state.led.color.toString(16).padStart(6, '0')}`);
-        lines.push(`brightness=${state.led.brightness}`);
-      }
-      if (state.led.mode === 'respiration') lines.push(`speed=${state.led.speed}`);
-      lines.push('');
-      lines.push('[buttons]');
-      const merged = { ...state.effectiveButtons, ...state.pendingButtons };
-      for (let i = 0; i < 16; i++) {
-        if (merged[i]) {
-          lines.push(`button_${NAMES[i]}=${merged[i].raw}`);
+        if (state.dpi.enabled[i]) {
+          lines.push(`dpi${i + 1}=${state.dpi.values[i]}`);
         }
       }
+      lines.push('', '[led]', `mode=${state.led.mode}`);
+      if (['steady', 'respiration'].includes(state.led.mode)) {
+        lines.push(`color=${state.led.color.toString(16).padStart(6, '0')}`);
+      }
+      if (state.led.mode !== 'off') {
+        lines.push(`brightness=${state.led.brightness}`);
+      }
+      if (['respiration', 'rainbow'].includes(state.led.mode)) {
+        lines.push(`speed=${state.led.speed}`);
+      }
+      lines.push('', '[buttons]');
+      const NAMES = [
+        'side1', 'side2', 'side3', 'side4', 'side5', 'side6',
+        'right', 'left',
+        'side7', 'side8', 'middle', 'fire',
+        'side9', 'side10', 'side11', 'side12',
+      ];
+      const merged = { ...state.effectiveButtons, ...state.pendingButtons };
+      for (let i = 0; i < 16; i++) {
+        if (merged[i]) lines.push(`button_${NAMES[i]}=${merged[i].raw}`);
+      }
+
       const blob = new Blob([lines.join('\n')], { type: 'text/plain' });
       const url = URL.createObjectURL(blob);
       const a = document.createElement('a');
-      a.href = url; a.download = 'm913-config.ini';
+      a.href = url;
+      a.download = 'm913-config.ini';
       a.click();
       URL.revokeObjectURL(url);
       toast('Exported m913-config.ini', 'ok');
     });
 
+    // --- IMPORT CONFIG INI ---
     function parseIni(text) {
       const cfg = { mouse: {}, dpi: {}, led: {}, buttons: {} };
       let section = null;
@@ -2336,16 +2940,18 @@ echo "Then go back to the browser and click 'Request device access'."
 
     function applyImportedConfig(cfg) {
       const issues = [];
-
       if (cfg.mouse.polling_rate) {
         const hz = parseInt(cfg.mouse.polling_rate, 10);
         if ([125, 250, 500, 1000].includes(hz)) {
           state.polling = hz;
-        } else issues.push(`polling_rate=${cfg.mouse.polling_rate} (invalid)`);
+        } else issues.push(`polling_rate=${cfg.mouse.polling_rate}`);
       }
 
       const dpiKeys = ['dpi1', 'dpi2', 'dpi3', 'dpi4', 'dpi5'];
-      const incoming = dpiKeys.map(k => cfg.dpi[k] ? parseInt(cfg.dpi[k], 10) : null);
+      const incoming = dpiKeys.map(k => {
+        const raw = cfg.dpi[k] || cfg.dpi[`${k}_x`];
+        return raw ? parseInt(raw, 10) : null;
+      });
       const enabled = incoming.map(v => v !== null);
       let firstGap = enabled.indexOf(false);
       if (firstGap === -1) firstGap = 5;
@@ -2362,10 +2968,11 @@ echo "Then go back to the browser and click 'Request device access'."
       state.dpi.enabled[0] = true;
 
       if (cfg.led.mode) {
-        const mode = cfg.led.mode.toLowerCase();
+        let mode = cfg.led.mode.toLowerCase();
+        if (mode === 'neon' || mode === 'streaming') mode = 'rainbow';
         if (['off', 'steady', 'respiration', 'rainbow'].includes(mode)) {
           state.led.mode = mode;
-        } else issues.push(`led mode=${cfg.led.mode} (invalid)`);
+        }
       }
       if (cfg.led.color) {
         const c = parseInt(cfg.led.color.replace(/^#/, ''), 16);
@@ -2378,6 +2985,12 @@ echo "Then go back to the browser and click 'Request device access'."
         state.led.speed = Math.max(1, Math.min(5, parseInt(cfg.led.speed, 10) || 3));
       }
 
+      const NAMES = [
+        'side1', 'side2', 'side3', 'side4', 'side5', 'side6',
+        'right', 'left',
+        'side7', 'side8', 'middle', 'fire',
+        'side9', 'side10', 'side11', 'side12',
+      ];
       state.effectiveButtons = {};
       state.pendingButtons = {};
       for (const [key, val] of Object.entries(cfg.buttons)) {
@@ -2385,92 +2998,124 @@ echo "Then go back to the browser and click 'Request device access'."
         if (!m) continue;
         const btnName = m[1];
         const idx = NAMES.indexOf(btnName);
-        if (idx < 0) { issues.push(`unknown button: ${btnName}`); continue; }
+        if (idx < 0) continue;
         const parsed = parseAction(val);
-        if (!parsed) { issues.push(`${btnName}=${val} (invalid action)`); continue; }
-        state.pendingButtons[idx] = { ...parsed, raw: val };
+        if (parsed) state.pendingButtons[idx] = { ...parsed, raw: val };
       }
 
       syncControlsToState();
       refresh();
-      saveState();
-
-      if (issues.length === 0) {
-        toast('Configuration imported. Click "Apply to mouse" to write.', 'ok');
-        log('=== Import OK ===', 'ok');
-      } else {
-        toast(`Imported with ${issues.length} warning(s) — see debug log`, 'info');
-        log('=== Import completed with warnings ===', 'info');
-        for (const i of issues) log(`  · ${i}`, 'info');
-      }
+      toast('Configuration imported! Click "Apply to Mouse" to write.', 'ok');
     }
 
-    document.getElementById('import-config').addEventListener('click', () => {
-      document.getElementById('import-file-input').click();
-    });
-
-    document.getElementById('import-file-input').addEventListener('change', async (e) => {
-      const file = e.target.files[0];
+    const importInput = document.getElementById('import-file-input');
+    document.getElementById('import-config').addEventListener('click', () => importInput.click());
+    importInput.addEventListener('change', () => {
+      const file = importInput.files[0];
       if (!file) return;
-      try {
-        const text = await file.text();
-        const cfg = parseIni(text);
-        applyImportedConfig(cfg);
-      } catch (err) {
-        log(`Import error: ${err.message}`, 'err');
-        toast(`Import failed: ${err.message}`, 'error');
-      } finally {
-        e.target.value = '';
-      }
+      const reader = new FileReader();
+      reader.onload = e => {
+        try {
+          const cfg = parseIni(e.target.result);
+          applyImportedConfig(cfg);
+        } catch (err) {
+          toast(`Import failed: ${err.message}`, 'error');
+        }
+      };
+      reader.readAsText(file);
+      importInput.value = '';
     });
 
-    // --- INIT ---
-    document.getElementById('connect-btn').addEventListener('click', connect);
+    // --- CONNECTION SETUP & WEBHID INITIALIZATION ---
+    document.getElementById('connect-btn').addEventListener('click', async () => {
+      if (!('hid' in navigator)) {
+        document.getElementById('browser-unsupported').style.display = 'block';
+        return;
+      }
+      try {
+        const filters = M913_PIDS.map(pid => ({ vendorId: M913_VID, productId: pid }));
+        const devs = await navigator.hid.requestDevice({ filters });
+        if (!devs || devs.length === 0) return;
 
-    if (!('hid' in navigator)) {
-      setStatus('WebHID not supported', 'error');
-      log('This browser does not support WebHID. Use Chrome, Edge or Brave.', 'err');
-      document.getElementById('browser-unsupported').style.display = 'block';
-      document.getElementById('connect-btn').style.display = 'none';
-      document.getElementById('os-line-default').style.display = 'none';
-      const linuxSetup = document.getElementById('linux-setup');
-      if (linuxSetup) linuxSetup.style.display = 'none';
-    } else {
-      setStatus('Disconnected · ready');
-      log('WebHID available. Ready.', 'ok');
-    }
+        const hasVendor = dev => (dev.collections || []).some(c => {
+          const up = c.usagePage ?? 0;
+          return up >= 0xff00 && up <= 0xffff;
+        });
+        const hasReportId = dev => (dev.collections || []).some(c => [
+          ...(c.featureReports?.map(r => r.reportId) ?? []),
+          ...(c.outputReports?.map(r => r.reportId) ?? []),
+        ].includes(REPORT_ID));
+
+        const chosen = devs.find(d => hasVendor(d) && hasReportId(d))
+          || devs.find(hasVendor)
+          || devs.find(hasReportId)
+          || devs[0];
+
+        await openDevice(chosen);
+      } catch (err) {
+        log(`Connection error: ${err.message}`, 'err');
+        toast(`Connection failed: ${err.message}`, 'error');
+      }
+    });
 
     if ('hid' in navigator) {
-      navigator.hid.getDevices().then(devs => {
+      navigator.hid.getDevices().then(async devs => {
         const m913s = devs.filter(d => d.vendorId === M913_VID && M913_PIDS.includes(d.productId));
-        if (m913s.length > 0) {
-          log(`Found previously authorized M913 (${m913s.length} interface).`, 'info');
+        if (m913s.length > 0 && !state.device) {
+          log(`Found previously authorized M913 (${m913s.length} interface). Auto-connecting...`, 'info');
+          const hasVendor = d => (d.collections || []).some(c => {
+            const up = c.usagePage ?? 0;
+            return up >= 0xff00 && up <= 0xffff;
+          });
+          const hasReportId = d => (d.collections || []).some(c => [
+            ...(c.featureReports?.map(r => r.reportId) ?? []),
+            ...(c.outputReports?.map(r => r.reportId) ?? []),
+          ].includes(REPORT_ID));
+
+          const chosen = m913s.find(d => hasVendor(d) && hasReportId(d))
+            || m913s.find(hasVendor)
+            || m913s.find(hasReportId)
+            || m913s[0];
+
+          try {
+            await openDevice(chosen);
+          } catch (autoErr) {
+            log(`Auto-connect notice: ${autoErr.message.split('\n')[0]}`, 'info');
+          }
         }
-      }).catch(err => {
-        log(`Could not list HID devices: ${err.message}`, 'err');
-      });
+      }).catch(err => log(`Could not list HID devices: ${err.message}`, 'err'));
+
       navigator.hid.addEventListener('disconnect', e => {
-        if (state.device && e.device === state.device) {
+        if (e.device === state.device) {
           log('Mouse disconnected.', 'err');
           setStatus('Disconnected');
           state.device = null;
+          if (batteryPollInterval) {
+            clearInterval(batteryPollInterval);
+            batteryPollInterval = null;
+          }
+          const batEl = document.getElementById('battery-status');
+          if (batEl) batEl.style.display = 'none';
           document.getElementById('not-connected').style.display = 'block';
           document.getElementById('app').style.display = 'none';
+          document.getElementById('commit-bar').style.display = 'none';
         }
       });
     }
 
+    document.getElementById('battery-status')?.addEventListener('click', () => {
+      if (!state.device) return;
+      toast('Querying battery level from hardware...', 'info');
+      queryBattery();
+    });
+
     setupOSAwareUI();
     buildQuickGrid();
-    const loaded = loadState();
-    // Sync the DOM controls to whatever state we ended up with (loaded or default).
+    buildHotspots();
+    renderAssignments();
     syncControlsToState();
-    if (loaded) {
-      const ts = typeof loaded === 'string' ? new Date(loaded).toLocaleString() : 'previously';
-      log(`Loaded saved config (${ts}). Connect the mouse to verify it matches.`, 'info');
-    }
+    log('Web configurator ready. Connect mouse to interface with hardware.', 'info');
   </script>
 
 </body>
-
 </html>
